@@ -37,7 +37,7 @@ function api.RefreshShop(index)
 	self.books = {}
 	local shopDef = ShopDefs[index]
 	for i = 1, shopDef.size do
-		self.books[#self.books + 1] = BookHelper.GetBook(shopDef.bookType)
+		self.books[#self.books + 1] = BookHelper.GetBook(util.SampleListWeighted(shopDef.bookType).bookType)
 	end
 end
 
@@ -61,12 +61,12 @@ function api.Draw(drawQueue)
 			self.books[i].Draw(xOff, yOff, scale, false)
 			local canAfford = TableHandler.CanAffordShopBook(self.books[i].GetScore())
 			local highlight = canAfford and swapSelected and (swapSelected.type == "shopSwapSelected") and (swapSelected.index == i)
-			if InterfaceUtil.DrawButton(xOff + 5, yOff + scale*3 + 10, 120, 50, mousePos, "Trade", not canAfford, false, false, highlight, 2, 5) then
+			if InterfaceUtil.DrawButton(xOff + 5, yOff + scale*self.books[i].GetHeight() + 10, 120, 50, mousePos, "Trade", not canAfford, false, false, highlight, 2, 5) then
 				TableHandler.SetUnderMouse({type = "shopSwapSelected", index = i})
 			end
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff + scale*3 + 15, scale*3)
+			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff + scale*self.books[i].GetHeight() + 15, scale*3)
 			xOff = xOff + 420
 		end
 		
@@ -94,7 +94,6 @@ function api.Initialize(world)
 		world = world,
 		books = {}
 	}
-	
 end
 
 return api

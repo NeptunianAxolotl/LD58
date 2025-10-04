@@ -2,7 +2,10 @@
 local def = {
 	{
 		name = "Fancy",
-		bookType = "shop_3",
+		bookType = {
+			{probability = 0.8, bookType = "shop_3"},
+			{probability = 0.2, bookType = "shop_3_tall"},
+		},
 		size = 3,
 		cost = 20,
 		bookRequirement = 200,
@@ -12,7 +15,9 @@ Costs $20 per visit.]]
 	},
 	{
 		name = "Standard",
-		bookType = "shop_2",
+		bookType = {
+			{probability = 1, bookType = "shop_2"},
+		},
 		size = 3,
 		cost = 5,
 		bookRequirement = 80,
@@ -22,7 +27,10 @@ Costs $5 per visit.]]
 	},
 	{
 		name = "Bargin",
-		bookType = "shop_1",
+		bookType = {
+			{probability = 0.5, bookType = "shop_1"},
+			{probability = 0.5, bookType = "shop_1_thin"},
+		},
 		size = 3,
 		cost = false,
 		bookRequirement = false,

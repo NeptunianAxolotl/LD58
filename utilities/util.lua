@@ -703,6 +703,19 @@ function util.SampleList(list)
 	return list[index], index
 end
 
+function util.SampleListWeighted(list, rngIn)
+	-- List elements must be maps with a key "probability" and, probabilities must sum to 1
+	local rngFunc = rngIn or math.random
+	local value = rngFunc()
+	for i = 1, #list do
+		if value < list[i].probability then
+			return list[i]
+		end
+		value = value - list[i].probability
+	end
+	return list[#list]
+end
+
 function util.SampleMap(map)
 	local size = 0
 	for _, _ in pairs(map) do

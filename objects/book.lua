@@ -14,6 +14,14 @@ local function NewBook(def)
 		return self.score
 	end
 	
+	function api.GetWidth()
+		return self.width
+	end
+	
+	function api.GetHeight()
+		return self.height
+	end
+	
 	function api.ReplaceStamp(x, y, replacement)
 		local old = self.stamps[x][y] or false
 		self.stamps[x][y] = replacement
