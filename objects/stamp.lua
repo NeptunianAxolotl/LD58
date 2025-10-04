@@ -9,6 +9,7 @@ local function NewStamp(def)
 	self.name = def.name
 	self.cost = def.cost
 	self.color = def.color
+	self.quality = def.quality
 	
 	function self.GetScore(left, right, top, bottom)
 		return self.def.GetScore(self, left, right, top, bottom)
@@ -27,6 +28,7 @@ local function NewStamp(def)
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1)
 		love.graphics.printf(self.cost, x - scale*0.3, y - scale*0.3, scale)
+		Resources.DrawImage("quality_" .. self.quality, x, y, false, false, scale)
 	end
 	
 	return self

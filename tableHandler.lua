@@ -209,7 +209,7 @@ function api.Initialize(world)
 		sideboard = {},
 		money = 10,
 	}
-	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3)})
+	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
 	
 	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
 	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})

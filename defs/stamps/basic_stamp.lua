@@ -19,7 +19,7 @@ local function GetScore(self, left, right, top, bottom)
 end
 
 local function GetSoloScore(self)
-	local score = self.cost
+	local score = math.ceil(self.cost / 3) * self.quality
 	return math.ceil(score)
 end
 
