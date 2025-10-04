@@ -184,6 +184,18 @@ function IterableMap.GetMinimum(self, minFunc, ...)
 	return minItem, minValue
 end
 
+function IterableMap.CleanupMapWantRemove(self)
+	local i = 1
+	while i <= self.indexMax do
+		local key = self.keyByIndex[i]
+		if self.dataByKey[key].map_want_remove then
+			IterableMap.Remove(self, key)
+		else
+			i = i + 1
+		end
+	end
+end
+
 function IterableMap.ApplySelf(self, funcName, ...)
 	local i = 1
 	while i <= self.indexMax do

@@ -3,12 +3,19 @@
 local self = {}
 
 local function UpdateCameraToPlayer(dt, playerPos, playerVelocity, playerSpeed, smoothness)
+	local wantedScale = self.baseScale
+	if Global.SPEED_ZOOM_SCALE then
+		wantedScale = wantedScale * math.min(3, math.max(0.5, (40 + playerSpeed)/40))
+	end
+	if not dt then
+		self.cameraPos = playerPos
+		self.playerVelocity = playerVelocity
+		self.cameraScale = wantedScale
+		return self.cameraPos[1], self.cameraPos[2], self.cameraScale
+	end
 	self.cameraVelocity = util.Average(self.cameraVelocity, playerVelocity, 2*(1 - smoothness))
 	self.cameraPos = util.Add(util.Mult(dt*60, self.cameraVelocity), util.Average(self.cameraPos, playerPos, (1 - smoothness)))
-	
-	local wantedScale = math.min(0.93, math.max(0.5, 12/(12 + playerSpeed)))
 	self.cameraScale = self.cameraScale*smoothness + wantedScale*(1 - smoothness)
-	
 	return self.cameraPos[1], self.cameraPos[2], self.cameraScale
 end
 
@@ -76,14 +83,23 @@ local function PushCamera(dt, vector, moveSmooth)
 	return self.cameraPos[1], self.cameraPos[2], self.cameraScale
 end
 
-local function UpdateTransform(cameraTransform, cameraX, cameraY, cameraScale)
+local function ZoomCamera(zoomAmount)
+	self.cameraScale = self.cameraScale * math.pow(1 + Global.CAMERA_SCROLL_SPEED, -zoomAmount)
+	return self.cameraPos[1], self.cameraPos[2], self.cameraScale
+end
+
+local function UpdateTransform(cameraTransform, cameraX, cameraY, cameraScale, focusOffset, minRatio)
 	local fullX, fullY = love.window.getMode()
 	local windowX = fullX * (1 - self.windowPadding.left - self.windowPadding.right)
 	local windowY = fullY * (1 - self.windowPadding.top - self.windowPadding.bot)
 	
+	if minRatio and windowX/windowY < minRatio then
+		windowY = windowX/minRatio
+	end
+	
 	local boundLimit = math.min(windowX, windowY)
 	self.scaleMult = {boundLimit/windowX, boundLimit/windowY}
-	
+	local scale = boundLimit/cameraScale
 	if self.pinY then
 		if self.pinY[2] == 1 then
 			if cameraY + cameraScale/2 > self.pinY[1] then
@@ -95,10 +111,10 @@ local function UpdateTransform(cameraTransform, cameraX, cameraY, cameraScale)
 	--print("cameraScale", cameraScale)
 	--print("Camera Scale", boundLimit/cameraScale, boundLimit/cameraScale)
 	cameraTransform:setTransformation(
-		windowX/2 + fullX * self.windowPadding.left,
-		windowY/2 + fullY * self.windowPadding.top,
+		windowX * (focusOffset and focusOffset[1] or 0.5) + fullX * self.windowPadding.left,
+		windowY * (focusOffset and focusOffset[2] or 0.5) + fullY * self.windowPadding.top,
 		0,
-		boundLimit/cameraScale, boundLimit/cameraScale,
+		scale, scale,
 		cameraX, cameraY)
 end
 
@@ -117,6 +133,7 @@ local function Initialize(data)
 		cameraVelocity = {0, 0},
 		posVelocity = {0, 0},
 		cameraScale = data.initScale or 1080,
+		baseScale = data.baseScale or 1,
 		windowPadding = data.windowPadding or {left = 0, right = 0, top = 0, bot = 0},
 		pinX = data.pinX,
 		pinY = data.pinY,
@@ -133,6 +150,7 @@ return {
 	UpdateCameraToViewPoints = UpdateCameraToViewPoints,
 	UpdateTransform = UpdateTransform,
 	PushCamera = PushCamera,
+	ZoomCamera = ZoomCamera,
 	Initialize = Initialize,
 	GetCameraScale = GetCameraScale,
 	GetCameraPos = GetCameraPos,

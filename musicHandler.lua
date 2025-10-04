@@ -16,9 +16,16 @@ local trackList = trackData.list
 local currentTrack = {}
 local trackRunning = false
 local initialDelay = true
-local currentTrackRemaining = 1
 local trackParity = 1
 local playingSounds = {}
+local pitch = 1
+local musicData = false
+
+local DISABLED = true
+
+function api.setPitch(newPitch)
+	pitch = newPitch or 1
+end
 
 function api.StopCurrentTrack(delay)
 	currentTrackRemaining = delay or 0
@@ -33,6 +40,9 @@ function api.SetCurrentTrackFadeTime(fadeTime)
 end
 
 function api.Update(dt)
+	if DISABLED then
+		return
+	end
 	if self.needDtReset then
 		Global.ResetMissingDt()
 		self.needDtReset = false
@@ -46,33 +56,26 @@ function api.Update(dt)
 			return
 		end
 	end
-	currentTrackRemaining = (currentTrackRemaining or 0) - dt
-	if currentTrackRemaining < 0 then
-		if cosmos.MusicEnabled() then
-			if trackRunning then
-				for i = 1, #trackList do
-					SoundHandler.StopSound(currentTrack[i])
-				end
-			end
-			trackRunning = true
-			currentTrackRemaining = soundFiles[trackData.useAsDurationForAllTracks or currentTrack[1]].duration
-			for i = 1, #trackList do
-				playingSounds[i] = SoundHandler.PlaySound(trackList[i], false, 1, 1, false, false, (trackData.WantTrack(cosmos, i) and 1) or 0, true)
-			end
-		elseif trackRunning then
-			for i = 1, #trackList do
-				SoundHandler.StopSound(trackList[i])
-			end
-			trackRunning = false
+	
+	local wantedTrack = GameHandler.GetDesiredTrack()
+	for i = wantedTrack, wantedTrack + 1 do
+		if trackList[i] and not playingSounds[i] then
+			local pitch = trackData.PitchFunc and trackData.PitchFunc(i)
+			playingSounds[i] = SoundHandler.PlaySound(trackList[i], i, 1, 1, false, true, ((trackData.WantTrack(cosmos, i) and 0.01) or 0), true, pitch, musicData)
 		end
-	elseif trackRunning then
-		for i = 1, #trackList do
-			playingSounds[i].want = ((trackData.WantTrack(cosmos, i) and 1) or 0)
-		end
+	end
+	
+	for i = 1, #playingSounds do
+		playingSounds[i].want = ((trackData.WantTrack(cosmos, i) and 1) or 0)
 	end
 end
 
 function api.Initialize(newCosmos)
+	if DISABLED then
+		return
+	end
+	musicData = love.filesystem.read("resources/sounds/music/LD57.wav")
+	musicData = love.filesystem.newFileData(musicData, "resources/sounds/music/LD57.wav")
 	self = {}
 	cosmos = newCosmos
 	initialDelay = 0
