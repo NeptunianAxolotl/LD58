@@ -88,7 +88,10 @@ function api.MousePressed(x, y, button)
 	if api.GetGameOver() then
 		return -- No doing actions
 	end
-	x, y = CameraHandler.GetCameraTransform():inverse():transformPoint(x, y)
+	
+	if TableHandler.MousePressed(x, y, button) then
+		return
+	end
 	
 	-- Send event to game components
 	if Global.DEBUG_PRINT_CLICK_POS and button == 2 then
