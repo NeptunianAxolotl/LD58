@@ -23,7 +23,7 @@ local function RegenerateStamps(self)
 	for i = 1, self.width do
 		self.stamps[i] = {}
 		for j = 1, self.height do
-			self.stamps[i][j] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*10)})
+			self.stamps[i][j] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*10), color = 1 + math.floor(math.random()*8)})
 		end
 	end
 	self.score = CalculateBookScore(self)

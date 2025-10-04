@@ -12,6 +12,10 @@ function api.GetSelected()
 	return self.swapSelected
 end
 
+function api.ClearShopSelected()
+	self.swapSelected = false
+end
+
 function api.CanAffordShopBook(shopScore)
 	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
 		return shopScore <= self.books[self.swapSelected.index].GetScore()
@@ -42,6 +46,14 @@ function api.CheckAndSetUnderMouse(x, y, width, height, thing)
 	return true
 end
 
+local function GetSwapIndecies()
+	if self.oldSwapSelected.type == "mySwapSelected" then
+		return self.oldSwapSelected.index, self.swapSelected.index
+	else
+		return self.swapSelected.index, self.oldSwapSelected.index
+	end
+end
+
 local function MousePlaceClick(placePos)
 	if not placePos then
 		return false
@@ -61,8 +73,13 @@ local function MousePlaceClick(placePos)
 		return leftEmptySpace
 	elseif placePos.type == "mySwapSelected" or placePos.type == "shopSwapSelected" then
 		self.swapSelected = placePos
-		if self.oldSwapSelected and self.oldSwapSelected.type ~= self.swapSelected then
-		
+		if self.oldSwapSelected and self.oldSwapSelected.type ~= self.swapSelected.type then
+			local bookIndex, shopIndex = GetSwapIndecies()
+			local shopBook = ShopHandler.ReplaceBook(self.books[bookIndex], shopIndex)
+			if shopBook then
+				self.books[bookIndex] = shopBook
+				self.swapSelected = false
+			end
 		end
 	end
 end

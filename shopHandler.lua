@@ -22,6 +22,15 @@ function api.CanSwapFromTable(tableValue)
 	return tableValue >= minScore
 end
 
+function api.ReplaceBook(tableBook, shopIndex)
+	local shopBook = self.books[shopIndex]
+	if shopBook.GetScore() > tableBook.GetScore() then
+		return false
+	end
+	self.books[shopIndex] = tableBook
+	return shopBook
+end
+
 --------------------------------------------------
 -- Updating
 --------------------------------------------------
@@ -34,7 +43,7 @@ function api.Draw(drawQueue)
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
 		local xOff = Global.WINDOW_X * 0.1
-		local yOff = Global.WINDOW_Y * 0.02
+		local yOff = Global.WINDOW_Y * 0.05
 		local scale = 120
 		
 		local swapSelected = TableHandler.GetSelected()
@@ -57,11 +66,16 @@ function api.Initialize(world)
 	self = {
 		world = world,
 		books = {},
+		shopTeirs = {
+			{name = "fancy", range = {180, 600}},
+			{name = "medium", range = {70, 160}},
+			{name = "bargin", range = {20, 70}},
+		}
 	}
 	
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {60, 400}})
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {60, 400}})
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {60, 400}})
+	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {400, 1000}})
+	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {250, 400}})
+	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {200, 400}})
 end
 
 return api

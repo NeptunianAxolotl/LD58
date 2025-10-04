@@ -8,14 +8,14 @@ local function NewStamp(def)
 	self.def = StampDefs[def.name]
 	self.name = def.name
 	self.cost = def.cost
-	self.color = {math.random()*0.8 + 0.2, math.random()*0.8 + 0.2, math.random()*0.8 + 0.2}
+	self.color = def.color
 	
 	function self.GetScore(left, right, top, bottom)
 		return self.def.GetScore(self, left, right, top, bottom)
 	end
 	
 	function self.Draw(x, y, scale)
-		Resources.DrawImage(self.def.image, x, y, false, false, scale, self.color)
+		Resources.DrawImage(self.def.image, x, y, false, false, scale, StampDefData.colorMap[self.color])
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1)
 		love.graphics.printf(self.cost, x - scale*0.3, y - scale*0.3, scale)

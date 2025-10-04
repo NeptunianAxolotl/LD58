@@ -4,7 +4,7 @@ local function ScorePair(self, other)
 	if not other then
 		return 0
 	end
-	local colorBonus = util.Dot(self.color, other.color) > 0.5 and 2 or 1
+	local colorBonus = 1
 	local numberFactor = util.GreatestCommonDivisor(self.cost, other.cost) 
 	return math.ceil(numberFactor * colorBonus / 2)
 end
