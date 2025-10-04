@@ -37,7 +37,7 @@ function api.RefreshShop(index)
 	self.books = {}
 	local shopDef = ShopDefs[index]
 	for i = 1, shopDef.size do
-		self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = shopDef.range})
+		self.books[#self.books + 1] = BookHelper.GetBook(shopDef.bookType)
 	end
 end
 

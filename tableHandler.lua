@@ -102,6 +102,9 @@ local function MousePlaceClick(placePos)
 		end
 	elseif placePos.type == "selectShop" then
 		if api.CanEnterShop(ShopDefs[placePos.index]) then
+			if ShopDefs[placePos.index].cost then
+				self.money = self.money - ShopDefs[placePos.index].cost
+			end
 			ShopHandler.RefreshShop(placePos.index)
 		end
 	end
@@ -211,9 +214,9 @@ function api.Initialize(world)
 	}
 	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
 	
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
+	self.books[#self.books + 1] = BookHelper.GetBook("starter")
+	self.books[#self.books + 1] = BookHelper.GetBook("starter")
+	self.books[#self.books + 1] = BookHelper.GetBook("starter")
 end
 
 return api

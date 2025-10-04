@@ -2,7 +2,7 @@
 local def = {
 	{
 		name = "Fancy",
-		range = {180, 600},
+		bookType = "shop_3",
 		size = 3,
 		cost = 20,
 		bookRequirement = 200,
@@ -12,7 +12,7 @@ Costs $20 per visit.]]
 	},
 	{
 		name = "Standard",
-		range = {70, 160},
+		bookType = "shop_2",
 		size = 3,
 		cost = 5,
 		bookRequirement = 80,
@@ -22,7 +22,7 @@ Costs $5 per visit.]]
 	},
 	{
 		name = "Bargin",
-		range = {20, 70},
+		bookType = "shop_1",
 		size = 3,
 		cost = false,
 		bookRequirement = false,
