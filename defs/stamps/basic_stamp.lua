@@ -4,9 +4,9 @@ local function ScorePair(self, other)
 	if not other then
 		return 0
 	end
-	local colorBonus = 1
+	local colorBonus = self.color == other.color and 5 or 1
 	local numberFactor = util.GreatestCommonDivisor(self.cost, other.cost) 
-	return math.ceil(numberFactor * colorBonus / 2)
+	return math.ceil(numberFactor * colorBonus)
 end
 
 local function GetScore(self, left, right, top, bottom)

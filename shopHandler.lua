@@ -19,7 +19,7 @@ function api.CanSwapFromTable(tableValue)
 			minScore = self.books[i].GetScore()
 		end
 	end
-	return tableValue >= minScore
+	return minScore and tableValue >= minScore
 end
 
 function api.ReplaceBook(tableBook, shopIndex)
@@ -29,6 +29,15 @@ function api.ReplaceBook(tableBook, shopIndex)
 	end
 	self.books[shopIndex] = tableBook
 	return shopBook
+end
+
+function api.RefreshShop(index)
+	TableHandler.ClearShopSelected()
+	self.books = {}
+	local shopDef = self.shopTypes[index]
+	for i = 1, shopDef.size do
+		self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = shopDef.range})
+	end
 end
 
 --------------------------------------------------
@@ -59,6 +68,18 @@ function api.Draw(drawQueue)
 			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff + scale*3 + 15, scale*3)
 			xOff = xOff + 420
 		end
+		
+		xOff = Global.WINDOW_X * 0.8
+		yOff = Global.WINDOW_Y * 0.12
+		love.graphics.setColor(0, 0, 0, 1)
+		love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
+		yOff = yOff + 50
+		for i = 1, #self.shopTypes do
+			if InterfaceUtil.DrawButton(xOff, yOff, 150, 60, mousePos, self.shopTypes[i].name, false, false, false, highlight, 2, 5) then
+				TableHandler.SetUnderMouse({type = "selectShop", index = i})
+			end
+			yOff = yOff + 80
+		end
 	end})
 end
 
@@ -66,16 +87,13 @@ function api.Initialize(world)
 	self = {
 		world = world,
 		books = {},
-		shopTeirs = {
-			{name = "fancy", range = {180, 600}},
-			{name = "medium", range = {70, 160}},
-			{name = "bargin", range = {20, 70}},
+		shopTypes = {
+			{name = "Fancy", range = {180, 600}, size = 3},
+			{name = "Medium", range = {70, 160}, size = 3},
+			{name = "Bargin", range = {20, 70}, size = 3},
 		}
 	}
 	
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {400, 1000}})
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {250, 400}})
-	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {200, 400}})
 end
 
 return api

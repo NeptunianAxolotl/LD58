@@ -81,6 +81,8 @@ local function MousePlaceClick(placePos)
 				self.swapSelected = false
 			end
 		end
+	elseif placePos.type == "selectShop" then
+		ShopHandler.RefreshShop(placePos.index)
 	end
 end
 
