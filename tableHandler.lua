@@ -34,7 +34,7 @@ function api.CanAffordShopBook(shopScore)
 end
 
 function api.CanEnterShop(shopDef)
-	if shopDef.cost and shopDef.cost > self.money then
+	if shopDef.cost and not shopDef.waiveCostIfNoMoney and shopDef.cost > self.money then
 		return false
 	end
 	if shopDef.bookRequirement and shopDef.bookRequirement > api.GetMaxBookValue() then
@@ -103,7 +103,7 @@ local function MousePlaceClick(placePos)
 	elseif placePos.type == "selectShop" then
 		if api.CanEnterShop(ShopDefs[placePos.index]) then
 			if ShopDefs[placePos.index].cost then
-				self.money = self.money - ShopDefs[placePos.index].cost
+				self.money = math.max(0, self.money - ShopDefs[placePos.index].cost)
 			end
 			ShopHandler.RefreshShop(placePos.index)
 		end

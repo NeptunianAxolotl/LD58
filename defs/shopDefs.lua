@@ -11,7 +11,7 @@ local def = {
 		bookRequirement = 200,
 		desc = [[The fanciest stamps.
 Bring a value 200 book to enter.
-Costs $20 per visit.]]
+Costs $20 to visit.]]
 	},
 	{
 		name = "Standard",
@@ -23,7 +23,7 @@ Costs $20 per visit.]]
 		bookRequirement = 80,
 		desc = [[Decent stamps.
 Bring a value 80 book to enter.
-Costs $5 per visit.]]
+Costs $5 to visit.]]
 	},
 	{
 		name = "Bargin",
@@ -32,11 +32,12 @@ Costs $5 per visit.]]
 			{probability = 0.5, bookType = "shop_1_thin"},
 		},
 		size = 3,
-		cost = false,
+		cost = 1,
+		waiveCostIfNoMoney = true,
 		bookRequirement = false,
 		desc = [[Terrible stamps, terribly organised.
 No standards.
-Free to visit.]]
+Costs $1 to visit, if you can pay.]]
 	},
 }
 
