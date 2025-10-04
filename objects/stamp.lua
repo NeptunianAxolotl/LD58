@@ -14,6 +14,10 @@ local function NewStamp(def)
 		return self.def.GetScore(self, left, right, top, bottom)
 	end
 	
+	function self.GetSoloScore()
+		return self.def.GetSoloScore(self)
+	end
+	
 	function self.GetSellValue()
 		return 5
 	end

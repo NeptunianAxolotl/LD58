@@ -5,6 +5,71 @@ local NewStamp = require("objects/stamp")
 
 local function CalculateBookScore(self)
 	local score = 0
+	
+	local basic_scores = 0
+	local basic_scores_row = {}
+	local basic_scores_col = {}
+	for i = 1, self.width do
+		basic_scores_col[i] = 0
+	end
+	for j = 1, self.height do
+		basic_scores_row[j] = 0
+	end
+	
+	-- Evaluate each stamp's individual value.
+	for i = 1, self.width do
+		for j = 1, self.height do
+			if self.stamps[i][j] then
+				local scoreme = self.stamps[i][j].GetSoloScore()
+				score = score + scoreme
+				basic_scores = basic_scores + scoreme
+				basic_scores_row[j] = basic_scores_row[j] + scoreme
+				basic_scores_col[i] = basic_scores_col[i] + scoreme
+			end
+		end
+	end
+	
+	-- Evaluate the score on each column.
+	for i = 1, self.width do
+		-- Are they all the same colour?
+		local x = -100
+		if self.stamps[i][1] and self.stamps[i][1].color then
+			x = self.stamps[i][1].color
+		end
+		for j = 2, self.height do
+			if self.stamps[i][j] and self.stamps[i][j].color and x == self.stamps[i][j].color then
+				-- do nothing
+			else
+				x = -100
+				break
+			end
+		end
+		if x >= 0 then
+			score = score + basic_scores_col[i]
+		end
+	end
+	
+	-- Evaluate the score on each row.
+	for j = 1, self.height do
+		-- Do their costs form a sequence?
+		local x = -100
+		if self.stamps[1][j] and self.stamps[1][j].cost then
+			 x = self.stamps[1][j].cost
+		end
+		for i = 2, self.width do
+			if self.stamps[i][j] and self.stamps[i][j].cost and x+1 == self.stamps[i][j].cost then
+				x = x + 1
+			else
+				x = -100
+				break
+			end
+		end
+		if x >= 0 then
+			score = score + basic_scores_row[j]
+		end
+	end
+	
+	-- Evaluate any other weird scoring stuff.
 	for i = 1, self.width do
 		for j = 1, self.height do
 			if self.stamps[i][j] then
@@ -16,6 +81,8 @@ local function CalculateBookScore(self)
 			end
 		end
 	end
+	
+	
 	return score
 end
 
