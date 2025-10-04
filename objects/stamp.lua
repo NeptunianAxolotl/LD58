@@ -14,6 +14,10 @@ local function NewStamp(def)
 		return self.def.GetScore(self, left, right, top, bottom)
 	end
 	
+	function self.GetSellValue()
+		return 5
+	end
+	
 	function self.Draw(x, y, scale)
 		Resources.DrawImage(self.def.image, x, y, false, false, scale, StampDefData.colorMap[self.color])
 		Font.SetSize(2)

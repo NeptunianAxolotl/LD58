@@ -1,4 +1,4 @@
-
+local ShopDefs = require("defs/shopDefs")
 local NewStamp = require("objects/stamp")
 
 local self = {}
@@ -16,17 +16,31 @@ function api.ClearShopSelected()
 	self.swapSelected = false
 end
 
-function api.CanAffordShopBook(shopScore)
-	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
-		return shopScore <= self.books[self.swapSelected.index].GetScore()
-	end
+function api.GetMaxBookValue()
 	local maxScore = 0
 	for i = 1, #self.books do
 		if self.books[i].GetScore() > maxScore then
 			maxScore = self.books[i].GetScore()
 		end
 	end
-	return shopScore <= maxScore
+	return maxScore
+end
+
+function api.CanAffordShopBook(shopScore)
+	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
+		return shopScore <= self.books[self.swapSelected.index].GetScore()
+	end
+	return shopScore <= api.GetMaxBookValue()
+end
+
+function api.CanEnterShop(shopDef)
+	if shopDef.cost and shopDef.cost > self.money then
+		return false
+	end
+	if shopDef.bookRequirement and shopDef.bookRequirement > api.GetMaxBookValue() then
+		return false
+	end
+	return true
 end
 
 function api.JustCheckUnderMouse(x, y, width, height)
@@ -71,6 +85,11 @@ local function MousePlaceClick(placePos)
 		local leftEmptySpace = bookStamp and not self.heldStamp
 		self.heldStamp = bookStamp
 		return leftEmptySpace
+	elseif placePos.type == "sellStamp" then
+		if self.heldStamp then
+			self.money = self.money + self.heldStamp.GetSellValue()
+			self.heldStamp = false
+		end
 	elseif placePos.type == "mySwapSelected" or placePos.type == "shopSwapSelected" then
 		self.swapSelected = placePos
 		if self.oldSwapSelected and self.oldSwapSelected.type ~= self.swapSelected.type then
@@ -82,7 +101,9 @@ local function MousePlaceClick(placePos)
 			end
 		end
 	elseif placePos.type == "selectShop" then
-		ShopHandler.RefreshShop(placePos.index)
+		if api.CanEnterShop(ShopDefs[placePos.index]) then
+			ShopHandler.RefreshShop(placePos.index)
+		end
 	end
 end
 
@@ -105,10 +126,8 @@ end
 --------------------------------------------------
 
 function api.Update(dt)
-	
 	self.underMouse = false
 end
-
 
 function api.Draw(drawQueue)
 	if self.heldStamp then
@@ -122,26 +141,27 @@ function api.Draw(drawQueue)
 	end
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
-		local xOff = Global.WINDOW_X *0.08
-		local yOff = Global.WINDOW_Y *0.6
-		local scale = 120
+		local xOff = Global.WINDOW_X *0.06
+		local yOff = Global.WINDOW_Y *0.6 - 36
+		local scale = 100
 		
 		for i = 1, self.sideboardSize do
 			local underMouse = api.CheckAndSetUnderMouse(xOff, yOff, scale, scale, {type = "sideboard", index = i})
-			love.graphics.setLineWidth(3)
 			if underMouse then
+				love.graphics.setLineWidth(3)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
 			else
+				love.graphics.setLineWidth(2)
 				love.graphics.setColor(0, 0, 0, 1)
 			end
 			love.graphics.rectangle("line", xOff, yOff, scale, scale)
 			if self.sideboard[i] then
 				self.sideboard[i].Draw(xOff + scale/2, yOff + scale/2, scale)
 			end
-			yOff = yOff + scale + 20
+			yOff = yOff + scale + 18
 		end
 		
-		xOff = Global.WINDOW_X *0.2
+		xOff = Global.WINDOW_X *0.15
 		yOff = Global.WINDOW_Y *0.6
 		for i = 1, #self.books do
 			self.books[i].Draw(xOff, yOff, scale, true)
@@ -153,8 +173,31 @@ function api.Draw(drawQueue)
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
 			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff - 50, scale*3)
-			xOff = xOff + 420
+			xOff = xOff + 390
 		end
+		
+		xOff = Global.WINDOW_X *0.8
+		yOff = Global.WINDOW_Y *0.6 - 50
+		
+		if InterfaceUtil.DrawButton(xOff - 20, yOff + 150, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
+			if self.heldStamp then
+				api.SetUnderMouse({type = "sellStamp", income = self.heldStamp.GetSellValue()})
+			else
+				Font.SetSize(3)
+				love.graphics.setColor(0, 0, 0, 1)
+				love.graphics.printf("Drop a stamp here to sell it.", xOff - 20, yOff + 235, 220)
+			end
+		end
+		
+		local moneyChangeString = ""
+		if self.underMouse and self.underMouse.cost then
+			moneyChangeString = " - " .. self.underMouse.cost
+		elseif self.underMouse and self.underMouse.income then
+			moneyChangeString = " + " .. self.underMouse.income
+		end
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1)
+		love.graphics.printf("Money: $" .. self.money .. moneyChangeString, xOff, yOff, scale*3)
 	end})
 end
 
@@ -162,11 +205,13 @@ function api.Initialize(world)
 	self = {
 		world = world,
 		books = {},
-		sideboardSize = 2,
+		sideboardSize = 3,
 		sideboard = {},
+		money = 10,
 	}
 	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3)})
 	
+	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
 	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
 	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
 end

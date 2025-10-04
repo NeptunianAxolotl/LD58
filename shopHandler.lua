@@ -1,5 +1,6 @@
 
 local NewStamp = require("objects/stamp")
+local ShopDefs = require("defs/shopDefs")
 
 local self = {}
 local api = {}
@@ -34,7 +35,7 @@ end
 function api.RefreshShop(index)
 	TableHandler.ClearShopSelected()
 	self.books = {}
-	local shopDef = self.shopTypes[index]
+	local shopDef = ShopDefs[index]
 	for i = 1, shopDef.size do
 		self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = shopDef.range})
 	end
@@ -49,11 +50,11 @@ end
 
 
 function api.Draw(drawQueue)
-	drawQueue:push({y=100; f=function()
+	drawQueue:push({y=50; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
 		local xOff = Global.WINDOW_X * 0.1
 		local yOff = Global.WINDOW_Y * 0.05
-		local scale = 120
+		local scale = 100
 		
 		local swapSelected = TableHandler.GetSelected()
 		for i = 1, #self.books do
@@ -69,14 +70,19 @@ function api.Draw(drawQueue)
 			xOff = xOff + 420
 		end
 		
-		xOff = Global.WINDOW_X * 0.8
-		yOff = Global.WINDOW_Y * 0.12
+		xOff = Global.WINDOW_X * 0.75
+		yOff = Global.WINDOW_Y * 0.1
 		love.graphics.setColor(0, 0, 0, 1)
 		love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
 		yOff = yOff + 50
-		for i = 1, #self.shopTypes do
-			if InterfaceUtil.DrawButton(xOff, yOff, 150, 60, mousePos, self.shopTypes[i].name, false, false, false, highlight, 2, 5) then
-				TableHandler.SetUnderMouse({type = "selectShop", index = i})
+		for i = 1, #ShopDefs do
+			local shopDef = ShopDefs[i]
+			local canEnter = TableHandler.CanEnterShop(shopDef)
+			if InterfaceUtil.DrawButton(xOff, yOff, 150, 60, mousePos, shopDef.name, not canEnter, false, true, highlight, 2, 5) then
+				TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost})
+				love.graphics.setColor(0, 0, 0, 1)
+				Font.SetSize(3)
+				love.graphics.printf(shopDef.desc, Global.WINDOW_X * 0.75 + 170, Global.WINDOW_Y * 0.1 + 45, 300, "left")
 			end
 			yOff = yOff + 80
 		end
@@ -86,12 +92,7 @@ end
 function api.Initialize(world)
 	self = {
 		world = world,
-		books = {},
-		shopTypes = {
-			{name = "Fancy", range = {180, 600}, size = 3},
-			{name = "Medium", range = {70, 160}, size = 3},
-			{name = "Bargin", range = {20, 70}, size = 3},
-		}
+		books = {}
 	}
 	
 end
