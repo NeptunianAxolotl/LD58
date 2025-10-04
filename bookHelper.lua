@@ -119,7 +119,7 @@ local function RegenerateStamps(self)
 				name = "basic_stamp",
 				cost = 1 + math.floor(math.random()*10),
 				color = 1 + math.floor(math.random()*8),
-				quality = self.minQuality + math.floor(math.random()*self.maxQuality),
+				quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1)),
 			})
 		end
 	end
