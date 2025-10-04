@@ -365,6 +365,25 @@ function util.ExtendLine(line, length)
 	}
 end
 
+function util.ArePointsConvex(points)
+	if #points < 3 then
+		return true
+	end
+	local n = #points
+	local sign = false
+	for i = 1, n do
+		local a = points[i]
+		local b = points[(i % n) + 1]
+		local c = points[((i + 1) % n) + 1]
+		local newSign = util.Cross2D(util.Subtract(a, b), util.Subtract(b, c))
+		sign = sign or newSign
+		if (sign > 0) ~= (newSign > 0) then
+			return false
+		end
+	end
+	return true
+end
+
 --------------------------------------------------
 --------------------------------------------------
 -- Transforms
@@ -1049,6 +1068,7 @@ function util.LoadDefDirectory(dir, nameByKey)
 		local name = string.sub(files[i], 0, -5)
 		nameList[#nameList + 1] = name
 		defTable[name] = love.filesystem.load(dir .. "/" .. name .. ".lua")()
+		defTable[name].name = name
 	end
 	
 	-- Loop for multiple inheritence
@@ -1074,6 +1094,7 @@ function util.LoadDefNames(path)
 	local defs = love.filesystem.load(path .. ".lua")()
 	local defNames = {}
 	for i = 1, #defs do
+		defs[i].index = i
 		defNames[defs[i].name] = defs[i]
 	end
 	return defs, defNames

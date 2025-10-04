@@ -19,18 +19,21 @@ local function UpdateSmoothNumber(dt, name)
 		number.diff = 0
 	else
 		local rate = dt*number.rate*15*(0.24 + 0.06 * math.abs(number.want - number.has) / number.diff)
-		if math.abs(rate) <= 0.008 or math.abs(number.want - number.has) < 0.02*number.diff then
+		local currentDiff = math.abs(number.want - number.has)
+		if math.abs(rate) <= 0.0008 or currentDiff < 0.0002*number.diff or currentDiff < number.snapGap then
 			number.has = number.want
 			number.diff = false
 		end
 		number.has = number.has + rate*(number.want - number.has)*2
 	end
-	while number.wrap and number.has >= number.wrap do
-		number.want = number.want - number.wrap
-		number.has = number.has - number.wrap
-		number.wrap = GameHandler.ReportOnWrap(name, number.wrap) or number.wrap
+	if GameHandler.ReportOnWrap then
+		while number.wrap and number.has >= number.wrap do
+			number.want = number.want - number.wrap
+			number.has = number.has - number.wrap
+			number.wrap = GameHandler.ReportOnWrap(name, number.wrap) or number.wrap
+		end
 	end
-	if (not number.wrap) and number.has > number.recordHigh then
+	if GameHandler.ReportOnRecord and (not number.wrap) and number.has > number.recordHigh then
 		GameHandler.ReportOnRecord(name, number.has, number.recordHigh)
 		number.recordHigh = number.has
 	end
@@ -58,6 +61,11 @@ function api.GetRawNumber(name)
 	return number.want
 end
 
+function api.GetRawRecordHigh(name)
+	local number = self.smoothNumbers[name]
+	return number.recordHigh
+end
+
 function api.GetNumber(name)
 	local number = self.smoothNumbers[name]
 	return number.has
@@ -68,7 +76,7 @@ function api.IsNumberBehindWrap(name)
 	return math.floor(number.has) ~= math.floor(number.want)
 end
 
-function api.RegisterSmoothNumber(name, initial, rate, wrap)
+function api.RegisterSmoothNumber(name, initial, rate, wrap, snapGap)
 	initial = initial or 0
 	rate = rate or 1
 	wrap = wrap or false
@@ -78,14 +86,15 @@ function api.RegisterSmoothNumber(name, initial, rate, wrap)
 		diff = 0,
 		recordHigh = initial,
 		wrap = wrap,
-		rate = rate
+		snapGap = snapGap or 0,
+		rate = rate,
 	}
 	self.smoothNumberList[#self.smoothNumberList + 1] = name
 end
 
 function api.ForceUpdataAllNumbers()
 	for i = 1, #self.smoothNumberList do
-		UpdateSmoothNumber(false, self.smoothNumberList[i])
+		api.UpdateSmoothNumber(false, self.smoothNumberList[i])
 	end
 end
 
@@ -140,7 +149,7 @@ end
 -- Buttons
 --------------------------------------------------
 
-function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, canHoverDisabled, fontSize, fontOffset, borderThickness)
+function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, canHoverDisabled, forceHighlight, fontSize, fontOffset, borderThickness)
 	local hovered = ((not disabled) or canHoverDisabled) and util.PosInRectangle(mousePos, x, y, width, height)
 	borderThickness = borderThickness or 6
 	
@@ -148,7 +157,7 @@ function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, ca
 		love.graphics.setColor(Global.BUTTON_DISABLE_COL[1], Global.BUTTON_DISABLE_COL[2], Global.BUTTON_DISABLE_COL[3], 1)
 	elseif (flash and (self.animDt%Global.BUTTON_FLASH_PERIOD < Global.BUTTON_FLASH_PERIOD/2)) then
 		love.graphics.setColor(Global.BUTTON_FLASH_COL[1], Global.BUTTON_FLASH_COL[2], Global.BUTTON_FLASH_COL[3], 1)
-	elseif hovered then
+	elseif hovered or forceHighlight then
 		love.graphics.setColor(Global.BUTTON_HIGHLIGHT_COL[1], Global.BUTTON_HIGHLIGHT_COL[2], Global.BUTTON_HIGHLIGHT_COL[3], 1)
 	else
 		love.graphics.setColor(Global.BUTTON_COL[1], Global.BUTTON_COL[2], Global.BUTTON_COL[3], 1)
@@ -162,7 +171,7 @@ function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, ca
 			love.graphics.setColor(Global.TEXT_DISABLE_COL[1], Global.TEXT_DISABLE_COL[2], Global.TEXT_DISABLE_COL[3], 1)
 		elseif (flash and (self.animDt%Global.BUTTON_FLASH_PERIOD < Global.BUTTON_FLASH_PERIOD/2)) then
 			love.graphics.setColor(Global.TEXT_FLASH_COL[1], Global.TEXT_FLASH_COL[2], Global.TEXT_FLASH_COL[3], 1)
-		elseif hovered then
+		elseif hovered or forceHighlight then
 			love.graphics.setColor(Global.TEXT_HIGHLIGHT_COL[1], Global.TEXT_HIGHLIGHT_COL[2], Global.TEXT_HIGHLIGHT_COL[3], 1)
 		else
 			love.graphics.setColor(Global.TEXT_COL[1], Global.TEXT_COL[2], Global.TEXT_COL[3], 1)
@@ -174,7 +183,7 @@ function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, ca
 		love.graphics.setColor(Global.OUTLINE_DISABLE_COL[1], Global.OUTLINE_DISABLE_COL[2], Global.OUTLINE_DISABLE_COL[3], 1)
 	elseif (flash and (self.animDt%Global.BUTTON_FLASH_PERIOD < Global.BUTTON_FLASH_PERIOD/2)) then
 		love.graphics.setColor(Global.OUTLINE_FLASH_COL[1], Global.OUTLINE_FLASH_COL[2], Global.OUTLINE_FLASH_COL[3], 1)
-	elseif hovered then
+	elseif hovered or forceHighlight then
 		love.graphics.setColor(Global.OUTLINE_HIGHLIGHT_COL[1], Global.OUTLINE_HIGHLIGHT_COL[2], Global.OUTLINE_HIGHLIGHT_COL[3], 1)
 	else
 		love.graphics.setColor(Global.OUTLINE_COL[1], Global.OUTLINE_COL[2], Global.OUTLINE_COL[3], 1)
