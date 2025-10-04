@@ -26,7 +26,7 @@ Bring a value 80 book to enter.
 Costs $5 to visit.]]
 	},
 	{
-		name = "Bargin",
+		name = "Bargain",
 		bookType = {
 			{probability = 0.5, bookType = "shop_1"},
 			{probability = 0.5, bookType = "shop_1_thin"},
