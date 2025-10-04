@@ -1,6 +1,7 @@
 
 EffectsHandler = require("effectsHandler")
 TableHandler = require("tableHandler")
+ShopHandler = require("shopHandler")
 BookHelper = require("bookHelper")
 
 InterfaceUtil = require("utilities/interfaceUtilities")
@@ -184,6 +185,7 @@ function api.Update(dt)
 		return
 	end
 	TableHandler.Update(dt)
+	ShopHandler.Update(dt)
 	
 	self.lifetime = self.lifetime + dt
 	Delay.Update(dt)
@@ -209,6 +211,7 @@ function api.Draw()
 	-- Draw interface
 	GameHandler.Draw(drawQueue)
 	TableHandler.Draw(drawQueue)
+	ShopHandler.Draw(drawQueue)
 	EffectsHandler.Draw(drawQueue)
 	
 	while true do
@@ -234,6 +237,7 @@ function api.Initialize(cosmos, levelData)
 	
 	GameHandler.Initialize(api)
 	TableHandler.Initialize(api)
+	ShopHandler.Initialize(api)
 	
 	CameraHandler.Initialize(api)
 end

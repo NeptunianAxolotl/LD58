@@ -8,21 +8,41 @@ local api = {}
 -- API
 --------------------------------------------------
 
+function api.GetSelected()
+	return self.swapSelected
+end
+
+function api.CanAffordShopBook(shopScore)
+	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
+		return shopScore <= self.books[self.swapSelected.index].GetScore()
+	end
+	local maxScore = 0
+	for i = 1, #self.books do
+		if self.books[i].GetScore() > maxScore then
+			maxScore = self.books[i].GetScore()
+		end
+	end
+	return shopScore <= maxScore
+end
 
 function api.JustCheckUnderMouse(x, y, width, height)
 	local mouse = self.world.GetMousePositionInterface()
 	return util.PosInRectangle(mouse, x, y, width, height)
 end
 
+function api.SetUnderMouse(thing)
+	self.underMouse = thing
+end
+
 function api.CheckAndSetUnderMouse(x, y, width, height, thing)
 	if not api.JustCheckUnderMouse(x, y, width, height) then
 		return false
 	end
-	self.underMouse = thing
+	api.SetUnderMouse(thing)
 	return true
 end
 
-local function PlaceStamp(placePos)
+local function MousePlaceClick(placePos)
 	if not placePos then
 		return false
 	end
@@ -39,19 +59,24 @@ local function PlaceStamp(placePos)
 		local leftEmptySpace = bookStamp and not self.heldStamp
 		self.heldStamp = bookStamp
 		return leftEmptySpace
+	elseif placePos.type == "mySwapSelected" or placePos.type == "shopSwapSelected" then
+		self.swapSelected = placePos
+		if self.oldSwapSelected and self.oldSwapSelected.type ~= self.swapSelected then
+		
+		end
 	end
 end
 
 function api.MousePressed(x, y, button)
+	self.oldSwapSelected = self.swapSelected
+	self.swapSelected = false
+	
 	if button == 1 then
-		if not self.underMouse then
-			return
-		end
-		if PlaceStamp(self.underMouse) then
+		if MousePlaceClick(self.underMouse) then
 			self.emptySpot = self.underMouse
 		end
 	elseif button == 2 and self.heldStamp and self.emptySpot then
-		PlaceStamp(self.emptySpot)
+		MousePlaceClick(self.emptySpot)
 		self.emptySpot = false
 	end
 end
@@ -77,6 +102,7 @@ function api.Draw(drawQueue)
 		end})
 	end
 	drawQueue:push({y=100; f=function()
+		local mousePos = self.world.GetMousePositionInterface()
 		local xOff = Global.WINDOW_X *0.08
 		local yOff = Global.WINDOW_Y *0.6
 		local scale = 120
@@ -99,8 +125,16 @@ function api.Draw(drawQueue)
 		xOff = Global.WINDOW_X *0.2
 		yOff = Global.WINDOW_Y *0.6
 		for i = 1, #self.books do
-			self.books[i].Draw(xOff, yOff, scale)
-			xOff = xOff + 400
+			self.books[i].Draw(xOff, yOff, scale, true)
+			local canAfford = ShopHandler.CanSwapFromTable(self.books[i].GetScore())
+			local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == i)
+			if InterfaceUtil.DrawButton(xOff + 5, yOff - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
+				api.SetUnderMouse({type = "mySwapSelected", index = i})
+			end
+			Font.SetSize(2)
+			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff - 50, scale*3)
+			xOff = xOff + 420
 		end
 	end})
 end
@@ -112,10 +146,10 @@ function api.Initialize(world)
 		sideboardSize = 2,
 		sideboard = {},
 	}
-	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*10)})
+	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3)})
 	
-	self.books[#self.books + 1] = BookHelper.GetBook({})
-	self.books[#self.books + 1] = BookHelper.GetBook({})
+	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
+	self.books[#self.books + 1] = BookHelper.GetBook({scoreRange = {0, 70}})
 end
 
 return api

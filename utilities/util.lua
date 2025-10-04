@@ -649,6 +649,24 @@ end
 
 --------------------------------------------------
 --------------------------------------------------
+-- Number Theory
+
+function util.GreatestCommonDivisor(a, b)
+	local t = false
+	while b > 0 do
+		t = b
+		b = a % b
+		a = t
+	end
+	return a
+end
+
+function util.LeastCommonMultiple(a, b)
+	return a * b / util.GreatestCommonDivisor(a, b)
+end
+
+--------------------------------------------------
+--------------------------------------------------
 -- Probability
 
 function util.WeightsToDistribution(weights)
