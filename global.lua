@@ -1,6 +1,6 @@
 
 local globals = {
-	BACK_COL = {141/255, 75/255, 14/255},
+	BACK_COL = {180/255, 180/255, 180/255},
 	TILE_COL = {124/255, 149/255, 61/255},
 	BACK_COL_EDITOR = {1.2*10/255, 1.2*84/255, 1.2*156/255},
 	
@@ -33,7 +33,8 @@ local globals = {
 	TEXT_COL            = {9/255, 11/255, 17/255},
 	FLOATING_TEXT_COL   = {0.95,0.95,0.9},
 	
-	
+	WINDOW_X = 1920,
+	WINDOW_Y = 1080,
 	
 	MASTER_VOLUME = 0.75,
 	MUSIC_VOLUME = 0.02,

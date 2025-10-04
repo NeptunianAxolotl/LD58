@@ -3,8 +3,6 @@ local World = require("world")
 SoundHandler = require("soundHandler")
 MusicHandler = require("musicHandler")
 
-local LevelDefs = util.LoadDefDirectory("defs/levels")
-
 local self = {}
 local api = {}
 
@@ -32,31 +30,6 @@ end
 
 function api.RestartWorld()
 	World.Initialize(api, self.curLevelData)
-end
-
-function api.LoadLevelByTable(levelTable)
-	self.curLevelData = levelTable
-	World.Initialize(api, self.curLevelData)
-end
-
-function api.SwitchLevel(goNext)
-	local nameKey = (goNext and "nextLevel") or "prevLevel"
-	local newLevelName = LevelDefs[self.inbuiltLevelName][nameKey]
-	if not newLevelName then
-		return
-	end
-	self.inbuiltLevelName = newLevelName
-	self.curLevelData = LevelDefs[self.inbuiltLevelName]
-	World.Initialize(api, self.curLevelData)
-end
-
-function api.TestSwitchLevel(goNext)
-	local nameKey = (goNext and "nextLevel") or "prevLevel"
-	local newLevelName = LevelDefs[self.inbuiltLevelName][nameKey]
-	if not newLevelName then
-		return false
-	end
-	return true
 end
 
 function api.GetScrollSpeeds()
@@ -117,14 +90,6 @@ function api.KeyPressed(key, scancode, isRepeat)
 		api.TakeScreenshot()
 		return true
 	end
-	if key == "n" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-		api.SwitchLevel(true)
-		return true
-	end
-	if key == "p" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-		api.SwitchLevel(false)
-		return true
-	end
 	return World.KeyPressed(key, scancode, isRepeat)
 end
 
@@ -154,13 +119,11 @@ end
 function api.Initialize()
 	self = {
 		realTime = 0,
-		inbuiltLevelName = Global.INIT_LEVEL,
 		musicEnabled = true,
 		mouseScrollSpeed = Global.MOUSE_SCROLL_MULT,
 		keyScrollSpeed = Global.KEYBOARD_SCROLL_MULT,
 		grabInput = Global.MOUSE_SCROLL_MULT > 0,
 	}
-	self.curLevelData = LevelDefs[self.inbuiltLevelName]
 	MusicHandler.Initialize(api)
 	SoundHandler.Initialize(api)
 	World.Initialize(api, self.curLevelData)

@@ -39,8 +39,11 @@ end
 function api.Update(dt)
 end
 
-function api.DrawInterface()
-	local windowX, windowY = love.window.getMode()
+function api.Draw(drawQueue)
+	drawQueue:push({y=0; f=function()
+		love.graphics.setColor(0, 0, 0, 1)
+		love.graphics.rectangle("line", 10, 10, Global.WINDOW_X - 20, Global.WINDOW_Y - 20)
+	end})
 end
 
 function api.Initialize(parentWorld)

@@ -1,5 +1,7 @@
 
 EffectsHandler = require("effectsHandler")
+TableHandler = require("tableHandler")
+BookHelper = require("bookHelper")
 
 InterfaceUtil = require("utilities/interfaceUtilities")
 Delay = require("utilities/delay")
@@ -178,6 +180,7 @@ function api.Update(dt)
 		UpdateCamera(dt)
 		return
 	end
+	TableHandler.Update(dt)
 	
 	self.lifetime = self.lifetime + dt
 	Delay.Update(dt)
@@ -188,39 +191,28 @@ function api.Update(dt)
 end
 
 function api.Draw()
-	local preShadowQueue = PriorityQueue.new(function(l, r) return l.y < r.y end)
 	local drawQueue = PriorityQueue.new(function(l, r) return l.y < r.y end)
-
-	-- Draw world
-	love.graphics.replaceTransform(CameraHandler.GetCameraTransform())
-	while true do
-		local d = preShadowQueue:pop()
-		if not d then break end
-		d.f()
-	end
 	
+	local windowX, windowY = love.window.getMode()
+	if windowX/windowY > Global.WINDOW_X/Global.WINDOW_Y then
+		local edge = (windowX - Global.WINDOW_X*windowY/Global.WINDOW_Y) / 2
+		self.interfaceTransform:setTransformation(edge, 0, 0, windowY/Global.WINDOW_Y, windowY/Global.WINDOW_Y, 0, 0)
+	else
+		local edge = (windowY - Global.WINDOW_Y*windowX/Global.WINDOW_X) / 2
+		self.interfaceTransform:setTransformation(0, edge, 0, windowX/Global.WINDOW_X, windowX/Global.WINDOW_X, 0, 0)
+	end
+	love.graphics.replaceTransform(self.interfaceTransform)
+	
+	-- Draw interface
+	GameHandler.Draw(drawQueue)
+	TableHandler.Draw(drawQueue)
 	EffectsHandler.Draw(drawQueue)
 	
-	love.graphics.replaceTransform(CameraHandler.GetCameraTransform())
 	while true do
 		local d = drawQueue:pop()
 		if not d then break end
 		d.f()
 	end
-	--ShadowHandler.DrawVisionShadow(CameraHandler.GetCameraTransform())
-	
-	--local windowX, windowY = love.window.getMode()
-	--if windowX/windowY > 16/9 then
-	--	self.interfaceTransform:setTransformation(0, 0, 0, windowY/1080, windowY/1080, 0, 0)
-	--else
-	--	self.interfaceTransform:setTransformation(0, 0, 0, windowX/1920, windowX/1920, 0, 0)
-	--end
-	love.graphics.replaceTransform(self.emptyTransform)
-	
-	-- Draw interface
-	GameHandler.DrawInterface()
-	EffectsHandler.DrawInterface()
-	
 	love.graphics.replaceTransform(self.emptyTransform)
 end
 
@@ -238,6 +230,7 @@ function api.Initialize(cosmos, levelData)
 	EffectsHandler.Initialize(api)
 	
 	GameHandler.Initialize(api)
+	TableHandler.Initialize(api)
 	
 	CameraHandler.Initialize(api)
 end
