@@ -98,7 +98,7 @@ function api.CalculateBookScore(self)
 	for i = 1, self.width do
 		for j = 1, self.height do
 			if self.stamps[i][j] then
-				score = score + self.stamps[i][j].GetScore(
+				score = score + self.stamps[i][j].GetAdjacencyScore(
 					self.stamps[i][j + 1],
 					self.stamps[i][j + 1],
 					self.stamps[i - 1] and self.stamps[i - 1][j],
@@ -116,7 +116,7 @@ local function RegenerateStamps(self)
 		self.stamps[i] = {}
 		for j = 1, self.height do
 			self.stamps[i][j] = NewStamp({
-				name = "basic_stamp",
+				name = util.SampleListWeighted(self.stampDist).stamp,
 				cost = 1 + math.floor(math.random()*10),
 				color = 1 + math.floor(math.random()*8),
 				quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1)),

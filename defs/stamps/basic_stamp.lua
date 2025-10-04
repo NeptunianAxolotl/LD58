@@ -1,21 +1,6 @@
 
-
-local function ScorePair(self, other)
-	if not other then
-		return 0
-	end
-	local colorBonus = self.color == other.color and 5 or 1
-	local numberFactor = util.GreatestCommonDivisor(self.cost, other.cost) 
-	return math.ceil(numberFactor * colorBonus)
-end
-
-local function GetScore(self, left, right, top, bottom)
-	--local score = self.cost
-	--score = score + ScorePair(self, left)
-	--score = score + ScorePair(self, right)
-	--score = score + ScorePair(self, top)
-	--score = score + ScorePair(self, bottom)
-	return math.ceil(0)
+local function GetAdjacencyScore(self, left, right, top, bottom)
+	return 0
 end
 
 local function GetSoloScore(self)
@@ -23,9 +8,14 @@ local function GetSoloScore(self)
 	return math.ceil(score)
 end
 
+local function GetSellValue(self)
+	return math.max(1, (self.quality - 1)*2)
+end
+
 local def = {
-	GetScore = GetScore,
+	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
+	GetSellValue = GetSellValue,
 	image = "stamp",
 }
 

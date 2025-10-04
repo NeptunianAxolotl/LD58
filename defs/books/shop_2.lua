@@ -5,6 +5,10 @@ local def = {
 	scoreRange = {80, 120},
 	minQuality = 1,
 	maxQuality = 3,
+	stampDist = util.NormaliseWeightedList({
+		{probability = 0.03, stamp = "money_stamp"},
+		{probability = 1, stamp = "basic_stamp"},
+	}),
 }
 
 return def

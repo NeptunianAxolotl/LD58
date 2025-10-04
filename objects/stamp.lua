@@ -11,8 +11,8 @@ local function NewStamp(def)
 	self.color = def.color
 	self.quality = def.quality
 	
-	function self.GetScore(left, right, top, bottom)
-		return self.def.GetScore(self, left, right, top, bottom)
+	function self.GetAdjacencyScore(left, right, top, bottom)
+		return self.def.GetAdjacencyScore(self, left, right, top, bottom)
 	end
 	
 	function self.GetSoloScore()
@@ -20,7 +20,7 @@ local function NewStamp(def)
 	end
 	
 	function self.GetSellValue()
-		return 5
+		return self.def.GetSellValue(self)
 	end
 	
 	function self.Draw(x, y, scale)

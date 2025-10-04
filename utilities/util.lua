@@ -704,7 +704,8 @@ function util.SampleList(list)
 end
 
 function util.SampleListWeighted(list, rngIn)
-	-- List elements must be maps with a key "probability" and, probabilities must sum to 1
+	-- List elements must be maps with a key "probability"
+	-- Probabilities must sum to at least one, and overflow is lost.
 	local rngFunc = rngIn or math.random
 	local value = rngFunc()
 	for i = 1, #list do
@@ -714,6 +715,18 @@ function util.SampleListWeighted(list, rngIn)
 		value = value - list[i].probability
 	end
 	return list[#list]
+end
+
+function util.NormaliseWeightedList(list)
+	local total = 0
+	for i = 1, #list do
+		total = total + list[i].probability
+	end
+	local factor = 1/total
+	for i = 1, #list do
+		list[i].probability = list[i].probability*factor
+	end
+	return list
 end
 
 function util.SampleMap(map)
