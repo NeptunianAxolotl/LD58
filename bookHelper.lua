@@ -12,9 +12,7 @@ local api = {}
 local world
 
 function api.GetColScoreMultiplier(self, colIndex)
-
 	local multiplier = 1
-	
 	-- Get average quality
 	local quality = 0
 	for j = 1, self.height do
@@ -76,15 +74,11 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 		x = self.stamps[1][rowIndex].cost
 	end
 	if x >= 0 and self.stamps[2][rowIndex] and self.stamps[2][rowIndex].cost then
-		if x+1 == self.stamps[2][rowIndex].cost then
-			dir = 1
-			x = x + dir
-		elseif x-1 == self.stamps[2][rowIndex].cost then
-			dir = -1
-			x = x + dir
-		else
+		if x == self.stamps[2][rowIndex].cost then
 			return 1
 		end
+		dir = self.stamps[2][rowIndex].cost - x
+		x = x + dir
 	end
 	for i = 3, self.width do
 		if self.stamps[i][rowIndex] and self.stamps[i][rowIndex].cost and x+dir == self.stamps[i][rowIndex].cost then
