@@ -3,6 +3,8 @@ local api = {}
 local cosmos
 local DISABLED = false
 
+ShopHandler = require("shopHandler")
+
 local trackDefs = require("defs/musicTracks")
 local trackList = trackDefs.list
 local trackData = {}
@@ -16,8 +18,8 @@ local volumePercentPerSecond = 0.3
 local bankAIsCurrent = true
 
 local continuoScore = 3
-local ripienoScore = 100
-local principalScore = 200
+local ripienoScore = 50
+local principalScore = 100
 
 function api.StopCurrentTrack(delay)
 	for i=1,#targetVolumes do
@@ -27,7 +29,7 @@ end
 
 function api.Update(dt)
   -- IMPLEMENT
-  --continuoScore = <something>
+  continuoScore = ShopHandler.GetCurrentContinuoScore()
   --ripienoScore = <something>
   --principalScore = <something>
   local sourceScore = nil
@@ -70,7 +72,7 @@ function api.Update(dt)
   end
   
   -- Unconditionally step all volumes towards target values
-  local dv = 1.0 --dt * volumePercentPerSecond
+  local dv = dt * volumePercentPerSecond
   
   for i=1,#targetVolumes do
     local vol = bankA[i]:getVolume()

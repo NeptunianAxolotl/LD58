@@ -46,6 +46,15 @@ function api.GetCurrentShopIndex(index)
 	return self.currentShopIndex
 end
 
+function api.GetCurrentContinuoScore(index)
+  if self.currentShopIndex == nil
+  then return 0
+  else
+    local shopDef = ShopDefs[self.currentShopIndex]
+    return shopDef.continuoValue
+  end
+end
+
 --------------------------------------------------
 -- Updating
 --------------------------------------------------
