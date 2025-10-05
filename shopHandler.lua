@@ -34,11 +34,25 @@ end
 
 function api.RefreshShop(index)
 	TableHandler.ClearShopSelected()
+	self.currentShopIndex = index
 	self.books = {}
 	local shopDef = ShopDefs[index]
 	for i = 1, shopDef.size do
 		self.books[#self.books + 1] = BookHelper.GetBook(util.SampleListWeighted(shopDef.bookType).bookType)
 	end
+end
+
+function api.GetCurrentShopIndex(index)
+	return self.currentShopIndex
+end
+
+function api.GetCurrentContinuoScore(index)
+  if self.currentShopIndex == nil
+  then return 0
+  else
+    local shopDef = ShopDefs[self.currentShopIndex]
+    return shopDef.continuoValue
+  end
 end
 
 --------------------------------------------------

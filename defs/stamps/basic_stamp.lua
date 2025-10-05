@@ -13,7 +13,7 @@ local function GetSellValue(self)
 end
 
 local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*9)
+	self.cost = 1 + math.floor(math.random()*8)
 	self.color = 1 + math.floor(math.random()*8)
 end
 
@@ -22,7 +22,7 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "stamp",
+	image = "emu",
 	humanName = "Basic Stamp",
 	desc = "Bog standard stamp",
 }

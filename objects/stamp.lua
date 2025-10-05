@@ -8,6 +8,7 @@ local function NewStamp(def)
 	self.def = StampDefs[def.name]
 	self.name = def.name
 	self.quality = def.quality
+	self.rarity = def.rarity or 1
 	self.def.InitRandomStamp(self)
 	
 	function self.GetAdjacencyScore(x, y, bonusDisplayTable, left, right, top, bottom)
@@ -54,12 +55,16 @@ local function NewStamp(def)
 	end
 	
 	function self.Draw(x, y, scale, alpha)
-		Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, StampDefData.colorMap[self.color] or false)
-		Font.SetSize(4)
-		love.graphics.setColor(0, 0, 0, alpha or 1)
-		local costString = self.def.GetSellValue(self) > 1 and ("$" .. self.cost) or (self.cost .. "¢")
-		love.graphics.printf(costString, x - Global.STAMP_WIDTH*scale*0.3, y - Global.STAMP_HEIGHT*scale*0.3, Global.STAMP_WIDTH*scale)
+		local colorDef = StampDefData.colorMap[self.color]
+		Resources.DrawImage("stamp_back", x, y, false, alpha or false, scale, colorDef and colorDef[1])
+		Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, colorDef and colorDef[2])
+		Resources.DrawImage("stamp", x, y, false, alpha or false, scale, StampDefData.rarityColorMap[self.rarity] or false)
 		Resources.DrawImage("quality_" .. self.quality, x, y, false, alpha or false, scale)
+		
+		Font.SetSize(4)
+		love.graphics.setColor(0, 0.05, 0, alpha or 1)
+		local costString = self.def.GetSellValue(self) > 1 and ("$" .. self.cost) or (self.cost .. "¢")
+		love.graphics.printf(costString, x - Global.STAMP_WIDTH*scale*0.39, y - Global.STAMP_HEIGHT*scale*0.41, Global.STAMP_WIDTH*scale)
 	end
 	
 	return self
