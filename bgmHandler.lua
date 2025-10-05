@@ -7,7 +7,7 @@ local trackDefs = require("defs/musicTracks")
 local trackList = trackDefs.list
 local trackData = {}
 local loopDuration = trackDefs.trackDuration
-local playbackPosition = 0.0
+local playbackPosition = loopDuration
 
 local bankA = {}
 local bankB = {}
@@ -15,7 +15,7 @@ local targetVolumes = {}
 local volumePercentPerSecond = 0.3
 local bankAIsCurrent = true
 
-local continuoScore = 50
+local continuoScore = 3
 local ripienoScore = 100
 local principalScore = 200
 
@@ -41,8 +41,8 @@ function api.Update(dt)
     if playbackPosition >= loopDuration
     then playbackPosition = 0
       bankAIsCurrent = not bankAIsCurrent
-      for sound in ipairs(bankAIsCurrent and bankA or bankB) do
-        sound:play()
+      for k,v in pairs(bankAIsCurrent and bankA or bankB) do
+        v:play()
       end
     end
     
@@ -70,12 +70,15 @@ function api.Update(dt)
   end
   
   -- Unconditionally step all volumes towards target values
-  local dv = dt * volumePercentPerSecond
+  local dv = 1.0 --dt * volumePercentPerSecond
   
   for i=1,#targetVolumes do
-    if bankA[i]:getVolume() + dv >= targetVolumes[i] or bankA[i]:getVolume() - dv <= targetVolumes[i] 
+    local vol = bankA[i]:getVolume()
+    if vol + dv >= targetVolumes[i] or vol - dv <= targetVolumes[i] 
     then bankA[i]:setVolume(targetVolumes[i])
-    else bankA[i]:setVolume(bankA[i]:getVolume() + dv)
+  elseif vol >= targetVolumes[i]
+  then bankA[i]:setVolume(vol - dv)
+    else bankA[i]:setVolume(vol + dv)
     end
     bankB[i]:setVolume(bankA[i]:getVolume())
   end
@@ -98,7 +101,7 @@ function api.Initialize(newCosmos)
       bankB[i]:setVolume(0.0)
   end
   
-  playbackPosition = 0
+  playbackPosition = loopDuration
   
 	self = {}
 	cosmos = newCosmos
