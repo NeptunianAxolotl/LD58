@@ -183,6 +183,22 @@ function api.GetMaxBookValue()
 	return maxScore
 end
 
+function api.GetTotalBookValue()
+	local totalScore = 0
+	for i = 1, #self.books do
+			totalScore = totalScore + self.books[i].GetScore()
+	end
+	return totalScore
+end
+
+function api.GetAverageFullness()
+  local totalFullness = 0
+  for i = 1, #self.books do
+			totalFullness = totalFullness + self.books[i].GetFullness()
+	end
+	return totalFullness / #self.books
+end
+
 function api.CanAffordShopBook(shopScore)
 	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
 		return shopScore <= self.books[self.swapSelected.index].GetScore()

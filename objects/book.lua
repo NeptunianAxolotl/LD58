@@ -69,6 +69,20 @@ local function NewBook(def)
 	function api.GetStampAt(x, y)
 		return self.stamps[x] and self.stamps[x][y]
 	end
+  
+  function api.GetFullness()
+    local capacity = self.height * self.width
+    local count = 0
+    for i=1,self.width do
+      for j=1,self.height do
+        local s = api.GetStampAt(i,j)
+        if s ~= nil
+        then count = count + 1.0
+        end
+      end
+    end
+    return count / capacity
+  end
 	
 	function api.ReplaceStamp(x, y, replacement)
 		replacement, self.stamps[x][y] = TableHandler.PlaceStampAndMaybeDoAbility(replacement, self.stamps[x][y], api, x, y)

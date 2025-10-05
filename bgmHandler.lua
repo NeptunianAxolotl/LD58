@@ -4,6 +4,7 @@ local cosmos
 local DISABLED = false
 
 ShopHandler = require("shopHandler")
+TableHandler = require("tableHandler")
 
 local trackDefs = require("defs/musicTracks")
 local trackList = trackDefs.list
@@ -30,8 +31,8 @@ end
 function api.Update(dt)
   -- IMPLEMENT
   continuoScore = ShopHandler.GetCurrentContinuoScore()
-  --ripienoScore = <something>
-  --principalScore = <something>
+  ripienoScore = 300 * TableHandler.GetAverageFullness()
+  principalScore = 4 * TableHandler.GetMaxBookValue()
   local sourceScore = nil
   local track = nil
   
