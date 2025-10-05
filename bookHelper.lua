@@ -181,6 +181,20 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 				"Row multiplier for sequential stamp prices, improved with better quality stamps.",
 				j, bonusDisplayTable)
 		end
+		--if bonusDisplayTable then
+		--TrackMultiplier(
+		--	self, 4, {{1, 1}}, math.random(),
+		--	"Row multiplier for sequential stamp prices, improved with better quality stamps.",
+		--	7, bonusDisplayTable)
+		--TrackMultiplier(
+		--	self, 4, {{1, 1}}, math.random(),
+		--	"Row multiplier for sequential stamp prices, improved with better quality stamps.",
+		--	7, bonusDisplayTable)
+		--TrackMultiplier(
+		--	self, 4, {{1, 1}}, math.random(),
+		--	"Row multiplier for sequential stamp prices, improved with better quality stamps.",
+		--	7, bonusDisplayTable)
+		--end
 		score = score + basic_scores_row[j] * (mult - 1)
 	end
 	
