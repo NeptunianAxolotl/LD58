@@ -16,7 +16,6 @@ local function InitRandomStamp(self)
 	self.cost = 20
 	self.color = 100
 	self.custom = {}
-	self.custom["wild_color"] = true
 end
 
 local def = {
@@ -24,6 +23,7 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
+	isWildColor = true,
 	image = "wild_stamp",
 	humanName = "Rainbow",
 	desc = "Low value but a single one can complete a flush.",
