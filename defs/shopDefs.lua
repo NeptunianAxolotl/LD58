@@ -1,7 +1,7 @@
 
 local def = {
 	{
-		name = "Fancy",
+		name = "World Stamp Congress",
 		bookType = {
 			{probability = 0.8, bookType = "shop_3"},
 			{probability = 0.2, bookType = "shop_3_tall"},
@@ -15,7 +15,35 @@ Bring a value 200 book to enter.
 Costs $20 to visit.]]
 	},
 	{
-		name = "Standard",
+		name = "National Stamp Show",
+		bookType = {
+			{probability = 0.8, bookType = "shop_3"},
+			{probability = 0.2, bookType = "shop_3_tall"},
+		},
+		size = 3,
+		cost = 20,
+		bookRequirement = 200,
+    continuoValue = 3,
+		desc = [[The fanciest stamps.
+Bring a value 200 book to enter.
+Costs $20 to visit.]]
+	},
+	{
+		name = "Stan's Fine Stamps",
+		bookType = {
+			{probability = 0.8, bookType = "shop_3"},
+			{probability = 0.2, bookType = "shop_3_tall"},
+		},
+		size = 3,
+		cost = 20,
+		bookRequirement = 200,
+    continuoValue = 3,
+		desc = [[The fanciest stamps.
+Bring a value 200 book to enter.
+Costs $20 to visit.]]
+	},
+	{
+		name = "Serviceable Stamps",
 		bookType = {
 			{probability = 1, bookType = "shop_2"},
 		},
@@ -28,7 +56,7 @@ Bring a value 80 book to enter.
 Costs $5 to visit.]]
 	},
 	{
-		name = "Bargain",
+		name = "Stamp Alley",
 		bookType = {
 			{probability = 0.5, bookType = "shop_1"},
 			{probability = 0.5, bookType = "shop_1_thin"},

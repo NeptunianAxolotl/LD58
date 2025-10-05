@@ -42,7 +42,7 @@ function api.RefreshShop(index)
 	end
 end
 
-function api.GetCurrentShopIndex(index)
+function api.GetCurrentShopIndex()
 	return self.currentShopIndex
 end
 
@@ -86,20 +86,21 @@ function api.Draw(drawQueue)
 			xOff = xOff + 420
 		end
 		
+		local tutorialPhase = TableHandler.GetTutorialPhase()
+		if tutorialPhase and tutorialPhase < 3.9 then
+			return
+		end
+		
 		xOff = Global.WINDOW_X * 0.75
-		yOff = Global.WINDOW_Y * 0.1
-		love.graphics.setColor(0, 0, 0, 1)
-		Font.SetSize(2)
-		love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
-		yOff = yOff + 50
+		yOff = Global.WINDOW_Y * 0.05
+		--love.graphics.setColor(0, 0, 0, 1)
+		--Font.SetSize(2)
+		--love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
 		for i = 1, #ShopDefs do
 			local shopDef = ShopDefs[i]
 			local canEnter = TableHandler.CanEnterShop(shopDef)
-			if InterfaceUtil.DrawButton(xOff, yOff, 150, 60, mousePos, shopDef.name, not canEnter, false, true, highlight, 2, 5) then
-				TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost})
-				love.graphics.setColor(0, 0, 0, 1)
-				Font.SetSize(3)
-				love.graphics.printf(shopDef.desc, Global.WINDOW_X * 0.75 + 170, Global.WINDOW_Y * 0.1 + 45, 300, "left")
+			if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, false, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then
+				TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost, tooltip = shopDef.desc})
 			end
 			yOff = yOff + 80
 		end

@@ -300,13 +300,13 @@ local function ForceRocketPlanet(self)
 	end
 	
 	self.stamps[i][j] = NewStamp({
-								name = "rocket_stamp", 
-								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
-								})
+		name = "rocket_stamp", 
+		quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+	})
 	self.stamps[i2][j2] = NewStamp({
-								name = "planet_stamp", 
-								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
-								})							
+		name = "planet_stamp", 
+		quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+	})
 end
 
 local function RegenerateStamps(self)
@@ -343,7 +343,6 @@ local function FillStamps(self, stampsToUse)
 		self.stamps[i] = {}
 		for j = 1, self.height do
 			if stampsToUse[index] then
-				util.PrintTable(stampsToUse[index])
 				self.stamps[i][j] = NewStamp(stampsToUse[index])
 			end
 			index = index + 1

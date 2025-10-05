@@ -13,6 +13,10 @@ local function NewBook(def)
 	self.position = def.position or {math.random()*2 - 1, 0}
 	self.velocity = {0, 0}
 	
+	function api.SetVelocity(newVelocity)
+		self.velocity = newVelocity
+	end
+	
 	function api.SetPosition(newPos)
 		self.position = newPos
 		self.velocity = {0, 0}

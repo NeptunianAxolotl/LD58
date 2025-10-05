@@ -58,6 +58,13 @@ end
 
 local function GetSideboardDrawPosition(index)
 	index = index + (SideboardDefs.maxSlots - self.sideboardDrawSize)
+	if self.tutorialPhase then
+		if self.tutorialPhase <= self.enabledOnPhase.sideboard - 0.6 then
+			index = index + 10
+		elseif self.tutorialPhase <= self.enabledOnPhase.sideboard then
+			index = index + (self.enabledOnPhase.sideboard - self.tutorialPhase) * 4
+		end
+	end
 	local x = self.sideboardX + (index - 1) * self.sideboardLean
 	local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
 	return x, y
@@ -67,6 +74,19 @@ local function GetBookDimensions(book, index)
 	local bx, by = GetBookDrawPosition(index)
 	local bw, bh = book.GetWidth() * self.bookScale * Global.STAMP_WIDTH, book.GetHeight() * self.bookScale * Global.STAMP_HEIGHT
 	return bx, by, bw, bh
+end
+
+local function GetMoneyPosition()
+	if not self.tutorialPhase then
+		return self.moneyX, self.moneyY
+	end
+	local mx = self.moneyX
+	if self.tutorialPhase <= self.enabledOnPhase.money - 0.7 then
+		mx = mx + 1200
+	elseif self.tutorialPhase <= self.enabledOnPhase.money then
+		mx = mx + (self.enabledOnPhase.money - self.tutorialPhase) * 1000
+	end
+	return mx, self.moneyY
 end
 
 local function GetSpotPosition(placePos)
@@ -122,6 +142,7 @@ local function MousePlaceClick(placePos)
 		if self.oldSwapSelected and self.oldSwapSelected.type ~= self.swapSelected.type then
 			local bookIndex, shopIndex = GetSwapIndecies()
 			local shopBook = ShopHandler.ReplaceBook(self.books[bookIndex], shopIndex)
+			api.TutorialBoughtBook()
 			if shopBook then
 				local bookPos = self.books[bookIndex].GetPosition()
 				shopBook.SetPosition({bookPos[1] + math.random()*0.06 - 0.03, 0.2 + math.random()*0.3})
@@ -260,6 +281,95 @@ function api.MousePressed(x, y, button)
 end
 
 --------------------------------------------------
+-- Tutorial
+--------------------------------------------------
+
+function api.GetTutorialPhase()
+	return self.tutorialPhase
+end
+
+function api.TutorialBoughtBook()
+	if self.tutorialPhase then
+		self.wantedTutorialPhase = self.wantedTutorialPhase + 1
+	end
+end
+
+local function TotalBookScore()
+	local score = 0
+	for i = 1, #self.books do
+		score = score + self.books[i].GetScore()
+	end
+	return score
+end
+
+local function DoTutorial(dt)
+	if self.tutorialPhase == 1 then
+		if TotalBookScore() >= 30 then
+			self.wantedTutorialPhase = math.max(2, self.wantedTutorialPhase)
+		end
+	elseif self.tutorialPhase == 2 then
+		if TotalBookScore() >= 41 then
+			self.wantedTutorialPhase = math.max(3, self.wantedTutorialPhase)
+		end
+	elseif self.tutorialPhase == 3 then
+		if TotalBookScore() >= 80 then
+			self.wantedTutorialPhase = math.max(4, self.wantedTutorialPhase)
+		end
+	elseif self.tutorialPhase == 4 then
+		if ShopHandler.GetCurrentShopIndex() then
+			self.wantedTutorialPhase = math.max(5, self.wantedTutorialPhase)
+		end
+	end
+	if self.tutorialPhase < self.wantedTutorialPhase then
+		self.tutorialPhase = math.min(self.tutorialPhase + dt*0.75, self.wantedTutorialPhase)
+	end
+	
+	if self.tutorialPhase > 2.6 and #self.books == 1 then
+		self.books[#self.books + 1] = BookHelper.GetBook("starter_2")
+		self.books[1].SetPosition({0.3, 0})
+		self.books[1].SetVelocity({10, 0})
+		self.books[2].SetPosition({-0.25, 0})
+	end
+	if self.tutorialPhase >= 7 then
+		self.tutorialPhase = false
+	end
+end
+
+local function DrawTutorial()
+	if self.tutorialPhase < 1.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 1) * 2)
+		love.graphics.printf("Nothing beats a well organised stamp collection. Improve this one by shifting the bird stamp up so the prices read 2¢, 3¢, 4¢.\n\nClick on the bird to pick it up, then click on a slot to place it.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
+		Font.SetSize(2)
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 30", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.74, 490, "center")
+	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
+		love.graphics.printf("Every collector needs a stamp tray. Replace the blue kangaroo with the orange planet from the tray to increase ♥.\n\nRows are multiplied by runs of price. Columns are multiplied by matching colours.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
+		Font.SetSize(2)
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 41", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.74 + 40, 490, "center")
+	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)
+		love.graphics.printf("Mix and match the stamps of two books to make combined ♥ of at least 80. Keep an eye out for stamps that work well together.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 80", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.45, 780, "center")
+	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)
+		print(1 - (self.tutorialPhase - 5) * 2)
+		love.graphics.printf("Take a visit to Stamp Alley to find collectors willing to trade books. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.28, Global.WINDOW_Y*0.35, 850)
+	elseif self.tutorialPhase > 4.8 and self.tutorialPhase <= 5.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 5) * 2)
+		love.graphics.printf("Offer a book to trade. All trades lose ♥ so pick up books with undervalued stamps.\nClick Stamp Alley again to see new trades. This costs $1, but the fee is waived for the broke.", Global.WINDOW_X*0.12, Global.WINDOW_Y*0.35, 900)
+	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
+		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for valuable stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.35, 850)
+	end
+end
+
+--------------------------------------------------
 -- Updating
 --------------------------------------------------
 
@@ -271,6 +381,9 @@ function api.Update(dt)
 	local wantToSeeSlots = math.min(self.sideboardSize + 1, SideboardDefs.maxSlots)
 	if self.sideboardDrawSize < wantToSeeSlots then
 		self.sideboardDrawSize = math.min(self.sideboardDrawSize + dt, wantToSeeSlots)
+	end
+	if self.tutorialPhase then
+		DoTutorial(dt)
 	end
 end
 
@@ -355,6 +468,9 @@ function api.Draw(drawQueue)
 	end
 	drawQueue:push({y=20; f=function()
 		Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.6)
+		if self.tutorialPhase then
+			DrawTutorial()
+		end
 	end})
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
@@ -393,7 +509,7 @@ function api.Draw(drawQueue)
 			if underMouse then
 				love.graphics.setLineWidth(3)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
-				wantTooltip = "Spend $" .. SideboardDefs.unlockCosts[self.sideboardSize + 1] .. " to increase the size of your stamp tray."
+				wantTooltip = "Tray Upgrade\nSpend $" .. SideboardDefs.unlockCosts[self.sideboardSize + 1] .. " to increase the size of your stamp tray."
 				buySideboard = SideboardDefs.unlockCosts[self.sideboardSize + 1]
 			else
 				love.graphics.setLineWidth(2)
@@ -405,10 +521,11 @@ function api.Draw(drawQueue)
 			love.graphics.printf("$" .. SideboardDefs.unlockCosts[self.sideboardSize + 1], x, y + yScale*0.2, xScale, "center")
 		end
 		
+		local moneyPosX, moneyPosY = GetMoneyPosition()
 		Resources.DrawImage("tooltip", self.tooltipX - 80, self.tooltipY - 80)
-		Resources.DrawImage("money_bag", self.moneyX, self.moneyY, false, false, 1.8)
+		Resources.DrawImage("money_bag", moneyPosX, moneyPosY, false, false, 1.8)
 		
-		if InterfaceUtil.DrawButton(self.moneyX - 125, self.moneyY - 12, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
+		if InterfaceUtil.DrawButton(moneyPosX - 125, moneyPosY - 12, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
 			if self.heldStamp then
 				api.SetUnderMouse({type = "sellStamp", income = self.heldStamp.GetSellValue()})
 			else
@@ -421,6 +538,9 @@ function api.Draw(drawQueue)
 			if tooltipStamp then
 				wantTooltip = tooltipStamp.GetTooltip(tBook, tX, tY)
 			end
+		end
+		if not wantTooltip and self.underMouse and self.underMouse.tooltip then
+			wantTooltip = self.underMouse.tooltip
 		end
 		
 		if wantTooltip then
@@ -441,7 +561,7 @@ function api.Draw(drawQueue)
 		end
 		Font.SetSize(1)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf("$" .. self.money .. moneyChangeString, self.moneyX - 120, self.moneyY - 85, 500)
+		love.graphics.printf("$" .. self.money .. moneyChangeString, moneyPosX - 120, moneyPosY - 85, 500)
 		
 	end})
 end
@@ -453,6 +573,12 @@ function api.Initialize(world)
 		sideboardSize = SideboardDefs.startSlots,
 		sideboardDrawSize = SideboardDefs.startSlots + 1,
 		sideboard = {},
+		tutorialPhase = 1,
+		wantedTutorialPhase = 1,
+		enabledOnPhase = {
+			money = 4,
+			sideboard = 2,
+		},
 		money = 10,
 		moneyX = Global.WINDOW_X * 0.9 + 20,
 		moneyY = Global.WINDOW_Y * 0.65,
@@ -465,7 +591,8 @@ function api.Initialize(world)
 		bookDrawSpacing = 390,
 		bookScale = 1,
 	}
-	self.sideboard[1] = false
+	self.sideboard[1] = NewStamp({name = "planet_stamp", cost = 7, quality = 2, color = 1, rarity = 2})
+	
 	
 	self.books[#self.books + 1] = BookHelper.GetBook("starter")
 	self.books[1].SetPosition({0, 0})
