@@ -32,7 +32,18 @@ local function NewBook(def)
 	
 	function api.ReplaceStamp(x, y, replacement)
 		local old = self.stamps[x][y] or false
-		self.stamps[x][y] = replacement
+		if old and replacement and replacement.def.PlaceAbilityCheck then
+			if replacement.def.PlaceAbilityCheck(replacement, old) then
+				replacement.def.DoPlaceAbility(replacement, self.stamps[x][y])
+				self.score = BookHelper.CalculateBookScore(self)
+				if replacement.def.placeConsumes then
+					return false
+				end
+			end
+			return replacement -- Hang onto stamp
+		else
+			self.stamps[x][y] = replacement
+		end
 		self.score = BookHelper.CalculateBookScore(self)
 		return old
 	end

@@ -25,6 +25,20 @@ local function GetTooltipStamp()
 	return false
 end
 
+local function GetMousePlaceStamp()
+	if not self.underMouse then
+		return false
+	end
+	if self.underMouse.type == "sideboard" then
+		local index = self.underMouse.index
+		return self.sideboard[index] or false
+	elseif self.underMouse.type == "book" then
+		local book = self.underMouse.book
+		return book.GetStampAt(self.underMouse.x, self.underMouse.y) or false, book, self.underMouse.x, self.underMouse.y
+	end
+	return false
+end
+
 local function GetSwapIndecies()
 	if self.oldSwapSelected.type == "mySwapSelected" then
 		return self.oldSwapSelected.index, self.swapSelected.index
@@ -39,6 +53,22 @@ local function GetBookDimensions(book, index)
 	return bx, by, bw, bh
 end
 
+local function GetSpotPosition(placePos)
+	if not placePos then
+		return false
+	end
+	if placePos.type == "sideboard" then
+		local index = placePos.index
+		local x = self.sideboardX + self.bookScale * Global.STAMP_WIDTH / 2
+		local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
+		return {x, y}
+	elseif placePos.type == "book" then
+		local book = placePos.book
+		local bx, by, bw, bh = GetBookDimensions(book, placePos.index)
+		return {bx + bw*(placePos.x - 0.5)/book.GetWidth(), by + bh*(placePos.y - 0.5)/book.GetHeight()}
+	end
+end
+
 local function MousePlaceClick(placePos)
 	if not placePos then
 		return false
@@ -46,16 +76,25 @@ local function MousePlaceClick(placePos)
 	if placePos.type == "sideboard" then
 		local index = placePos.index
 		local sideStamp = self.sideboard[index] or false
-		self.sideboard[index] = self.heldStamp or false
-		self.heldStamp = sideStamp
-		local leftEmptySpace = self.heldStamp and not self.sideboard[index]
-		return leftEmptySpace
+		if sideStamp and self.heldStamp and self.heldStamp.def.PlaceAbilityCheck then
+			if self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, sideStamp) then
+				self.heldStamp.def.DoPlaceAbility(self.heldStamp, self.sideboard[index])
+				if self.heldStamp.def.placeConsumes then
+					self.heldStamp = false
+				end
+			end
+		else
+			self.sideboard[index] = self.heldStamp or false
+			self.heldStamp = sideStamp
+			local leftEmptySpace = self.heldStamp and not self.sideboard[index]
+			return leftEmptySpace
+		end
 	elseif placePos.type == "book" then
 		local book = placePos.book
 		local bookStamp = book.ReplaceStamp(placePos.x, placePos.y, self.heldStamp or false)
 		if self.heldStamp and placePos.index then
-			local bx, by, bh, bw = GetBookDimensions(book, placePos.index)
-			BookHelper.SpawnStampPlaceEffect(book.GetSelfData(), placePos, bx, by, bh, bw)
+			local bx, by, bw, bh = GetBookDimensions(book, placePos.index)
+			BookHelper.SpawnStampPlaceEffect(book.GetSelfData(), placePos, bx, by, bw, bh)
 		end
 		local leftEmptySpace = bookStamp and not self.heldStamp
 		self.heldStamp = bookStamp
@@ -169,14 +208,34 @@ function api.Draw(drawQueue)
 			if self.heldStamp then
 				local mouse = self.world.GetMousePositionInterface()
 				local scale = 1
-				self.heldStamp.Draw(mouse[1], mouse[2], scale)
+				if self.emptySpot then
+					local pos = GetSpotPosition(self.emptySpot)
+					self.heldStamp.Draw(pos[1], pos[2], scale, 0.15)
+				end
+				if self.heldStamp.def.PlaceAbilityCheck then
+					local other = GetMousePlaceStamp()
+					if self.emptySpot then
+						local pos = GetSpotPosition(self.emptySpot)
+						love.graphics.setLineWidth(4)
+						if not other then
+							love.graphics.setColor(0.3, 0.95, 0.2, 0.4)
+						elseif self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, other) then
+							love.graphics.setColor(0.3, 0.95, 0.2, 1)
+						else
+							love.graphics.setColor(0.95, 0.1, 0.2, 1)
+						end
+						love.graphics.line(pos[1], pos[2], mouse[1], mouse[2])
+					end
+				else
+					self.heldStamp.Draw(mouse[1], mouse[2], scale)
+				end
 			end
 		end})
 	end
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
-		local xOff = Global.WINDOW_X *0.06
-		local yOff = Global.WINDOW_Y *0.6 - 36
+		local xOff = self.sideboardX
+		local yOff = self.sideboardY
 		local scale = self.bookScale
 		local xScale = scale * Global.STAMP_WIDTH
 		local yScale = scale * Global.STAMP_HEIGHT
@@ -194,7 +253,7 @@ function api.Draw(drawQueue)
 			if self.sideboard[i] then
 				self.sideboard[i].Draw(xOff + xScale/2, yOff + yScale/2, scale)
 			end
-			yOff = yOff + yScale + 18
+			yOff = yOff + yScale + self.sideboardGap
 		end
 		
 		xOff = self.bookDrawX
@@ -256,6 +315,9 @@ function api.Initialize(world)
 		sideboardSize = 3,
 		sideboard = {},
 		money = 10,
+		sideboardX = Global.WINDOW_X*0.06,
+		sideboardY = Global.WINDOW_Y*0.6 - 36,
+		sideboardGap = 18,
 		bookDrawX = Global.WINDOW_X*0.15,
 		bookDrawY = Global.WINDOW_Y*0.6,
 		bookDrawSpacing = 390,
