@@ -72,17 +72,19 @@ function api.Draw(drawQueue)
 		
 		local swapSelected = TableHandler.GetSelected()
 		for i = 1, #self.books do
-			self.books[i].Draw(xOff, yOff, scale, "shopBook")
-			local canAfford = TableHandler.CanAffordShopBook(self.books[i].GetScore())
+			local book = self.books[i]
+			book.Draw(xOff, yOff, scale, "shopBook")
+			local buttonX = xOff + book.GetOfferOffset()
+			local canAfford = TableHandler.CanAffordShopBook(book.GetScore())
 			local highlight = canAfford and swapSelected and (swapSelected.type == "shopSwapSelected") and (swapSelected.index == i)
 			if InterfaceUtil.DrawButton(
-					xOff + 5, yOff + Global.STAMP_HEIGHT*self.books[i].GetHeight() + 10, 120, 50, mousePos,
+					buttonX, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 10, 120, 50, mousePos,
 					"Trade", not canAfford, false, false, highlight, 2, 5) then
 				TableHandler.SetUnderMouse({type = "shopSwapSelected", index = i})
 			end
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf("♥ " .. self.books[i].GetScore(), xOff + 150, yOff + Global.STAMP_HEIGHT*self.books[i].GetHeight() + 15, Global.STAMP_WIDTH*3)
+			love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 15, Global.STAMP_WIDTH*3)
 			xOff = xOff + 420
 		end
 		

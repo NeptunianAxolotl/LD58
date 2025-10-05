@@ -24,11 +24,12 @@ local data = {
 		"Terrible",
 		"Poor",
 		"Good",
+		"Excellent",
 		"Pristine",
 	},
 	rarityColorMap = {
 		{0.52, 0.38, 0.25},
-		{0.95, 0.88, 0.78},
+		{0.92, 0.86, 0.78},
 		{0.9, 0.8, 0.4},
 	},
 }

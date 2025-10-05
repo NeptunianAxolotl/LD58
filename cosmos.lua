@@ -55,6 +55,10 @@ function api.TransposePlacementMode()
 	return self.transposePlacementMode
 end
 
+function api.SkipTutorial()
+	return self.skipTutorial
+end
+
 --------------------------------------------------
 -- Draw
 --------------------------------------------------
@@ -95,8 +99,13 @@ function api.KeyPressed(key, scancode, isRepeat)
 		api.TakeScreenshot()
 		return true
 	end
-	if key == "t" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
-		self.transposePlacementMode = not self.transposePlacementMode
+	if Global.DEV_TOOLS_ENABLED then
+		if key == "t" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+			self.transposePlacementMode = not self.transposePlacementMode
+		end
+		if key == "space" then
+			self.skipTutorial = not self.skipTutorial
+		end
 	end
 	return World.KeyPressed(key, scancode, isRepeat)
 end
@@ -132,6 +141,7 @@ function api.Initialize()
 		keyScrollSpeed = Global.KEYBOARD_SCROLL_MULT,
 		grabInput = Global.MOUSE_SCROLL_MULT > 0,
 		transposePlacementMode = false,
+		skipTutorial = Global.DEV_TOOLS_ENABLED,
 	}
 	MusicHandler.Initialize(api)
 	SoundHandler.Initialize(api)

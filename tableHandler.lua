@@ -303,6 +303,10 @@ local function TotalBookScore()
 end
 
 local function DoTutorial(dt)
+	if self.world.GetCosmos().SkipTutorial() then
+		self.tutorialPhase = false
+		return
+	end
 	if self.tutorialPhase == 1 then
 		if TotalBookScore() >= 30 then
 			self.wantedTutorialPhase = math.max(2, self.wantedTutorialPhase)
