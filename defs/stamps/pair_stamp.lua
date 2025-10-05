@@ -17,7 +17,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 					posList = {{sx, sy}, {ox, oy}},
 					image = "pair",
 					humanName = "Pair Bonus",
-					desc = string.format("Paired stamps gaining %d and %d to base ♥, varies with quality.", bonus, otherBonus),
+					desc = string.format("Paired stamps gaining %d and %d to base ♥, improves with quality.", bonus, otherBonus),
 				})
 			end
 		end

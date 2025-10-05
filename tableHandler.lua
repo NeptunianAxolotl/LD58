@@ -1,5 +1,6 @@
 local ShopDefs = require("defs/shopDefs")
 local NewStamp = require("objects/stamp")
+local SideboardDefs = require("defs/sideboardDefs")
 
 local self = {}
 local api = {}
@@ -56,7 +57,7 @@ local function GetBookDrawPosition(index)
 end
 
 local function GetSideboardDrawPosition(index)
-	index = index + (self.maxSideboard - self.sideboardDrawSize)
+	index = index + (SideboardDefs.maxSlots - self.sideboardDrawSize)
 	local x = self.sideboardX + (index - 1) * self.sideboardGap/2
 	local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
 	return x, y
@@ -136,6 +137,12 @@ local function MousePlaceClick(placePos)
 				self.money = math.max(0, self.money - ShopDefs[placePos.index].cost)
 			end
 			ShopHandler.RefreshShop(placePos.index)
+		end
+	elseif placePos.type == "buyMoreSideboard" then
+		local cost = SideboardDefs.unlockCosts[self.sideboardSize + 1]
+		if cost and cost <= self.money and self.sideboardSize < SideboardDefs.maxSlots then
+			self.money = self.money - cost
+			self.sideboardSize = self.sideboardSize + 1
 		end
 	end
 end
@@ -261,8 +268,9 @@ function api.Update(dt)
 	for i = 1, #self.books do
 		self.books[i].UpdatePhysics(dt, i, self.books)
 	end
-	if self.sideboardDrawSize < self.sideboardSize then
-		self.sideboardDrawSize = math.min(self.sideboardDrawSize + dt, self.sideboardSize)
+	local wantToSeeSlots = math.min(self.sideboardSize + 1, SideboardDefs.maxSlots)
+	if self.sideboardDrawSize < wantToSeeSlots then
+		self.sideboardDrawSize = math.min(self.sideboardDrawSize + dt, wantToSeeSlots)
 	end
 end
 
@@ -271,14 +279,15 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local baseX, baseY = GetBookDrawPosition(index)
 	Resources.DrawImage("book_width_" .. book.GetWidth(), baseX - 60, baseY - 94)
 	book.Draw(baseX + 1, baseY + 2, scale, "book", index)
+	local buttonX = baseX + book.GetOfferOffset()
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
-	if InterfaceUtil.DrawButton(baseX + 5, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
+	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
 		api.SetUnderMouse({type = "mySwapSelected", index = index})
 	end
 	Font.SetSize(2)
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.printf("♥ " .. book.GetScore(), baseX + 142, baseY - 54, xScale*3)
+	love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, baseY - 54, xScale*3)
 	
 	-- Draw bonuses
 	local xOff = baseX + xScale * 0.35
@@ -377,10 +386,29 @@ function api.Draw(drawQueue)
 			end
 		end
 		
+		local buySideboard = false
+		if self.sideboardSize < SideboardDefs.maxSlots then
+			local x, y = GetSideboardDrawPosition(self.sideboardSize + 1)
+			local underMouse = api.CheckAndSetUnderMouse(x, y, xScale, yScale, {type = "buyMoreSideboard"})
+			if underMouse then
+				love.graphics.setLineWidth(3)
+				love.graphics.setColor(0.2, 1, 0.2, 1)
+				wantTooltip = "Spend $" .. SideboardDefs.unlockCosts[self.sideboardSize + 1] .. " to increase the size of your stamp tray."
+				buySideboard = SideboardDefs.unlockCosts[self.sideboardSize + 1]
+			else
+				love.graphics.setLineWidth(2)
+				love.graphics.setColor(0, 0, 0, 1)
+			end
+			love.graphics.rectangle("line", x, y, xScale, yScale)
+			Font.SetSize(2)
+			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.printf("$" .. SideboardDefs.unlockCosts[self.sideboardSize + 1], x, y + yScale*0.2, xScale, "center")
+		end
+		
 		Resources.DrawImage("tooltip", self.tooltipX - 80, self.tooltipY - 80)
 		Resources.DrawImage("money_bag", self.moneyX, self.moneyY, false, false, 1.8)
 		
-		if InterfaceUtil.DrawButton(self.moneyX - 125, self.moneyY - 15, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
+		if InterfaceUtil.DrawButton(self.moneyX - 125, self.moneyY - 12, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
 			if self.heldStamp then
 				api.SetUnderMouse({type = "sellStamp", income = self.heldStamp.GetSellValue()})
 			else
@@ -402,7 +430,9 @@ function api.Draw(drawQueue)
 		end
 		
 		local moneyChangeString = ""
-		if self.heldSellAbilityAmount then
+		if buySideboard then
+			moneyChangeString = " - " .. buySideboard
+		elseif self.heldSellAbilityAmount then
 			moneyChangeString = " + " .. self.heldSellAbilityAmount
 		elseif self.underMouse and self.underMouse.cost then
 			moneyChangeString = " - " .. self.underMouse.cost
@@ -411,7 +441,7 @@ function api.Draw(drawQueue)
 		end
 		Font.SetSize(1)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf("$" .. self.money .. moneyChangeString, self.moneyX - 110, self.moneyY - 90, 500)
+		love.graphics.printf("$" .. self.money .. moneyChangeString, self.moneyX - 120, self.moneyY - 85, 500)
 		
 	end})
 end
@@ -420,9 +450,8 @@ function api.Initialize(world)
 	self = {
 		world = world,
 		books = {},
-		sideboardSize = 2,
-		sideboardDrawSize = 2,
-		maxSideboard = 5,
+		sideboardSize = SideboardDefs.startSlots,
+		sideboardDrawSize = SideboardDefs.startSlots + 1,
 		sideboard = {},
 		money = 10,
 		moneyX = Global.WINDOW_X * 0.9 + 20,
@@ -435,7 +464,7 @@ function api.Initialize(world)
 		bookDrawSpacing = 390,
 		bookScale = 1,
 	}
-	self.sideboard[1] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
+	self.sideboard[1] = false
 	
 	self.books[#self.books + 1] = BookHelper.GetBook("starter")
 	self.books[#self.books + 1] = BookHelper.GetBook("starter")
