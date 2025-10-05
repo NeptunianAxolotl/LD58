@@ -35,7 +35,7 @@ function api.GetColScoreMultiplier(self, colIndex)
 	local candfound = false
 	local candcolor = -100
 	for j = 1, self.height do
-		if self.stamps[colIndex][j].custom and self.stamps[colIndex][j].def.isWildColor then
+		if self.stamps[colIndex][j].def.isWildColor then
 			nwilds = nwilds + 1
 		else
 			if candfound then
