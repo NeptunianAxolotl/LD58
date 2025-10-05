@@ -213,6 +213,50 @@ function api.Update(dt)
 	self.underMouse = false
 end
 
+local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, drawnTooltip)
+	local book = self.books[index]
+	book.Draw(xOff, yOff, scale, "book", index)
+	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
+	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
+	if InterfaceUtil.DrawButton(xOff + 5, yOff - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
+		api.SetUnderMouse({type = "mySwapSelected", index = index})
+	end
+	Font.SetSize(2)
+	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.printf("♥ " .. book.GetScore(), xOff + 150, yOff - 50, xScale*3)
+	
+	-- Draw bonuses
+	local baseX = xOff
+	local baseY = yOff
+	yOff = yOff + yScale*book.GetHeight() + yScale / 2
+	xOff = xOff + xScale / 2
+	local bonusCount, keyByIndex, bonusByKey = book.GetBonusIterationData()
+	for i = 1, bonusCount do
+		local bonus = bonusByKey[keyByIndex[i]]
+		local hovered = (not drawnTooltip) and util.PosInRectangle(mousePos, xOff - xScale*0.45/2, yOff - yScale*0.45/2, xScale*0.45, yScale*0.45)
+		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or 0.6, 0.45)
+		if hovered then
+			Font.SetSize(3)
+			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.printf(bonus.humanName .. "\n" .. bonus.desc, self.tooltipX, self.tooltipY, 380)
+			drawnTooltip = true
+			for j = 1, #bonus.posList do
+				local px, py = bonus.posList[j][1] - 1, bonus.posList[j][2] - 1
+				print(px, py)
+				love.graphics.setLineWidth(3)
+				love.graphics.setColor(0.2, 1, 0.2, 1)
+				love.graphics.rectangle("line", baseX + px*xScale, baseY + py*yScale, xScale, yScale)
+			end
+		end
+		xOff = xOff + xScale/2
+		if i%(book.GetWidth()*2 - 1) == 0 then
+			xOff = baseX + xScale / 2
+			yOff = yOff + yScale/2
+		end
+	end
+	return drawnTooltip
+end
+
 function api.Draw(drawQueue)
 	if self.heldStamp then
 		drawQueue:push({y=500; f=function()
@@ -273,32 +317,24 @@ function api.Draw(drawQueue)
 			yOff = yOff + yScale + self.sideboardGap
 		end
 		
+		local drawnTooltip = false
 		xOff = self.bookDrawX
 		yOff = self.bookDrawY
 		for i = 1, #self.books do
-			self.books[i].Draw(xOff, yOff, scale, "book", i)
-			local canAfford = ShopHandler.CanSwapFromTable(self.books[i].GetScore())
-			local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == i)
-			if InterfaceUtil.DrawButton(xOff + 5, yOff - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
-				api.SetUnderMouse({type = "mySwapSelected", index = i})
-			end
-			Font.SetSize(2)
-			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf("♥ " .. self.books[i].GetScore(), xOff + 150, yOff - 50, xScale*3)
+			drawnTooltip = DrawBook(i, xOff, yOff, xScale, yScale, scale, mousePos, drawnTooltip)
 			xOff = xOff + self.bookDrawSpacing
 		end
 		
-		xOff = Global.WINDOW_X *0.8
-		yOff = Global.WINDOW_Y *0.6 - 50
-		local drawnTooltip = false
+		xOff = self.tooltipX
+		yOff = self.tooltipY
 		
-		if InterfaceUtil.DrawButton(xOff - 20, yOff + 80, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
+		if InterfaceUtil.DrawButton(xOff + 40, yOff - 95, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
 			if self.heldStamp then
 				api.SetUnderMouse({type = "sellStamp", income = self.heldStamp.GetSellValue()})
 			else
 				Font.SetSize(3)
 				love.graphics.setColor(0, 0, 0, 1)
-				love.graphics.printf("Drop a stamp here to sell it.", xOff - 60, yOff + 190, 220)
+				love.graphics.printf("Drop a stamp here to sell it.", xOff - 120, yOff, 220)
 				drawnTooltip = true
 			end
 		end
@@ -308,7 +344,7 @@ function api.Draw(drawQueue)
 			if tooltipStamp then
 				Font.SetSize(3)
 				love.graphics.setColor(0, 0, 0, 1)
-				love.graphics.printf(tooltipStamp.GetTooltip(tBook, tX, tY), xOff - 60, yOff + 190, 380)
+				love.graphics.printf(tooltipStamp.GetTooltip(tBook, tX, tY), xOff, yOff, 380)
 				drawnTooltip = true
 			end
 		end
@@ -323,7 +359,7 @@ function api.Draw(drawQueue)
 		end
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf("$" .. self.money .. moneyChangeString, xOff + 2, yOff, xScale*3)
+		love.graphics.printf("Money: $" .. self.money .. moneyChangeString, xOff + 62, yOff - 150, xScale*3)
 	end})
 end
 
@@ -334,6 +370,8 @@ function api.Initialize(world)
 		sideboardSize = 3,
 		sideboard = {},
 		money = 10,
+		tooltipX = Global.WINDOW_X * 0.8 - 30,
+		tooltipY = Global.WINDOW_Y * 0.6 + 95,
 		sideboardX = Global.WINDOW_X*0.06,
 		sideboardY = Global.WINDOW_Y*0.6 - 36,
 		sideboardGap = 18,

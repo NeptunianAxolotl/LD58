@@ -108,7 +108,25 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	return 1
 end
 
-function api.CalculateBookScore(self)
+local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable)
+	IterableMap.Add(bonusDisplayTable, humanName .. index .. "_mult", {
+		posList = posList,
+		image = "renumber_stamp",
+		humanName = humanName,
+		desc = desc,
+	})
+end
+
+function api.GetStampAdjacencyScore(self, i, j, bonusDisplayTable)
+	return self.stamps[i][j].GetAdjacencyScore(
+		i, j, bonusDisplayTable or false,
+		self.stamps[i - 1] and self.stamps[i - 1][j],
+		self.stamps[i + 1] and self.stamps[i + 1][j],
+		self.stamps[i][j - 1],
+		self.stamps[i][j + 1])
+end
+
+function api.CalculateBookScore(self, bonusDisplayTable)
 	local score = 0
 	
 	local basic_scores = 0
@@ -125,11 +143,7 @@ function api.CalculateBookScore(self)
 	for i = 1, self.width do
 		for j = 1, self.height do
 			if self.stamps[i][j] then
-				local scoreme = self.stamps[i][j].GetSoloScore() + self.stamps[i][j].GetAdjacencyScore(
-					self.stamps[i][j + 1],
-					self.stamps[i][j + 1],
-					self.stamps[i - 1] and self.stamps[i - 1][j],
-					self.stamps[i + 1] and self.stamps[i + 1][j])
+				local scoreme = self.stamps[i][j].GetSoloScore() + api.GetStampAdjacencyScore(self, i, j, bonusDisplayTable)
 				score = score + scoreme
 				basic_scores = basic_scores + scoreme
 				basic_scores_row[j] = basic_scores_row[j] + scoreme
@@ -140,15 +154,37 @@ function api.CalculateBookScore(self)
 	
 	-- Evaluate the score on each column.
 	for i = 1, self.width do
-		score = score + math.ceil(basic_scores_col[i] * (api.GetColScoreMultiplier(self, i) - 1))
+		local mult = api.GetColScoreMultiplier(self, i)
+		if mult > 1 and bonusDisplayTable then
+			local posList = {}
+			for j = 1, self.height do
+				posList[#posList + 1] = {i, j}
+			end
+			TrackMultiplier(
+				self, mult, posList, "Column ♥ x" .. mult,
+				"Column multiplier for matching stamp colours, improved with better quality stamps.",
+				i, bonusDisplayTable)
+		end
+		score = score + basic_scores_col[i] * (mult - 1)
 	end
 	
 	-- Evaluate the score on each row.
 	for j = 1, self.height do
-		score = score + math.ceil(basic_scores_row[j] * (api.GetRowScoreMultiplier(self, j) - 1))
+		local mult = api.GetRowScoreMultiplier(self, j)
+		if mult > 1 and bonusDisplayTable then
+			local posList = {}
+			for i = 1, self.width do
+				posList[#posList + 1] = {i, j}
+			end
+			TrackMultiplier(
+				self, mult, posList, "Row ♥ x" .. mult,
+				"Row multiplier for sequential stamp prices, improved with better quality stamps.",
+				j, bonusDisplayTable)
+		end
+		score = score + basic_scores_row[j] * (mult - 1)
 	end
 	
-	return score
+	return math.ceil(score)
 end
 
 function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)

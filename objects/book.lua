@@ -5,10 +5,11 @@ local StampDefs = StampDefData.defs
 local function NewBook(def)
 	local self = {}
 	local api = {}
+	self.bonusDisplayTable = IterableMap.New()
 	self.width = def.width
 	self.height = def.height
 	self.stamps = def.stamps
-	self.score = BookHelper.CalculateBookScore(self)
+	self.score = BookHelper.CalculateBookScore(self, self.bonusDisplayTable)
 	
 	function api.GetSelfData()
 		return self
@@ -32,11 +33,17 @@ local function NewBook(def)
 	
 	function api.ReplaceStamp(x, y, replacement)
 		replacement, self.stamps[x][y] = TableHandler.PlaceStampAndMaybeDoAbility(replacement, self.stamps[x][y], api, x, y)
-		self.score = BookHelper.CalculateBookScore(self)
+		IterableMap.Clear(self.bonusDisplayTable)
+		self.score = BookHelper.CalculateBookScore(self, self.bonusDisplayTable)
 		return replacement
 	end
 	
-	function api.Draw(x, y, scale, hoverType, index)
+	function api.GetBonusIterationData()
+		local bonusCount, keyByIndex, bonusByKey = IterableMap.GetBarbarianData(self.bonusDisplayTable)
+		return bonusCount, keyByIndex, bonusByKey
+	end
+	
+	function api.Draw(x, y, scale, hoverType, index, drawBonuses)
 		local xScale = scale * Global.STAMP_WIDTH
 		local yScale = scale * Global.STAMP_HEIGHT
 		for i = 1, self.width do

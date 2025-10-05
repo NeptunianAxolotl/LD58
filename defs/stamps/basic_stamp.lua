@@ -1,5 +1,5 @@
 
-local function GetAdjacencyScore(self, left, right, top, bottom)
+local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	return 0
 end
 

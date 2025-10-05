@@ -10,7 +10,7 @@ local function ScorePair(self, other)
 	return 0
 end
 
-local function GetAdjacencyScore(self, left, right, top, bottom)
+local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	local score = 0
 	score = score + ScorePair(self, left)
 	score = score + ScorePair(self, right)

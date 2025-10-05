@@ -10,8 +10,8 @@ local function NewStamp(def)
 	self.quality = def.quality
 	self.def.InitRandomStamp(self)
 	
-	function self.GetAdjacencyScore(left, right, top, bottom)
-		return self.def.GetAdjacencyScore(self, left, right, top, bottom)
+	function self.GetAdjacencyScore(x, y, bonusDisplayTable, left, right, top, bottom)
+		return self.def.GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	end
 	
 	function self.GetSoloScore()
@@ -33,12 +33,21 @@ local function NewStamp(def)
 	function self.GetTooltip(book, x, y)
 		local tooltip = self.def.humanName
 		tooltip = tooltip .. "\nQuality: " .. StampDefData.qualityMap[self.quality]
-		tooltip = tooltip .. "\nValue: ♥ " .. self.GetSoloScore()
+		local adjBonus = book and BookHelper.GetStampAdjacencyScore(book.GetSelfData(), x, y) or 0
 		local multiplier = self.GetStampMultiplier(book, x, y)
-		if multiplier%1 == 0 then
-			tooltip = tooltip .. " x " .. multiplier
+		if adjBonus == 0 then
+			tooltip = tooltip .. "\nValue: ♥ " .. self.GetSoloScore()
+		elseif adjBonus > 0 then
+			tooltip = tooltip .. "\nValue: ♥ " .. (multiplier > 1 and "(" or "") .. self.GetSoloScore() .. " + " .. adjBonus .. (multiplier > 1 and ")" or "")
 		else
-			tooltip = tooltip .. string.format(" x %.1f", multiplier)
+			tooltip = tooltip .. "\nValue: ♥ " .. (multiplier > 1 and "(" or "") .. self.GetSoloScore() .. " - " .. (-1*adjBonus) .. (multiplier > 1 and ")" or "")
+		end
+		if multiplier > 1 then
+			if multiplier%1 == 0 then
+				tooltip = tooltip .. " x " .. multiplier
+			else
+				tooltip = tooltip .. string.format(" x %.1f", multiplier)
+			end
 		end
 		tooltip = tooltip .. "\n" .. self.def.desc
 		return tooltip
