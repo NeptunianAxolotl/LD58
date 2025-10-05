@@ -33,7 +33,7 @@ local function NewStamp(def)
 	function self.GetTooltip(book, x, y)
 		local tooltip = self.def.humanName
 		tooltip = tooltip .. "\nQuality: " .. StampDefData.qualityMap[self.quality]
-		tooltip = tooltip .. "\nValue: " .. self.GetSoloScore()
+		tooltip = tooltip .. "\nValue: ♥" .. self.GetSoloScore()
 		local multiplier = self.GetStampMultiplier(book, x, y)
 		if multiplier%1 == 0 then
 			tooltip = tooltip .. " x " .. multiplier
@@ -46,9 +46,10 @@ local function NewStamp(def)
 	
 	function self.Draw(x, y, scale, alpha)
 		Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, StampDefData.colorMap[self.color] or false)
-		Font.SetSize(2)
+		Font.SetSize(4)
 		love.graphics.setColor(0, 0, 0, alpha or 1)
-		love.graphics.printf(self.cost, x - Global.STAMP_WIDTH*scale*0.3, y - Global.STAMP_HEIGHT*scale*0.3, Global.STAMP_WIDTH*scale)
+		local costString = self.def.GetSellValue(self) > 1 and ("$" .. self.cost) or (self.cost .. "¢")
+		love.graphics.printf(costString, x - Global.STAMP_WIDTH*scale*0.3, y - Global.STAMP_HEIGHT*scale*0.3, Global.STAMP_WIDTH*scale)
 		Resources.DrawImage("quality_" .. self.quality, x, y, false, alpha or false, scale)
 	end
 	

@@ -9,7 +9,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	return math.max(1, (self.quality - 1)*2)
+	return 1
 end
 
 local function InitRandomStamp(self)

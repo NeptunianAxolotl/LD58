@@ -25,15 +25,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	if self.quality == 1 then
-		return 2
-	elseif self.quality == 2 then
-		return 5
-	elseif self.quality == 3 then
-		return 20
-	else
-		return 50
-	end
+	return self.cost
 end
 
 local function InitRandomStamp(self)

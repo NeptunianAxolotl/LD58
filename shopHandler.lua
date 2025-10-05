@@ -68,7 +68,7 @@ function api.Draw(drawQueue)
 			end
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff + Global.STAMP_HEIGHT*self.books[i].GetHeight() + 15, Global.STAMP_WIDTH*3)
+			love.graphics.printf("♥" .. self.books[i].GetScore(), xOff + 150, yOff + Global.STAMP_HEIGHT*self.books[i].GetHeight() + 15, Global.STAMP_WIDTH*3)
 			xOff = xOff + 420
 		end
 		

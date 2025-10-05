@@ -9,7 +9,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	return math.max(1, (self.quality - 1)*2)
+	return 1
 end
 
 local function InitRandomStamp(self)
@@ -42,7 +42,7 @@ local def = {
 	placeConsumes = true,
 	image = "sell_stamp",
 	humanName = "Sell Stamp",
-	desc = "Place this stamp on another to sell for its current stampbook value. Consumes the sell stamp.",
+	desc = "Place this on another stamp to sell it for its ♥ value. Consumes the sell stamp.",
 }
 
 return def
