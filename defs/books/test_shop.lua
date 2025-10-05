@@ -6,8 +6,6 @@ local def = {
 	minQuality = 1,
 	maxQuality = 3,
 	stampDist = util.NormaliseWeightedList({
-		{probability = 0.2, stamp = "rocket_stamp"},
-		{probability = 0.2, stamp = "planet_stamp"},
 		{probability = 0.2, stamp = "wild_stamp"},
 		{probability = 0.2, stamp = "money_stamp"},
 		{probability = 0.2, stamp = "quality_stamp"},
@@ -18,8 +16,10 @@ local def = {
 		{probability = 1, stamp = "basic_stamp"},
 	}),
 	forcingDist = util.NormaliseWeightedList({
-		{probability = 0.75, forcing = "force_sequence"},
-		{probability = 0.25, forcing = "force_none"},
+		{probability = 0.4, forcing = "force_rocket"},
+		{probability = 0.2, forcing = "force_flush"},
+		{probability = 0.2, forcing = "force_sequence"},
+		{probability = 0.2, forcing = "force_none"},
 	}),
 }
 

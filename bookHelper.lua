@@ -242,15 +242,27 @@ function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
 	end
 end
 
+local function ForceBasicFlush(self)
+	i = 1 + math.floor(math.random() * self.width)
+	c = 1 + math.floor(math.random() * 8)
+	for j = 1, self.height do
+		self.stamps[i][j] = NewStamp({
+								name = "basic_stamp", 
+								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+								})
+		self.stamps[i][j].color = c
+	end
+end
+
 local function ForceBasicSequence(self)
-	j = math.random(self.height)
-	flip = math.random(2)
+	j = 1 + math.floor(math.random()*self.height)
+	flip = 1 + math.floor(math.random()*2)
 	if flip == 1 then
 		jumpsize = 4 - math.ceil(math.sqrt(math.random(9)))
-		seqstart = math.random(8-jumpsize*self.width)
+		seqstart = 1 + math.floor(math.random()*(8-jumpsize*self.width))
 	else
 		jumpsize = -4 + math.ceil(math.sqrt(math.random(9)))
-		seqstart = 9-math.random(8+jumpsize*self.width)
+		seqstart = 9 - (1 + math.floor(math.random()*(8+jumpsize*self.width)))
 	end
 	
 	for i = 1, self.width do
@@ -260,6 +272,41 @@ local function ForceBasicSequence(self)
 								})
 		self.stamps[i][j].cost = seqstart + jumpsize*(i-1)
 	end
+end
+
+local function ForceRocketPlanet(self)
+	
+	i = 1 + math.floor(math.random() * self.width)
+	j = 1 + math.floor(math.random()*self.height)
+	flip = 1 + math.floor(math.random()*2)
+	if flip == 1 then
+		i2 = i
+		j2 = j + 2 * math.floor(math.random()*2) - 1
+		if j2 == 0 then
+			j2 = 2
+		end
+		if j2 > self.height then
+			j2 = self.height - 1 
+		end 
+	else
+		j2 = j
+		i2 = i + 2 * math.floor(math.random()*2) - 1
+		if i2 == 0 then
+			i2 = 2
+		end
+		if i2 > self.width then
+			i2 = self.width - 1 
+		end
+	end
+	
+	self.stamps[i][j] = NewStamp({
+								name = "rocket_stamp", 
+								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+								})
+	self.stamps[i2][j2] = NewStamp({
+								name = "planet_stamp", 
+								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+								})							
 end
 
 local function RegenerateStamps(self)
@@ -278,6 +325,10 @@ local function RegenerateStamps(self)
 			-- do nothing
 		elseif forcing == "force_sequence" then
 			ForceBasicSequence(self)
+		elseif forcing == "force_flush" then
+			ForceBasicFlush(self)
+		elseif forcing == "force_rocket" then
+			ForceRocketPlanet(self)
 		else
 			error("Error in book generation")
 		end
