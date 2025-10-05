@@ -20,7 +20,7 @@ function api.GetColScoreMultiplier(self, colIndex)
 			quality = quality + self.stamps[colIndex][j].quality
 		end
 	end
-	quality = quality / self.width
+	quality = quality / self.height
 
 	-- Is the column full?
 	for j = 1, self.height do
