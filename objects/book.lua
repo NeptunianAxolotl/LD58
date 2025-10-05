@@ -110,7 +110,7 @@ local function NewBook(def)
 		for i = 1, self.width do
 			for j = 1, self.height do
 				if not hoverType or not TableHandler.JustCheckUnderMouse(x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale) then
-					love.graphics.setColor(0, 0, 0, 1)
+					love.graphics.setColor(0.4, 0.35, 0.2, 1)
 					love.graphics.setLineWidth(2)
 					love.graphics.rectangle("line", x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale)
 				end

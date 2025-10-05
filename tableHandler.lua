@@ -357,15 +357,15 @@ local function DrawTutorial()
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)
 		print(1 - (self.tutorialPhase - 5) * 2)
-		love.graphics.printf("Take a visit to Stamp Alley to find collectors willing to trade books. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.28, Global.WINDOW_Y*0.35, 850)
+		love.graphics.printf("Take a visit to Stamp Alley to find collectors willing to trade books. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.28, Global.WINDOW_Y*0.345, 850)
 	elseif self.tutorialPhase > 4.8 and self.tutorialPhase <= 5.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 5) * 2)
-		love.graphics.printf("Offer a book to trade. All trades lose ♥ so pick up books with undervalued stamps.\nClick Stamp Alley again to see new trades. This costs $1, but the fee is waived for the broke.", Global.WINDOW_X*0.12, Global.WINDOW_Y*0.35, 900)
+		love.graphics.printf("Offer a book to trade. All trades lose ♥ so pick up books with undervalued stamps.\nClick Stamp Alley again to see new trades. This costs $1, but the fee is waived when out of money.", Global.WINDOW_X*0.12, Global.WINDOW_Y*0.345, 900)
 	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
-		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for valuable stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.35, 850)
+		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for valuable stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.345, 850)
 	end
 end
 
@@ -494,7 +494,7 @@ function api.Draw(drawQueue)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
 			else
 				love.graphics.setLineWidth(2)
-				love.graphics.setColor(0, 0, 0, 1)
+				love.graphics.setColor(0.4, 0.4, 0.4, 1)
 			end
 			love.graphics.rectangle("line", x, y, xScale, yScale)
 			if self.sideboard[i] then
@@ -513,7 +513,7 @@ function api.Draw(drawQueue)
 				buySideboard = SideboardDefs.unlockCosts[self.sideboardSize + 1]
 			else
 				love.graphics.setLineWidth(2)
-				love.graphics.setColor(0, 0, 0, 1)
+				love.graphics.setColor(0.4, 0.4, 0.4, 1)
 			end
 			love.graphics.rectangle("line", x, y, xScale, yScale)
 			Font.SetSize(2)

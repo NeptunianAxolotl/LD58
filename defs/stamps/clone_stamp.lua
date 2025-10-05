@@ -25,6 +25,7 @@ local function DoPlaceAbility(self, other, book)
 	self.def = other.def
 	self.color = other.color
 	self.cost = other.cost
+	self.rarity = other.rarity
 	-- Leave quality as-is?
 end
 
