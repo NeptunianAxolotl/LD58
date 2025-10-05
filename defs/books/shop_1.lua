@@ -11,6 +11,9 @@ local def = {
 		{probability = 0.4, stamp = "pair_stamp"},
 		{probability = 1, stamp = "basic_stamp"},
 	}),
+	forcingDist = util.NormaliseWeightedList({
+		{probability = 1.0, forcing = "force_none"},
+	}),
 }
 
 return def

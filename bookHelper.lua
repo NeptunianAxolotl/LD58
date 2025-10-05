@@ -210,6 +210,26 @@ function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
 	end
 end
 
+local function ForceBasicSequence(self)
+	j = math.random(self.height)
+	flip = math.random(2)
+	if flip == 1 then
+		jumpsize = 4 - math.ceil(math.sqrt(math.random(9)))
+		seqstart = math.random(8-jumpsize*self.width)
+	else
+		jumpsize = -4 + math.ceil(math.sqrt(math.random(9)))
+		seqstart = 9-math.random(8+jumpsize*self.width)
+	end
+	
+	for i = 1, self.width do
+		self.stamps[i][j] = NewStamp({
+								name = "basic_stamp", 
+								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+								})
+		self.stamps[i][j].cost = seqstart + jumpsize*(i-1)
+	end
+end
+
 local function RegenerateStamps(self)
 	for i = 1, self.width do
 		self.stamps[i] = {}
@@ -220,6 +240,17 @@ local function RegenerateStamps(self)
 			})
 		end
 	end
+	if self.forcingDist then
+		forcing = util.SampleListWeighted(self.forcingDist).forcing
+		if forcing == "force_none" then
+			-- do nothing
+		elseif forcing == "force_sequence" then
+			ForceBasicSequence(self)
+		else
+			error("Error in book generation")
+		end
+	end
+	
 	self.score = api.CalculateBookScore(self)
 end
 

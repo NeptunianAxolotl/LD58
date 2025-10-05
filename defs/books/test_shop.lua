@@ -2,7 +2,7 @@
 local def = {
 	width = 3,
 	height = 3,
-	scoreRange = {80, 120},
+	scoreRange = {1, 120},
 	minQuality = 1,
 	maxQuality = 3,
 	stampDist = util.NormaliseWeightedList({
@@ -14,6 +14,10 @@ local def = {
 		{probability = 0.2, stamp = "sell_stamp"},
 		{probability = 0.2, stamp = "clone_stamp"},
 		{probability = 1, stamp = "basic_stamp"},
+	}),
+	forcingDist = util.NormaliseWeightedList({
+		{probability = 0.75, forcing = "force_sequence"},
+		{probability = 0.25, forcing = "force_none"},
 	}),
 }
 
