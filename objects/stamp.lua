@@ -44,7 +44,7 @@ local function NewStamp(def)
 		Resources.DrawImage(self.def.image, x, y, false, false, scale, StampDefData.colorMap[self.color] or false)
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf(self.cost, x - scale*0.3, y - scale*0.3, scale)
+		love.graphics.printf(self.cost, x - Global.STAMP_WIDTH*scale*0.3, y - Global.STAMP_HEIGHT*scale*0.3, Global.STAMP_WIDTH*scale)
 		Resources.DrawImage("quality_" .. self.quality, x, y, false, false, scale)
 	end
 	

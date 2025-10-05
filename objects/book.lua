@@ -38,28 +38,30 @@ local function NewBook(def)
 	end
 	
 	function api.Draw(x, y, scale, hoverType, index)
+		local xScale = scale * Global.STAMP_WIDTH
+		local yScale = scale * Global.STAMP_HEIGHT
 		for i = 1, self.width do
 			for j = 1, self.height do
-				if not hoverType or not TableHandler.JustCheckUnderMouse(x + (i - 1)*scale, y + (j - 1)*scale, scale, scale) then
+				if not hoverType or not TableHandler.JustCheckUnderMouse(x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale) then
 					love.graphics.setColor(0, 0, 0, 1)
 					love.graphics.setLineWidth(2)
-					love.graphics.rectangle("line", x + (i - 1)*scale, y + (j - 1)*scale, scale, scale)
+					love.graphics.rectangle("line", x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale)
 				end
 			end
 		end
 		for i = 1, self.width do
 			for j = 1, self.height do
 				local underMouse = hoverType and TableHandler.CheckAndSetUnderMouse(
-					x + (i - 1)*scale, y + (j - 1)*scale, scale, scale,
+					x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale,
 					{type = hoverType, book = api, index = index, x = i, y = j}
 				)
 				if underMouse then
 					love.graphics.setColor(0.2, 1, 0.2, 1)
 					love.graphics.setLineWidth(3)
-					love.graphics.rectangle("line", x + (i - 1)*scale, y + (j - 1)*scale, scale, scale)
+					love.graphics.rectangle("line", x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale)
 				end
 				if self.stamps[i][j] then
-					self.stamps[i][j].Draw(x + (i - 0.5)*scale, y + (j - 0.5)*scale, scale)
+					self.stamps[i][j].Draw(x + (i - 0.5)*xScale, y + (j - 0.5)*yScale, scale)
 				end
 			end
 		end

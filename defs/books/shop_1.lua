@@ -8,6 +8,7 @@ local def = {
 	stampDist = util.NormaliseWeightedList({
 		{probability = 0.10, stamp = "wild_stamp"},
 		{probability = 0.02, stamp = "money_stamp"},
+		{probability = 0.2, stamp = "quality_stamp"},
 		{probability = 1, stamp = "basic_stamp"},
 	}),
 }

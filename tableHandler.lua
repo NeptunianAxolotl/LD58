@@ -35,7 +35,7 @@ end
 
 local function GetBookDimensions(book, index)
 	local bx, by = self.bookDrawX + self.bookDrawSpacing*(index - 1), self.bookDrawY
-	local bw, bh = book.GetWidth() * self.bookScale, book.GetHeight() * self.bookScale
+	local bw, bh = book.GetWidth() * self.bookScale * Global.STAMP_WIDTH, book.GetHeight() * self.bookScale * Global.STAMP_HEIGHT
 	return bx, by, bw, bh
 end
 
@@ -168,7 +168,7 @@ function api.Draw(drawQueue)
 		drawQueue:push({y=500; f=function()
 			if self.heldStamp then
 				local mouse = self.world.GetMousePositionInterface()
-				local scale = 120
+				local scale = 1
 				self.heldStamp.Draw(mouse[1], mouse[2], scale)
 			end
 		end})
@@ -178,9 +178,11 @@ function api.Draw(drawQueue)
 		local xOff = Global.WINDOW_X *0.06
 		local yOff = Global.WINDOW_Y *0.6 - 36
 		local scale = self.bookScale
+		local xScale = scale * Global.STAMP_WIDTH
+		local yScale = scale * Global.STAMP_HEIGHT
 		
 		for i = 1, self.sideboardSize do
-			local underMouse = api.CheckAndSetUnderMouse(xOff, yOff, scale, scale, {type = "sideboard", index = i})
+			local underMouse = api.CheckAndSetUnderMouse(xOff, yOff, xScale, yScale, {type = "sideboard", index = i})
 			if underMouse then
 				love.graphics.setLineWidth(3)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
@@ -188,11 +190,11 @@ function api.Draw(drawQueue)
 				love.graphics.setLineWidth(2)
 				love.graphics.setColor(0, 0, 0, 1)
 			end
-			love.graphics.rectangle("line", xOff, yOff, scale, scale)
+			love.graphics.rectangle("line", xOff, yOff, xScale, yScale)
 			if self.sideboard[i] then
-				self.sideboard[i].Draw(xOff + scale/2, yOff + scale/2, scale)
+				self.sideboard[i].Draw(xOff + xScale/2, yOff + yScale/2, scale)
 			end
-			yOff = yOff + scale + 18
+			yOff = yOff + yScale + 18
 		end
 		
 		xOff = self.bookDrawX
@@ -206,7 +208,7 @@ function api.Draw(drawQueue)
 			end
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff - 50, scale*3)
+			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff - 50, xScale*3)
 			xOff = xOff + self.bookDrawSpacing
 		end
 		
@@ -243,7 +245,7 @@ function api.Draw(drawQueue)
 		end
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf("Money: $" .. self.money .. moneyChangeString, xOff + 2, yOff, scale*3)
+		love.graphics.printf("Money: $" .. self.money .. moneyChangeString, xOff + 2, yOff, xScale*3)
 	end})
 end
 
@@ -257,7 +259,7 @@ function api.Initialize(world)
 		bookDrawX = Global.WINDOW_X*0.15,
 		bookDrawY = Global.WINDOW_Y*0.6,
 		bookDrawSpacing = 390,
-		bookScale = 100,
+		bookScale = 1,
 	}
 	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
 	

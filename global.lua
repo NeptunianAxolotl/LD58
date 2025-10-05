@@ -35,6 +35,8 @@ local globals = {
 	
 	WINDOW_X = 1920,
 	WINDOW_Y = 1080,
+	STAMP_WIDTH = 96,
+	STAMP_HEIGHT = 72,
 	
 	MASTER_VOLUME = 0.75,
 	MUSIC_VOLUME = 0.02,
