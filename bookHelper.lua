@@ -9,6 +9,73 @@ local NewBook = require("objects/book")
 local NewStamp = require("objects/stamp")
 
 local api = {}
+local world
+
+function api.GetColScoreMultiplier(self, colIndex)
+	-- Are they all the same colour?
+	local x = -100
+	if self.stamps[colIndex][1] and self.stamps[colIndex][1].color then
+		x = self.stamps[colIndex][1].color
+	end
+	for j = 2, self.height do
+		if self.stamps[colIndex][j] and self.stamps[colIndex][j].color and x == self.stamps[colIndex][j].color then
+			-- do nothing
+		else
+			return 1
+		end
+	end
+	-- Get average quality
+	local quality = 0
+	for j = 1, self.height do
+		if self.stamps[colIndex][j] and self.stamps[colIndex][j].quality then
+			quality = quality + self.stamps[colIndex][j].quality
+		end
+	end
+	quality = quality / self.width
+	if x >= 0 then
+		return math.ceil(quality)
+	end
+	return 1
+end
+
+function api.GetRowScoreMultiplier(self, rowIndex)
+	-- Do their costs form a sequence?
+	local dir = 0
+	local x = -100
+	if self.stamps[1][rowIndex] and self.stamps[1][rowIndex].cost then
+		x = self.stamps[1][rowIndex].cost
+	end
+	if x >= 0 and self.stamps[2][rowIndex] and self.stamps[2][rowIndex].cost then
+		if x+1 == self.stamps[2][rowIndex].cost then
+			dir = 1
+			x = x + dir
+		elseif x-1 == self.stamps[2][rowIndex].cost then
+			dir = -1
+			x = x + dir
+		else
+			return 1
+		end
+	end
+	for i = 3, self.width do
+		if self.stamps[i][rowIndex] and self.stamps[i][rowIndex].cost and x+dir == self.stamps[i][rowIndex].cost then
+			x = x + dir
+		else
+			return 1
+		end
+	end
+	-- Get average quality
+	local quality = 0
+	for i = 1, self.width do
+		if self.stamps[i][rowIndex] and self.stamps[i][rowIndex].quality  then
+			quality = quality + self.stamps[i][rowIndex].quality
+		end
+	end
+	quality = quality / self.width
+	if x >= 0 then
+		return math.ceil(quality)
+	end
+	return 1
+end
 
 function api.CalculateBookScore(self)
 	local score = 0
@@ -16,15 +83,11 @@ function api.CalculateBookScore(self)
 	local basic_scores = 0
 	local basic_scores_row = {}
 	local basic_scores_col = {}
-	local quality_row = {}
-	local quality_col = {}
 	for i = 1, self.width do
 		basic_scores_col[i] = 0
-		quality_col[i] = 0
 	end
 	for j = 1, self.height do
 		basic_scores_row[j] = 0
-		quality_row[j] = 0
 	end
 	
 	-- Evaluate each stamp's individual value.
@@ -42,69 +105,12 @@ function api.CalculateBookScore(self)
 	
 	-- Evaluate the score on each column.
 	for i = 1, self.width do
-		-- Get average quality
-		for j = 1, self.height do
-			if self.stamps[i][j] and self.stamps[i][j].quality then
-				quality_col[i] = quality_col[i] + self.stamps[i][j].quality
-			end
-		end
-		quality_col[i] = quality_col[i] / self.height
-		-- Are they all the same colour?
-		local x = -100
-		if self.stamps[i][1] and self.stamps[i][1].color then
-			x = self.stamps[i][1].color
-		end
-		for j = 2, self.height do
-			if self.stamps[i][j] and self.stamps[i][j].color and x == self.stamps[i][j].color then
-				-- do nothing
-			else
-				x = -100
-				break
-			end
-		end
-		if x >= 0 then
-			score = score + basic_scores_col[i] * math.ceil(quality_col[i] - 1)
-		end
+		score = score + basic_scores_col[i] * api.GetColScoreMultiplier(self, i)
 	end
 	
 	-- Evaluate the score on each row.
 	for j = 1, self.height do
-		-- Get average quality
-		for i = 1, self.width do
-			if self.stamps[i][j] and self.stamps[i][j].quality  then
-				quality_row[j] = quality_row[j] + self.stamps[i][j].quality
-			end
-		end
-		quality_row[j] = quality_row[j] / self.width
-		-- Do their costs form a sequence?
-		local dir = 0
-		local x = -100
-		if self.stamps[1][j] and self.stamps[1][j].cost then
-			x = self.stamps[1][j].cost
-		end
-		if x >= 0 and self.stamps[2][j] and self.stamps[2][j].cost then
-			if x+1 == self.stamps[2][j].cost then
-				dir = 1
-				x = x + dir
-			elseif x-1 == self.stamps[2][j].cost then
-				dir = -1
-				x = x + dir
-			else
-				x = -100
-				break
-			end
-		end
-		for i = 3, self.width do
-			if self.stamps[i][j] and self.stamps[i][j].cost and x+dir == self.stamps[i][j].cost then
-				x = x + dir
-			else
-				x = -100
-				break
-			end
-		end
-		if x >= 0 then
-			score = score + basic_scores_row[j] * math.ceil(quality_row[j] - 1)
-		end
+		score = score + basic_scores_row[j] * api.GetRowScoreMultiplier(self, j)
 	end
 	
 	-- Evaluate any other weird scoring stuff.
@@ -122,6 +128,29 @@ function api.CalculateBookScore(self)
 	
 	
 	return score
+end
+
+function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
+	local colMult = api.GetColScoreMultiplier(self, placePos.x)
+	local rowMult = api.GetRowScoreMultiplier(self, placePos.y)
+	if colMult == 1 and rowMult == 1 then
+		return
+	end
+	local mousePos = world.GetMousePositionInterface()
+	local xFrac = math.max(0, math.min(1, (mousePos[1] - bx) / bw))
+	local yFrac = math.max(0, math.min(1, (mousePos[2] - by) / bh))
+	
+	if colMult > 1 then
+		EffectsHandler.SpawnEffect("popup", {bx + bw * (placePos.x - 0.5) / self.width, by}, {text = "x" .. colMult, velocity = {0, -5}})
+	end
+	if rowMult > 1 then
+		local ey = by + bh * (placePos.y - 0.5) / self.height
+		if xFrac < 0.5 then
+			EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "x" .. rowMult, velocity = {-5, 0}})
+		else
+			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
+		end
+	end
 end
 
 local function RegenerateStamps(self)
@@ -149,6 +178,10 @@ function api.GetBook(defName)
 		end
 	end
 	return NewBook(self)
+end
+
+function api.Initialize(parentWorld)
+	world = parentWorld
 end
 
 return api

@@ -68,6 +68,12 @@ local function GetSwapIndecies()
 	end
 end
 
+local function GetBookDimensions(book, index)
+	local bx, by = self.bookDrawX + self.bookDrawSpacing*(index - 1), self.bookDrawY
+	local bw, bh = book.GetWidth() * self.bookScale, book.GetHeight() * self.bookScale
+	return bx, by, bw, bh
+end
+
 local function MousePlaceClick(placePos)
 	if not placePos then
 		return false
@@ -82,6 +88,10 @@ local function MousePlaceClick(placePos)
 	elseif placePos.type == "book" then
 		local book = placePos.book
 		local bookStamp = book.ReplaceStamp(placePos.x, placePos.y, self.heldStamp or false)
+		if self.heldStamp and placePos.index then
+			local bx, by, bh, bw = GetBookDimensions(book, placePos.index)
+			BookHelper.SpawnStampPlaceEffect(book.GetSelfData(), placePos, bx, by, bh, bw)
+		end
 		local leftEmptySpace = bookStamp and not self.heldStamp
 		self.heldStamp = bookStamp
 		return leftEmptySpace
@@ -146,7 +156,7 @@ function api.Draw(drawQueue)
 		local mousePos = self.world.GetMousePositionInterface()
 		local xOff = Global.WINDOW_X *0.06
 		local yOff = Global.WINDOW_Y *0.6 - 36
-		local scale = 100
+		local scale = self.bookScale
 		
 		for i = 1, self.sideboardSize do
 			local underMouse = api.CheckAndSetUnderMouse(xOff, yOff, scale, scale, {type = "sideboard", index = i})
@@ -164,10 +174,10 @@ function api.Draw(drawQueue)
 			yOff = yOff + scale + 18
 		end
 		
-		xOff = Global.WINDOW_X *0.15
-		yOff = Global.WINDOW_Y *0.6
+		xOff = self.bookDrawX
+		yOff = self.bookDrawY
 		for i = 1, #self.books do
-			self.books[i].Draw(xOff, yOff, scale, true)
+			self.books[i].Draw(xOff, yOff, scale, true, i)
 			local canAfford = ShopHandler.CanSwapFromTable(self.books[i].GetScore())
 			local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == i)
 			if InterfaceUtil.DrawButton(xOff + 5, yOff - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
@@ -176,19 +186,19 @@ function api.Draw(drawQueue)
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
 			love.graphics.printf("Value: " .. self.books[i].GetScore(), xOff + 150, yOff - 50, scale*3)
-			xOff = xOff + 390
+			xOff = xOff + self.bookDrawSpacing
 		end
 		
 		xOff = Global.WINDOW_X *0.8
 		yOff = Global.WINDOW_Y *0.6 - 50
 		
-		if InterfaceUtil.DrawButton(xOff - 20, yOff + 150, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
+		if InterfaceUtil.DrawButton(xOff - 20, yOff + 80, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
 			if self.heldStamp then
 				api.SetUnderMouse({type = "sellStamp", income = self.heldStamp.GetSellValue()})
 			else
 				Font.SetSize(3)
 				love.graphics.setColor(0, 0, 0, 1)
-				love.graphics.printf("Drop a stamp here to sell it.", xOff - 20, yOff + 235, 220)
+				love.graphics.printf("Drop a stamp here to sell it.", xOff - 20, yOff + 190, 220)
 			end
 		end
 		
@@ -200,7 +210,7 @@ function api.Draw(drawQueue)
 		end
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf("Money: $" .. self.money .. moneyChangeString, xOff, yOff, scale*3)
+		love.graphics.printf("Money: $" .. self.money .. moneyChangeString, xOff + 2, yOff, scale*3)
 	end})
 end
 
@@ -211,6 +221,10 @@ function api.Initialize(world)
 		sideboardSize = 3,
 		sideboard = {},
 		money = 10,
+		bookDrawX = Global.WINDOW_X*0.15,
+		bookDrawY = Global.WINDOW_Y*0.6,
+		bookDrawSpacing = 390,
+		bookScale = 100,
 	}
 	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
 	

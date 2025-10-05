@@ -10,6 +10,10 @@ local function NewBook(def)
 	self.stamps = def.stamps
 	self.score = BookHelper.CalculateBookScore(self)
 	
+	function api.GetSelfData()
+		return self
+	end
+	
 	function api.GetScore()
 		return self.score
 	end
@@ -29,7 +33,7 @@ local function NewBook(def)
 		return old
 	end
 	
-	function api.Draw(x, y, scale, checkHover)
+	function api.Draw(x, y, scale, checkHover, index)
 		for i = 1, self.width do
 			for j = 1, self.height do
 				if not checkHover or not TableHandler.JustCheckUnderMouse(x + (i - 1)*scale, y + (j - 1)*scale, scale, scale) then
@@ -41,7 +45,10 @@ local function NewBook(def)
 		end
 		for i = 1, self.width do
 			for j = 1, self.height do
-				local underMouse = checkHover and TableHandler.CheckAndSetUnderMouse(x + (i - 1)*scale, y + (j - 1)*scale, scale, scale, {type = "book", book = api, x = i, y = j})
+				local underMouse = checkHover and TableHandler.CheckAndSetUnderMouse(
+					x + (i - 1)*scale, y + (j - 1)*scale, scale, scale,
+					{type = "book", book = api, index = index, x = i, y = j}
+				)
 				if underMouse then
 					love.graphics.setColor(0.2, 1, 0.2, 1)
 					love.graphics.setLineWidth(3)

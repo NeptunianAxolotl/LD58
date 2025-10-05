@@ -1,5 +1,5 @@
 
-EffectsHandler = require("effectsHandler")
+EffectsHandler = require("EffectsHandler")
 TableHandler = require("tableHandler")
 ShopHandler = require("shopHandler")
 BookHelper = require("bookHelper")
@@ -233,6 +233,7 @@ function api.Initialize(cosmos, levelData)
 	
 	Delay.Initialise()
 	InterfaceUtil.Initialize()
+	BookHelper.Initialize(api)
 	EffectsHandler.Initialize(api)
 	
 	GameHandler.Initialize(api)
