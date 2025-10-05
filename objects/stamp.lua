@@ -8,8 +8,7 @@ local function NewStamp(def)
 	self.def = StampDefs[def.name]
 	self.name = def.name
 	self.quality = def.quality
-	self.rarity = def.rarity or 1
-	self.def.InitRandomStamp(self)
+	self.def.InitRandomStamp(self, def)
 	
 	function self.GetAdjacencyScore(x, y, bonusDisplayTable, left, right, top, bottom)
 		return self.def.GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)

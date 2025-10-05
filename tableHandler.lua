@@ -58,7 +58,7 @@ end
 
 local function GetSideboardDrawPosition(index)
 	index = index + (SideboardDefs.maxSlots - self.sideboardDrawSize)
-	local x = self.sideboardX + (index - 1) * self.sideboardGap/2
+	local x = self.sideboardX + (index - 1) * self.sideboardLean
 	local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
 	return x, y
 end
@@ -287,7 +287,7 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	end
 	Font.SetSize(2)
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, baseY - 54, xScale*3)
+	love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, baseY - 55, xScale*3)
 	
 	-- Draw bonuses
 	local xOff = baseX + xScale * 0.35
@@ -460,6 +460,7 @@ function api.Initialize(world)
 		tooltipY = Global.WINDOW_Y * 0.6 + 180,
 		sideboardX = 40,
 		sideboardY = Global.WINDOW_Y*0.52 + 18,
+		sideboardLean = 10,
 		sideboardGap = 18,
 		bookDrawSpacing = 390,
 		bookScale = 1,
@@ -467,8 +468,7 @@ function api.Initialize(world)
 	self.sideboard[1] = false
 	
 	self.books[#self.books + 1] = BookHelper.GetBook("starter")
-	self.books[#self.books + 1] = BookHelper.GetBook("starter")
-	self.books[#self.books + 1] = BookHelper.GetBook("starter")
+	self.books[1].SetPosition({0, 0})
 end
 
 return api

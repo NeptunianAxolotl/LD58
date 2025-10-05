@@ -4,7 +4,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = -10
+	local score = 10
 	return math.ceil(score)
 end
 
@@ -12,9 +12,10 @@ local function GetSellValue(self)
 	return 1
 end
 
-local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*3)
-	self.color = 1 + math.floor(math.random()*8)
+local function InitRandomStamp(self, def)
+	self.cost = def.cost or (5 + math.floor(math.random()*3))
+	self.color = def.color or (1 + math.floor(math.random()*8))
+	self.rarity = def.rarity or (1 + math.floor(math.random()*3))
 end
 
 local function PlaceAbilityMoneyGain(self, other, book, px, py)

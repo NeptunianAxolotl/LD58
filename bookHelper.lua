@@ -180,7 +180,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 			end
 			TrackMultiplier(
 				self, mult, posList, "Column ♥ x" .. mult,
-				"Column multiplier for matching stamp colours, improved with better quality stamps.",
+				"Column multiplier for matching stamp colours, improves with better quality stamps.",
 				i, bonusDisplayTable)
 		end
 		score = score + basic_scores_col[i] * (mult - 1)
@@ -196,7 +196,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 			end
 			TrackMultiplier(
 				self, mult, posList, "Row ♥ x" .. mult,
-				"Row multiplier for sequential stamp prices, improved with better quality stamps.",
+				"Row multiplier for sequential stamp prices, improves with better quality stamps.",
 				j, bonusDisplayTable)
 		end
 		--if bonusDisplayTable then
@@ -337,10 +337,29 @@ local function RegenerateStamps(self)
 	self.score = api.CalculateBookScore(self)
 end
 
+local function FillStamps(self, stampsToUse)
+	local index = 1
+	for i = 1, self.width do
+		self.stamps[i] = {}
+		for j = 1, self.height do
+			if stampsToUse[index] then
+				util.PrintTable(stampsToUse[index])
+				self.stamps[i][j] = NewStamp(stampsToUse[index])
+			end
+			index = index + 1
+		end
+	end
+	self.score = api.CalculateBookScore(self)
+end
+
 function api.GetBook(defName)
 	local self = util.CopyTable(BookDefs[defName])
 	self.stamps = {}
-	RegenerateStamps(self)
+	if self.predeterminedStamps then
+		FillStamps(self, self.predeterminedStamps)
+	else
+		RegenerateStamps(self)
+	end
 	if self.scoreRange then
 		local tries = 100
 		while (self.score < self.scoreRange[1] or self.score > self.scoreRange[2]) and tries > 0 do

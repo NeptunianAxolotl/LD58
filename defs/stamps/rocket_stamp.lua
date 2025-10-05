@@ -40,7 +40,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = math.ceil(self.cost / 3) * self.quality
+	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2
 	return math.ceil(score)
 end
 
@@ -51,6 +51,7 @@ end
 local function InitRandomStamp(self)
 	self.cost = 1 + math.floor(math.random()*8)
 	self.color = 1 + math.floor(math.random()*8)
+	self.rarity = def.rarity or (1 + math.floor(math.random()*3))
 end
 
 local def = {

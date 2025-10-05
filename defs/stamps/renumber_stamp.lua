@@ -4,17 +4,17 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = -10
-	return math.ceil(score)
+	return 5
 end
 
 local function GetSellValue(self)
 	return 1
 end
 
-local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*8)
-	self.color = 1 + math.floor(math.random()*8)
+local function InitRandomStamp(self, def)
+	self.cost = def.cost or (1 + math.floor(math.random()*8))
+	self.color = def.color or (1 + math.floor(math.random()*8))
+	self.rarity = def.rarity or (1 + math.floor(math.random()*3))
 end
 
 local function PlaceAbilityCheck(self, other, book, px, py)
@@ -33,9 +33,9 @@ local def = {
 	PlaceAbilityCheck = PlaceAbilityCheck,
 	DoPlaceAbility = DoPlaceAbility,
 	placeConsumes = true,
-	image = "renumber_stamp",
-	humanName = "Recost Stamp",
-	desc = "Place this stamp on another to copy the cost across. Consumes the recost stamp.",
+	image = "pen",
+	humanName = "Pen Stamp (Single Use)",
+	desc = "Overrides the cost of the stamp it is placed on. Consumes pen stamp.",
 }
 
 return def
