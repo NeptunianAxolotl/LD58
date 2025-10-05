@@ -74,7 +74,7 @@ local function GetSpotPosition(placePos)
 	end
 	if placePos.type == "sideboard" then
 		local x, y = GetSideboardDrawPosition(placePos.index)
-		return {x, y}
+		return {x + self.bookScale * Global.STAMP_WIDTH/2, y + self.bookScale * Global.STAMP_HEIGHT/2}
 	elseif placePos.type == "book" then
 		local book = placePos.book
 		local bx, by, bw, bh = GetBookDimensions(book, placePos.index)
@@ -270,7 +270,7 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local book = self.books[index]
 	local baseX, baseY = GetBookDrawPosition(index)
 	Resources.DrawImage("book_width_" .. book.GetWidth(), baseX - 60, baseY - 94)
-	book.Draw(baseX, baseY, scale, "book", index)
+	book.Draw(baseX + 1, baseY + 2, scale, "book", index)
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
 	if InterfaceUtil.DrawButton(baseX + 5, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
