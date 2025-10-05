@@ -51,7 +51,7 @@ function externalFunc.Load()
 	hugeFont  = love.graphics.newFont('include/fonts/' .. FONT, 64)
 	bigFont   = love.graphics.newFont('include/fonts/' .. FONT, 48)
 	medFont   = love.graphics.newFont('include/fonts/' .. FONT, 32)
-	smallFont = love.graphics.newFont('include/fonts/' .. FONT, 24)
+	smallFont = love.graphics.newFont('include/fonts/' .. FONT, 26)
 	smallerFont = love.graphics.newFont('include/fonts/' .. FONT, 18)
 end
 
