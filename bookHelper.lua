@@ -12,18 +12,9 @@ local api = {}
 local world
 
 function api.GetColScoreMultiplier(self, colIndex)
-	-- Are they all the same colour?
-	local x = -100
-	if self.stamps[colIndex][1] and self.stamps[colIndex][1].color then
-		x = self.stamps[colIndex][1].color
-	end
-	for j = 2, self.height do
-		if self.stamps[colIndex][j] and self.stamps[colIndex][j].color and x == self.stamps[colIndex][j].color then
-			-- do nothing
-		else
-			return 1
-		end
-	end
+
+	local multiplier = 1
+	
 	-- Get average quality
 	local quality = 0
 	for j = 1, self.height do
@@ -32,10 +23,51 @@ function api.GetColScoreMultiplier(self, colIndex)
 		end
 	end
 	quality = quality / self.width
-	if x >= 0 then
-		return math.max(1.5, math.ceil(quality*2)/2)
+
+	-- Is the column full?
+	local isfull = true
+	for j = 1, self.height do
+		if not self.stamps[colIndex][j] then
+			isfull = false
+			break
+		end
 	end
-	return 1
+	if isfull then
+		-- EVALUATE FLUSHES
+		-- How many wilds are there? And if they are not all wilds, what might be the flush colour?
+		local nwilds = 0
+		local candfound = false
+		local candcolor = -100
+		for j = 1, self.height do
+			if self.stamps[colIndex][j].custom and self.stamps[colIndex][j].custom["wild_color"] then
+				nwilds = nwilds + 1
+			else
+				if candfound then
+					if candcolor ~= self.stamps[colIndex][j].color then
+						candcolor = -200
+					end
+				else
+					candfound = true
+					candcolor = self.stamps[colIndex][j].color
+				end
+			end
+		end
+		
+		if nwilds >= self.height then
+			-- full wilds
+			multiplier = multiplier + 3 * math.ceil(quality)
+		elseif nwilds > 1 then
+			-- does not score
+		else
+			-- check for colours
+			if candfound and candcolor >= 0 then
+				multiplier = multiplier + 1 * math.ceil(quality)
+			end
+		end
+	end
+
+	return multiplier
+
 end
 
 function api.GetRowScoreMultiplier(self, rowIndex)

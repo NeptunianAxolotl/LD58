@@ -13,8 +13,9 @@ local function GetSellValue(self)
 end
 
 local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*10)
+	self.cost = 1 + math.floor(math.random()*9)
 	self.color = 1 + math.floor(math.random()*8)
+	self.custom = {}
 end
 
 local def = {
