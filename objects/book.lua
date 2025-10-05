@@ -28,7 +28,7 @@ local function NewBook(def)
 			if i ~= index then
 				local other = otherBooks[i]
 				local oPos = other.GetPosition()
-				local width = math.max(2.25, other.GetWidth()) + math.max(2.25, self.width) + 1.2
+				local width = math.max(2.35, other.GetWidth()) + math.max(2.35, self.width) + 1.2
 				if math.abs(self.position[1] - oPos[1]) < width*0.15 then
 					local sign = (oPos[1] > self.position[1]) and 1 or -1
 					local val = (width*0.15 - math.abs(self.position[1] - oPos[1]))
