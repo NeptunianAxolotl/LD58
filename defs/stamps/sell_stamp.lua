@@ -41,9 +41,9 @@ local def = {
 	DoPlaceAbility = DoPlaceAbility,
 	PlaceAbilityMoneyGain = PlaceAbilityMoneyGain, -- For tooltips
 	placeConsumes = true,
-	image = "sell_stamp",
-	humanName = "Sell Stamp",
-	desc = "Place this on another stamp to sell it for its ♥ value. Consumes the sell stamp.",
+	image = "bank",
+	humanName = "Bank Stamp",
+	desc = "Place this on another stamp to sell it for its ♥ value. Consumes the bank stamp.",
 }
 
 return def

@@ -15,7 +15,7 @@ local function GetSellValue(self)
 end
 
 local function InitRandomStamp(self, def)
-	self.cost = def.cost or (1 + math.floor(math.random()*8))
+	self.cost = def.cost or (3 + math.floor(math.random()*6))
 	self.color = def.color or (1 + math.floor(math.random()*8))
 	self.rarity = def.rarity or (1 + math.floor(math.random()*3))
 end
@@ -25,7 +25,7 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "money_stamp",
+	image = "gold",
 	humanName = "Money Stamp",
 	desc = "Contains gold dust that is of no value to true collectors.",
 }
