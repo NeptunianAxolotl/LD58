@@ -33,7 +33,7 @@ local function NewStamp(def)
 	function self.GetTooltip(book, x, y)
 		local tooltip = self.def.humanName
 		tooltip = tooltip .. "\nQuality: " .. StampDefData.qualityMap[self.quality]
-		tooltip = tooltip .. "\nValue: ♥" .. self.GetSoloScore()
+		tooltip = tooltip .. "\nValue: ♥ " .. self.GetSoloScore()
 		local multiplier = self.GetStampMultiplier(book, x, y)
 		if multiplier%1 == 0 then
 			tooltip = tooltip .. " x " .. multiplier

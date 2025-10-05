@@ -284,7 +284,7 @@ function api.Draw(drawQueue)
 			end
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf("♥" .. self.books[i].GetScore(), xOff + 150, yOff - 50, xScale*3)
+			love.graphics.printf("♥ " .. self.books[i].GetScore(), xOff + 150, yOff - 50, xScale*3)
 			xOff = xOff + self.bookDrawSpacing
 		end
 		
