@@ -55,19 +55,17 @@ function api.GetColScoreMultiplier(self, colIndex)
 		
 		if nwilds >= self.height then
 			-- full wilds
-			multiplier = multiplier + 3 * math.ceil(quality)
+			multiplier = 3 * quality
 		elseif nwilds > 1 then
-			-- does not score
+			multiplier = 1
 		else
 			-- check for colours
 			if candfound and candcolor >= 0 then
-				multiplier = multiplier + 1 * math.ceil(quality)
+				multiplier = math.max(1.5, math.ceil(quality*2)/2)
 			end
 		end
 	end
-
 	return multiplier
-
 end
 
 function api.GetRowScoreMultiplier(self, rowIndex)

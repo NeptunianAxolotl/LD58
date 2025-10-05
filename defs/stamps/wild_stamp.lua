@@ -25,6 +25,8 @@ local def = {
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	image = "wild_stamp",
+	humanName = "Rainbow",
+	desc = "Low value but a single one can complete a flush.",
 }
 
 return def
