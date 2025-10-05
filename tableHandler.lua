@@ -344,6 +344,9 @@ function api.Draw(drawQueue)
 	else
 		self.heldSellAbilityAmount = false
 	end
+	drawQueue:push({y=20; f=function()
+		Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.6)
+	end})
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
 		local scale = self.bookScale
