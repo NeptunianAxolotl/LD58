@@ -18,6 +18,12 @@ local data = {
 		{1, 0,   1},
 		{0, 1, 1},
 		{1, 1, 1},
+	},
+	qualityMap = {
+		"Terrible",
+		"Poor",
+		"Good",
+		"Pristine",
 	}
 }
 

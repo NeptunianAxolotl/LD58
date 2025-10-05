@@ -73,6 +73,7 @@ function api.Draw(drawQueue)
 		xOff = Global.WINDOW_X * 0.75
 		yOff = Global.WINDOW_Y * 0.1
 		love.graphics.setColor(0, 0, 0, 1)
+		Font.SetSize(2)
 		love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
 		yOff = yOff + 50
 		for i = 1, #ShopDefs do

@@ -24,6 +24,8 @@ local def = {
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	image = "stamp",
+	humanName = "Basic Stamp",
+	desc = "Bog standard stamp",
 }
 
 return def

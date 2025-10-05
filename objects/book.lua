@@ -26,6 +26,10 @@ local function NewBook(def)
 		return self.height
 	end
 	
+	function api.GetStampAt(x, y)
+		return self.stamps[x] and self.stamps[x][y]
+	end
+	
 	function api.ReplaceStamp(x, y, replacement)
 		local old = self.stamps[x][y] or false
 		self.stamps[x][y] = replacement

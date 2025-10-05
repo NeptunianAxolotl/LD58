@@ -5,59 +5,24 @@ local self = {}
 local api = {}
 
 --------------------------------------------------
--- API
+-- Helpers
 --------------------------------------------------
 
-function api.GetSelected()
-	return self.swapSelected
-end
-
-function api.ClearShopSelected()
-	self.swapSelected = false
-end
-
-function api.GetMaxBookValue()
-	local maxScore = 0
-	for i = 1, #self.books do
-		if self.books[i].GetScore() > maxScore then
-			maxScore = self.books[i].GetScore()
-		end
+local function GetTooltipStamp()
+	if self.heldStamp then
+		return self.heldStamp
 	end
-	return maxScore
-end
-
-function api.CanAffordShopBook(shopScore)
-	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
-		return shopScore <= self.books[self.swapSelected.index].GetScore()
-	end
-	return shopScore <= api.GetMaxBookValue()
-end
-
-function api.CanEnterShop(shopDef)
-	if shopDef.cost and not shopDef.waiveCostIfNoMoney and shopDef.cost > self.money then
+	if not self.underMouse then
 		return false
 	end
-	if shopDef.bookRequirement and shopDef.bookRequirement > api.GetMaxBookValue() then
-		return false
+	if self.underMouse.type == "sideboard" then
+		local index = self.underMouse.index
+		return self.sideboard[index] or false
+	elseif self.underMouse.type == "book" then
+		local book = self.underMouse.book
+		return book.GetStampAt(self.underMouse.x, self.underMouse.y) or false, book, self.underMouse.x, self.underMouse.y
 	end
-	return true
-end
-
-function api.JustCheckUnderMouse(x, y, width, height)
-	local mouse = self.world.GetMousePositionInterface()
-	return util.PosInRectangle(mouse, x, y, width, height)
-end
-
-function api.SetUnderMouse(thing)
-	self.underMouse = thing
-end
-
-function api.CheckAndSetUnderMouse(x, y, width, height, thing)
-	if not api.JustCheckUnderMouse(x, y, width, height) then
-		return false
-	end
-	api.SetUnderMouse(thing)
-	return true
+	return false
 end
 
 local function GetSwapIndecies()
@@ -118,6 +83,62 @@ local function MousePlaceClick(placePos)
 			ShopHandler.RefreshShop(placePos.index)
 		end
 	end
+end
+
+--------------------------------------------------
+-- API
+--------------------------------------------------
+
+function api.GetSelected()
+	return self.swapSelected
+end
+
+function api.ClearShopSelected()
+	self.swapSelected = false
+end
+
+function api.GetMaxBookValue()
+	local maxScore = 0
+	for i = 1, #self.books do
+		if self.books[i].GetScore() > maxScore then
+			maxScore = self.books[i].GetScore()
+		end
+	end
+	return maxScore
+end
+
+function api.CanAffordShopBook(shopScore)
+	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
+		return shopScore <= self.books[self.swapSelected.index].GetScore()
+	end
+	return shopScore <= api.GetMaxBookValue()
+end
+
+function api.CanEnterShop(shopDef)
+	if shopDef.cost and not shopDef.waiveCostIfNoMoney and shopDef.cost > self.money then
+		return false
+	end
+	if shopDef.bookRequirement and shopDef.bookRequirement > api.GetMaxBookValue() then
+		return false
+	end
+	return true
+end
+
+function api.JustCheckUnderMouse(x, y, width, height)
+	local mouse = self.world.GetMousePositionInterface()
+	return util.PosInRectangle(mouse, x, y, width, height)
+end
+
+function api.SetUnderMouse(thing)
+	self.underMouse = thing
+end
+
+function api.CheckAndSetUnderMouse(x, y, width, height, thing)
+	if not api.JustCheckUnderMouse(x, y, width, height) then
+		return false
+	end
+	api.SetUnderMouse(thing)
+	return true
 end
 
 function api.MousePressed(x, y, button)
@@ -191,6 +212,7 @@ function api.Draw(drawQueue)
 		
 		xOff = Global.WINDOW_X *0.8
 		yOff = Global.WINDOW_Y *0.6 - 50
+		local drawnTooltip = false
 		
 		if InterfaceUtil.DrawButton(xOff - 20, yOff + 80, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
 			if self.heldStamp then
@@ -198,7 +220,18 @@ function api.Draw(drawQueue)
 			else
 				Font.SetSize(3)
 				love.graphics.setColor(0, 0, 0, 1)
-				love.graphics.printf("Drop a stamp here to sell it.", xOff - 20, yOff + 190, 220)
+				love.graphics.printf("Drop a stamp here to sell it.", xOff - 60, yOff + 190, 220)
+				drawnTooltip = true
+			end
+		end
+		
+		if not drawnTooltip then
+			local tooltipStamp, tBook, tX, tY = GetTooltipStamp()
+			if tooltipStamp then
+				Font.SetSize(3)
+				love.graphics.setColor(0, 0, 0, 1)
+				love.graphics.printf(tooltipStamp.GetTooltip(tBook, tX, tY), xOff - 60, yOff + 190, 380)
+				drawnTooltip = true
 			end
 		end
 		
