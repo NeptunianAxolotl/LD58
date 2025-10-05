@@ -184,7 +184,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 		score = score + basic_scores_row[j] * (mult - 1)
 	end
 	
-	return math.ceil(score)
+	return math.floor(score)
 end
 
 function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
