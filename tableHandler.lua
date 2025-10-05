@@ -124,12 +124,12 @@ end
 function api.PlaceStampAndMaybeDoAbility(placing, target, book, px, py)
 	if target and placing and placing.def.PlaceAbilityCheck then
 		if placing.def.PlaceAbilityCheck(placing, target, book, px, py) then
-			local toDestroy = placing.def.placeConsumes
+			local destroySelf = placing.def.placeConsumes
 			placing.def.DoPlaceAbility(placing, target, book, px, py)
-			if target.wantDestoy then
+			if target.wantDestroy then
 				target = false
 			end
-			if toDestroy then
+			if destroySelf then
 				placing = false
 			end
 		end
@@ -226,7 +226,7 @@ function api.Draw(drawQueue)
 				end
 				if self.heldStamp.def.PlaceAbilityCheck then
 					local other, book, px, py = GetMousePlaceStamp()
-					if other and book and self.heldStamp.def.PlaceAbilityMoneyGain and self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, other, book, px, py) then
+					if other and self.heldStamp.def.PlaceAbilityMoneyGain and self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, other, book, px, py) then
 						self.heldSellAbilityAmount = self.heldStamp.def.PlaceAbilityMoneyGain(self, other, book, px, py)
 					end
 					if self.emptySpot then

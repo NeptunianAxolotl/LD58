@@ -19,7 +19,6 @@ end
 
 local function PlaceAbilityMoneyGain(self, other, book, px, py)
 	local multiplier = other.GetStampMultiplier(book, px, py)
-	print(multiplier, other.GetSoloScore())
 	return math.ceil(multiplier * other.GetSoloScore())
 end
 
@@ -31,6 +30,7 @@ local function DoPlaceAbility(self, other, book, px, py)
 	TableHandler.AddMoney(PlaceAbilityMoneyGain(self, other, book, px, py))
 	other.wantDestroy = true
 end
+
 local def = {
 	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
