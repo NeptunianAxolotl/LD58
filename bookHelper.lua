@@ -33,7 +33,7 @@ function api.GetColScoreMultiplier(self, colIndex)
 	end
 	quality = quality / self.width
 	if x >= 0 then
-		return math.ceil(quality)
+		return math.max(1.5, math.ceil(quality*2)/2)
 	end
 	return 1
 end
@@ -72,7 +72,7 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	end
 	quality = quality / self.width
 	if x >= 0 then
-		return math.ceil(quality)
+		return math.max(1.5, math.ceil(quality*2)/2)
 	end
 	return 1
 end
@@ -105,12 +105,12 @@ function api.CalculateBookScore(self)
 	
 	-- Evaluate the score on each column.
 	for i = 1, self.width do
-		score = score + basic_scores_col[i] * api.GetColScoreMultiplier(self, i)
+		score = score + math.ceil(basic_scores_col[i] * api.GetColScoreMultiplier(self, i))
 	end
 	
 	-- Evaluate the score on each row.
 	for j = 1, self.height do
-		score = score + basic_scores_row[j] * api.GetRowScoreMultiplier(self, j)
+		score = score + math.ceil(basic_scores_row[j] * api.GetRowScoreMultiplier(self, j))
 	end
 	
 	-- Evaluate any other weird scoring stuff.
