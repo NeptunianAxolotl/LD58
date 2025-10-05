@@ -33,6 +33,8 @@ local globals = {
 	TEXT_COL            = {9/255, 11/255, 17/255},
 	FLOATING_TEXT_COL   = {0.95,0.95,0.9},
 	
+	TRANSPOSE_PLACEMENT = true,
+	
 	WINDOW_X = 1920,
 	WINDOW_Y = 1080,
 	STAMP_WIDTH = 96,

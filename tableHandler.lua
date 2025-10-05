@@ -77,6 +77,11 @@ local function MousePlaceClick(placePos)
 		local index = placePos.index
 		self.heldStamp, self.sideboard[index] = api.PlaceStampAndMaybeDoAbility(self.heldStamp, self.sideboard[index])
 		local leftEmptySpace = self.heldStamp and not self.sideboard[index]
+		if self.sideboard[index] and self.heldStamp and self.emptySpot and Global.TRANSPOSE_PLACEMENT then
+			local spot = self.emptySpot
+			self.emptySpot = false
+			MousePlaceClick(spot)
+		end
 		return leftEmptySpace
 	elseif placePos.type == "book" then
 		local book = placePos.book
@@ -87,6 +92,11 @@ local function MousePlaceClick(placePos)
 		end
 		local leftEmptySpace = bookStamp and not self.heldStamp
 		self.heldStamp = bookStamp
+		if bookStamp and self.heldStamp and self.emptySpot and Global.TRANSPOSE_PLACEMENT then
+			local spot = self.emptySpot
+			self.emptySpot = false
+			MousePlaceClick(spot)
+		end
 		return leftEmptySpace
 	elseif placePos.type == "sellStamp" then
 		if self.heldStamp then
