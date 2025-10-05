@@ -18,7 +18,7 @@ local function GetTooltipStamp()
 	if self.underMouse.type == "sideboard" then
 		local index = self.underMouse.index
 		return self.sideboard[index] or false
-	elseif self.underMouse.type == "book" then
+	elseif self.underMouse.type == "book" or self.underMouse.type == "shopBook" then
 		local book = self.underMouse.book
 		return book.GetStampAt(self.underMouse.x, self.underMouse.y) or false, book, self.underMouse.x, self.underMouse.y
 	end
@@ -198,7 +198,7 @@ function api.Draw(drawQueue)
 		xOff = self.bookDrawX
 		yOff = self.bookDrawY
 		for i = 1, #self.books do
-			self.books[i].Draw(xOff, yOff, scale, true, i)
+			self.books[i].Draw(xOff, yOff, scale, "book", i)
 			local canAfford = ShopHandler.CanSwapFromTable(self.books[i].GetScore())
 			local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == i)
 			if InterfaceUtil.DrawButton(xOff + 5, yOff - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then

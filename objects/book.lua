@@ -37,10 +37,10 @@ local function NewBook(def)
 		return old
 	end
 	
-	function api.Draw(x, y, scale, checkHover, index)
+	function api.Draw(x, y, scale, hoverType, index)
 		for i = 1, self.width do
 			for j = 1, self.height do
-				if not checkHover or not TableHandler.JustCheckUnderMouse(x + (i - 1)*scale, y + (j - 1)*scale, scale, scale) then
+				if not hoverType or not TableHandler.JustCheckUnderMouse(x + (i - 1)*scale, y + (j - 1)*scale, scale, scale) then
 					love.graphics.setColor(0, 0, 0, 1)
 					love.graphics.setLineWidth(2)
 					love.graphics.rectangle("line", x + (i - 1)*scale, y + (j - 1)*scale, scale, scale)
@@ -49,9 +49,9 @@ local function NewBook(def)
 		end
 		for i = 1, self.width do
 			for j = 1, self.height do
-				local underMouse = checkHover and TableHandler.CheckAndSetUnderMouse(
+				local underMouse = hoverType and TableHandler.CheckAndSetUnderMouse(
 					x + (i - 1)*scale, y + (j - 1)*scale, scale, scale,
-					{type = "book", book = api, index = index, x = i, y = j}
+					{type = hoverType, book = api, index = index, x = i, y = j}
 				)
 				if underMouse then
 					love.graphics.setColor(0.2, 1, 0.2, 1)

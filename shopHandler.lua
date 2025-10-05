@@ -58,7 +58,7 @@ function api.Draw(drawQueue)
 		
 		local swapSelected = TableHandler.GetSelected()
 		for i = 1, #self.books do
-			self.books[i].Draw(xOff, yOff, scale, false)
+			self.books[i].Draw(xOff, yOff, scale, "shopBook")
 			local canAfford = TableHandler.CanAffordShopBook(self.books[i].GetScore())
 			local highlight = canAfford and swapSelected and (swapSelected.type == "shopSwapSelected") and (swapSelected.index == i)
 			if InterfaceUtil.DrawButton(xOff + 5, yOff + scale*self.books[i].GetHeight() + 10, 120, 50, mousePos, "Trade", not canAfford, false, false, highlight, 2, 5) then
