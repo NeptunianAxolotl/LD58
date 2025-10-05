@@ -225,6 +225,7 @@ end
 
 local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, drawnTooltip)
 	local book = self.books[index]
+	Resources.DrawImage("book_width_" .. book.GetWidth(), xOff - 60, yOff - 94)
 	book.Draw(xOff, yOff, scale, "book", index)
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
@@ -233,7 +234,7 @@ local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, draw
 	end
 	Font.SetSize(2)
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.printf("♥ " .. book.GetScore(), xOff + 150, yOff - 50, xScale*3)
+	love.graphics.printf("♥ " .. book.GetScore(), xOff + 142, yOff - 54, xScale*3)
 	
 	-- Draw bonuses
 	local baseX = xOff
@@ -252,7 +253,6 @@ local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, draw
 			drawnTooltip = true
 			for j = 1, #bonus.posList do
 				local px, py = bonus.posList[j][1] - 1, bonus.posList[j][2] - 1
-				print(px, py)
 				love.graphics.setLineWidth(3)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
 				love.graphics.rectangle("line", baseX + px*xScale, baseY + py*yScale, xScale, yScale)
