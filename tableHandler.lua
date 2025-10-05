@@ -55,6 +55,13 @@ local function GetBookDrawPosition(index)
 	return baseX, baseY
 end
 
+local function GetSideboardDrawPosition(index)
+	index = index + (self.maxSideboard - self.sideboardDrawSize)
+	local x = self.sideboardX + (index - 1) * self.sideboardGap/2
+	local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
+	return x, y
+end
+
 local function GetBookDimensions(book, index)
 	local bx, by = GetBookDrawPosition(index)
 	local bw, bh = book.GetWidth() * self.bookScale * Global.STAMP_WIDTH, book.GetHeight() * self.bookScale * Global.STAMP_HEIGHT
@@ -66,9 +73,7 @@ local function GetSpotPosition(placePos)
 		return false
 	end
 	if placePos.type == "sideboard" then
-		local index = placePos.index
-		local x = self.sideboardX + self.bookScale * Global.STAMP_WIDTH / 2
-		local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
+		local x, y = GetSideboardDrawPosition(placePos.index)
 		return {x, y}
 	elseif placePos.type == "book" then
 		local book = placePos.book
@@ -256,9 +261,12 @@ function api.Update(dt)
 	for i = 1, #self.books do
 		self.books[i].UpdatePhysics(dt, i, self.books)
 	end
+	if self.sideboardDrawSize < self.sideboardSize then
+		self.sideboardDrawSize = math.min(self.sideboardDrawSize + dt, self.sideboardSize)
+	end
 end
 
-local function DrawBook(index, xScale, yScale, scale, mousePos, drawnTooltip)
+local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local book = self.books[index]
 	local baseX, baseY = GetBookDrawPosition(index)
 	Resources.DrawImage("book_width_" .. book.GetWidth(), baseX - 60, baseY - 94)
@@ -278,13 +286,12 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, drawnTooltip)
 	local bonusCount, keyByIndex, bonusByKey = book.GetBonusIterationData()
 	for i = 1, bonusCount do
 		local bonus = bonusByKey[keyByIndex[i]]
-		local hovered = (not drawnTooltip) and util.PosInRectangle(mousePos, xOff - xScale*0.5/2, yOff - yScale*0.5/2, xScale*0.5, yScale*0.5)
+		local hovered = (not wantTooltip) and util.PosInRectangle(mousePos, xOff - xScale*0.5/2, yOff - yScale*0.5/2, xScale*0.5, yScale*0.5)
 		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or 0.6, 0.5)
 		if hovered then
 			Font.SetSize(3)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(bonus.humanName .. "\n" .. bonus.desc, self.tooltipX, self.tooltipY, 380)
-			drawnTooltip = true
+			wantTooltip = bonus.humanName .. "\n" .. bonus.desc
 			for j = 1, #bonus.posList do
 				local px, py = bonus.posList[j][1] - 1, bonus.posList[j][2] - 1
 				love.graphics.setLineWidth(3)
@@ -298,7 +305,7 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, drawnTooltip)
 			yOff = yOff + yScale * 0.6
 		end
 	end
-	return drawnTooltip
+	return wantTooltip
 end
 
 function api.Draw(drawQueue)
@@ -339,14 +346,21 @@ function api.Draw(drawQueue)
 	end
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
-		local xOff = self.sideboardX
-		local yOff = self.sideboardY
 		local scale = self.bookScale
 		local xScale = scale * Global.STAMP_WIDTH
 		local yScale = scale * Global.STAMP_HEIGHT
 		
+		local wantTooltip = false
+		for i = 1, #self.books do
+			wantTooltip = DrawBook(i, xScale, yScale, scale, mousePos, wantTooltip)
+		end
+		
+		local sideX, sideY = GetSideboardDrawPosition(1)
+		Resources.DrawImage("sideboard", sideX - 412, sideY - 108)
+		
 		for i = 1, self.sideboardSize do
-			local underMouse = api.CheckAndSetUnderMouse(xOff, yOff, xScale, yScale, {type = "sideboard", index = i})
+			local x, y = GetSideboardDrawPosition(i)
+			local underMouse = api.CheckAndSetUnderMouse(x, y, xScale, yScale, {type = "sideboard", index = i})
 			if underMouse then
 				love.graphics.setLineWidth(3)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
@@ -354,40 +368,34 @@ function api.Draw(drawQueue)
 				love.graphics.setLineWidth(2)
 				love.graphics.setColor(0, 0, 0, 1)
 			end
-			love.graphics.rectangle("line", xOff, yOff, xScale, yScale)
+			love.graphics.rectangle("line", x, y, xScale, yScale)
 			if self.sideboard[i] then
-				self.sideboard[i].Draw(xOff + xScale/2, yOff + yScale/2, scale)
+				self.sideboard[i].Draw(x + xScale/2, y + yScale/2, scale)
 			end
-			yOff = yOff + yScale + self.sideboardGap
 		end
 		
-		local drawnTooltip = false
-		for i = 1, #self.books do
-			drawnTooltip = DrawBook(i, xScale, yScale, scale, mousePos, drawnTooltip)
-		end
+		Resources.DrawImage("tooltip", self.tooltipX - 80, self.tooltipY - 80)
+		Resources.DrawImage("money_bag", self.moneyX, self.moneyY, false, false, 1.8)
 		
-		xOff = self.tooltipX
-		yOff = self.tooltipY
-		
-		if InterfaceUtil.DrawButton(xOff + 40, yOff - 95, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
+		if InterfaceUtil.DrawButton(self.moneyX - 125, self.moneyY - 15, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
 			if self.heldStamp then
 				api.SetUnderMouse({type = "sellStamp", income = self.heldStamp.GetSellValue()})
 			else
-				Font.SetSize(3)
-				love.graphics.setColor(0, 0, 0, 1)
-				love.graphics.printf("Drop a stamp here to sell it.", xOff - 120, yOff, 220)
-				drawnTooltip = true
+				wantTooltip = "Drop a stamp here to sell it."
 			end
 		end
 		
-		if not drawnTooltip then
+		if not wantTooltip then
 			local tooltipStamp, tBook, tX, tY = GetTooltipStamp()
 			if tooltipStamp then
-				Font.SetSize(3)
-				love.graphics.setColor(0, 0, 0, 1)
-				love.graphics.printf(tooltipStamp.GetTooltip(tBook, tX, tY), xOff, yOff, 380)
-				drawnTooltip = true
+				wantTooltip = tooltipStamp.GetTooltip(tBook, tX, tY)
 			end
+		end
+		
+		if wantTooltip then
+			Font.SetSize(3)
+			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.printf(wantTooltip, self.tooltipX, self.tooltipY, 380)
 		end
 		
 		local moneyChangeString = ""
@@ -398,9 +406,10 @@ function api.Draw(drawQueue)
 		elseif self.underMouse and self.underMouse.income then
 			moneyChangeString = " + " .. self.underMouse.income
 		end
-		Font.SetSize(2)
+		Font.SetSize(1)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf("Money: $" .. self.money .. moneyChangeString, xOff + 62, yOff - 150, xScale*3)
+		love.graphics.printf("$" .. self.money .. moneyChangeString, self.moneyX - 110, self.moneyY - 90, 500)
+		
 	end})
 end
 
@@ -408,18 +417,22 @@ function api.Initialize(world)
 	self = {
 		world = world,
 		books = {},
-		sideboardSize = 3,
+		sideboardSize = 2,
+		sideboardDrawSize = 2,
+		maxSideboard = 5,
 		sideboard = {},
 		money = 10,
-		tooltipX = Global.WINDOW_X * 0.8 - 30,
-		tooltipY = Global.WINDOW_Y * 0.6 + 95,
-		sideboardX = Global.WINDOW_X*0.06,
-		sideboardY = Global.WINDOW_Y*0.6 - 36,
+		moneyX = Global.WINDOW_X * 0.9 + 20,
+		moneyY = Global.WINDOW_Y * 0.65,
+		tooltipX = Global.WINDOW_X * 0.8 + 20,
+		tooltipY = Global.WINDOW_Y * 0.6 + 180,
+		sideboardX = 40,
+		sideboardY = Global.WINDOW_Y*0.52 + 18,
 		sideboardGap = 18,
 		bookDrawSpacing = 390,
 		bookScale = 1,
 	}
-	self.sideboard[2] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
+	self.sideboard[1] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
 	
 	self.books[#self.books + 1] = BookHelper.GetBook("starter")
 	self.books[#self.books + 1] = BookHelper.GetBook("starter")
