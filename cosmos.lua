@@ -51,6 +51,10 @@ function api.ScrollSpeedChange(change)
 	self.keyScrollSpeed = self.keyScrollSpeed * change
 end
 
+function api.TransposePlacementMode()
+	return self.transposePlacementMode
+end
+
 --------------------------------------------------
 -- Draw
 --------------------------------------------------
@@ -91,6 +95,9 @@ function api.KeyPressed(key, scancode, isRepeat)
 		api.TakeScreenshot()
 		return true
 	end
+	if key == "t" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+		self.transposePlacementMode = not self.transposePlacementMode
+	end
 	return World.KeyPressed(key, scancode, isRepeat)
 end
 
@@ -124,6 +131,7 @@ function api.Initialize()
 		mouseScrollSpeed = Global.MOUSE_SCROLL_MULT,
 		keyScrollSpeed = Global.KEYBOARD_SCROLL_MULT,
 		grabInput = Global.MOUSE_SCROLL_MULT > 0,
+		transposePlacementMode = false,
 	}
 	MusicHandler.Initialize(api)
 	SoundHandler.Initialize(api)

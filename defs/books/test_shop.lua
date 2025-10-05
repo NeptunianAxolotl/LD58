@@ -16,8 +16,10 @@ local def = {
 		{probability = 1, stamp = "basic_stamp"},
 	}),
 	forcingDist = util.NormaliseWeightedList({
-		{probability = 0.75, forcing = "force_sequence"},
-		{probability = 0.25, forcing = "force_none"},
+		{probability = 0.4, forcing = "force_rocket"},
+		{probability = 0.2, forcing = "force_flush"},
+		{probability = 0.2, forcing = "force_sequence"},
+		{probability = 0.2, forcing = "force_none"},
 	}),
 }
 

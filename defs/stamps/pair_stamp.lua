@@ -4,6 +4,9 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
 		return 0
 	end
+	if self.adjacencyDisabled or other.adjacencyDisabled then
+		return 0
+	end
 	if other.name == "pair_stamp" then
 		local bonus = 2 * (self.quality + 3)
 		local otherBonus = 2 * (other.quality + 3)
@@ -21,6 +24,15 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 		return bonus
 	end
 	return 0
+end
+
+local function CountPair(other)
+	return (other and other.name == "pair_stamp") and 1 or 0
+end
+
+local function UpdateAdjacencyData(self, x, y, left, right, top, bottom)
+	local count = CountPair(left) + CountPair(right) + CountPair(top) + CountPair(bottom)
+	self.adjacencyDisabled = (count ~= 1)
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
@@ -47,13 +59,14 @@ local function InitRandomStamp(self)
 end
 
 local def = {
+	UpdateAdjacencyData = UpdateAdjacencyData,
 	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	image = "pair",
 	humanName = "Pair Stamp",
-	desc = "Bonus points per adjacent pair stamp",
+	desc = "Bonus points when next to one pair stamp",
 }
 
 return def

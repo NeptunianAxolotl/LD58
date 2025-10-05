@@ -77,6 +77,11 @@ local function MousePlaceClick(placePos)
 		local index = placePos.index
 		self.heldStamp, self.sideboard[index] = api.PlaceStampAndMaybeDoAbility(self.heldStamp, self.sideboard[index])
 		local leftEmptySpace = self.heldStamp and not self.sideboard[index]
+		if self.sideboard[index] and self.heldStamp and self.emptySpot and self.world.GetCosmos().TransposePlacementMode() then
+			local spot = self.emptySpot
+			self.emptySpot = false
+			MousePlaceClick(spot)
+		end
 		return leftEmptySpace
 	elseif placePos.type == "book" then
 		local book = placePos.book
@@ -87,6 +92,11 @@ local function MousePlaceClick(placePos)
 		end
 		local leftEmptySpace = bookStamp and not self.heldStamp
 		self.heldStamp = bookStamp
+		if bookStamp and self.heldStamp and self.emptySpot and self.world.GetCosmos().TransposePlacementMode() then
+			local spot = self.emptySpot
+			self.emptySpot = false
+			MousePlaceClick(spot)
+		end
 		return leftEmptySpace
 	elseif placePos.type == "sellStamp" then
 		if self.heldStamp then
@@ -215,6 +225,7 @@ end
 
 local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, drawnTooltip)
 	local book = self.books[index]
+	Resources.DrawImage("book_width_" .. book.GetWidth(), xOff - 60, yOff - 94)
 	book.Draw(xOff, yOff, scale, "book", index)
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
@@ -223,18 +234,18 @@ local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, draw
 	end
 	Font.SetSize(2)
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.printf("♥ " .. book.GetScore(), xOff + 150, yOff - 50, xScale*3)
+	love.graphics.printf("♥ " .. book.GetScore(), xOff + 142, yOff - 54, xScale*3)
 	
 	-- Draw bonuses
 	local baseX = xOff
 	local baseY = yOff
 	yOff = yOff + yScale*book.GetHeight() + yScale / 2
-	xOff = xOff + xScale / 2
+	xOff = xOff + xScale * 0.35
 	local bonusCount, keyByIndex, bonusByKey = book.GetBonusIterationData()
 	for i = 1, bonusCount do
 		local bonus = bonusByKey[keyByIndex[i]]
-		local hovered = (not drawnTooltip) and util.PosInRectangle(mousePos, xOff - xScale*0.45/2, yOff - yScale*0.45/2, xScale*0.45, yScale*0.45)
-		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or 0.6, 0.45)
+		local hovered = (not drawnTooltip) and util.PosInRectangle(mousePos, xOff - xScale*0.5/2, yOff - yScale*0.5/2, xScale*0.5, yScale*0.5)
+		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or 0.6, 0.5)
 		if hovered then
 			Font.SetSize(3)
 			love.graphics.setColor(0, 0, 0, 1)
@@ -242,16 +253,15 @@ local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, draw
 			drawnTooltip = true
 			for j = 1, #bonus.posList do
 				local px, py = bonus.posList[j][1] - 1, bonus.posList[j][2] - 1
-				print(px, py)
 				love.graphics.setLineWidth(3)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
 				love.graphics.rectangle("line", baseX + px*xScale, baseY + py*yScale, xScale, yScale)
 			end
 		end
-		xOff = xOff + xScale/2
+		xOff = xOff + xScale*(book.GetWidth() - 0.7) / (book.GetWidth()*2 - 2)
 		if i%(book.GetWidth()*2 - 1) == 0 then
-			xOff = baseX + xScale / 2
-			yOff = yOff + yScale/2
+			xOff = baseX + xScale * 0.35
+			yOff = yOff + yScale * 0.6
 		end
 	end
 	return drawnTooltip

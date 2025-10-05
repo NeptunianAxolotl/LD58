@@ -26,6 +26,7 @@ local data = {
 		"Pristine",
 	},
 	rarityColorMap = {
+		{0.9, 0.8, 0.4},
 		{0.8, 0.7, 0.2},
 	},
 }
