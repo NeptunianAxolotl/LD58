@@ -4,7 +4,7 @@ local function GetAdjacencyScore(self, left, right, top, bottom)
 end
 
 local function GetSoloScore(self)
-	local score = 15
+	local score = -10
 	return math.ceil(score)
 end
 
@@ -13,16 +13,16 @@ local function GetSellValue(self)
 end
 
 local function InitRandomStamp(self)
-	self.cost = 26
+	self.cost = 1 + math.floor(math.random()*10)
 	self.color = 1 + math.floor(math.random()*8)
 end
 
 local function PlaceAbilityCheck(self, other, book, px, py)
-	return other.quality < 4
+	return true
 end
 
 local function DoPlaceAbility(self, other, book)
-	other.quality = other.quality + 1
+	other.cost = self.cost
 end
 
 local def = {
@@ -33,9 +33,9 @@ local def = {
 	PlaceAbilityCheck = PlaceAbilityCheck,
 	DoPlaceAbility = DoPlaceAbility,
 	placeConsumes = true,
-	image = "quality_stamp",
-	humanName = "Quality Stamp",
-	desc = "Place this stamp on another to upgrade it by one quality level. Consumes the quality stamp.",
+	image = "renumber_stamp",
+	humanName = "Recost Stamp",
+	desc = "Place this stamp on another to copy the cost across. Consumes the recost stamp.",
 }
 
 return def

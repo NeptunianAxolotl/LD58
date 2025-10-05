@@ -39,6 +39,16 @@ Costs $5 to visit.]]
 No standards.
 Costs $1 to visit, if you can pay.]]
 	},
+	{
+		name = "Test",
+		bookType = {
+			{probability = 1, bookType = "test_shop"},
+		},
+		size = 3,
+		cost = false,
+		bookRequirement = false,
+		desc = [[Test.]]
+	},
 }
 
 return def

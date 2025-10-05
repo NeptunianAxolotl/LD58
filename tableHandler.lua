@@ -75,20 +75,9 @@ local function MousePlaceClick(placePos)
 	end
 	if placePos.type == "sideboard" then
 		local index = placePos.index
-		local sideStamp = self.sideboard[index] or false
-		if sideStamp and self.heldStamp and self.heldStamp.def.PlaceAbilityCheck then
-			if self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, sideStamp) then
-				self.heldStamp.def.DoPlaceAbility(self.heldStamp, self.sideboard[index])
-				if self.heldStamp.def.placeConsumes then
-					self.heldStamp = false
-				end
-			end
-		else
-			self.sideboard[index] = self.heldStamp or false
-			self.heldStamp = sideStamp
-			local leftEmptySpace = self.heldStamp and not self.sideboard[index]
-			return leftEmptySpace
-		end
+		self.heldStamp, self.sideboard[index] = api.PlaceStampAndMaybeDoAbility(self.heldStamp, self.sideboard[index])
+		local leftEmptySpace = self.heldStamp and not self.sideboard[index]
+		return leftEmptySpace
 	elseif placePos.type == "book" then
 		local book = placePos.book
 		local bookStamp = book.ReplaceStamp(placePos.x, placePos.y, self.heldStamp or false)
@@ -101,7 +90,7 @@ local function MousePlaceClick(placePos)
 		return leftEmptySpace
 	elseif placePos.type == "sellStamp" then
 		if self.heldStamp then
-			self.money = self.money + self.heldStamp.GetSellValue()
+			api.AddMoney(self.heldStamp.GetSellValue())
 			self.heldStamp = false
 		end
 	elseif placePos.type == "mySwapSelected" or placePos.type == "shopSwapSelected" then
@@ -127,6 +116,28 @@ end
 --------------------------------------------------
 -- API
 --------------------------------------------------
+
+function api.AddMoney(amount)
+	self.money = self.money + amount
+end
+
+function api.PlaceStampAndMaybeDoAbility(placing, target, book, px, py)
+	if target and placing and placing.def.PlaceAbilityCheck then
+		if placing.def.PlaceAbilityCheck(placing, target, book, px, py) then
+			local toDestroy = placing.def.placeConsumes
+			placing.def.DoPlaceAbility(placing, target, book, px, py)
+			if target.wantDestoy then
+				target = false
+			end
+			if toDestroy then
+				placing = false
+			end
+		end
+	else
+		target, placing = placing, target -- Swap stamps if no ability
+	end
+	return placing, target
+end
 
 function api.GetSelected()
 	return self.swapSelected
@@ -205,6 +216,7 @@ end
 function api.Draw(drawQueue)
 	if self.heldStamp then
 		drawQueue:push({y=500; f=function()
+			self.heldSellAbilityAmount = false
 			if self.heldStamp then
 				local mouse = self.world.GetMousePositionInterface()
 				local scale = 1
@@ -213,13 +225,16 @@ function api.Draw(drawQueue)
 					self.heldStamp.Draw(pos[1], pos[2], scale, 0.15)
 				end
 				if self.heldStamp.def.PlaceAbilityCheck then
-					local other = GetMousePlaceStamp()
+					local other, book, px, py = GetMousePlaceStamp()
+					if other and book and self.heldStamp.def.PlaceAbilityMoneyGain and self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, other, book, px, py) then
+						self.heldSellAbilityAmount = self.heldStamp.def.PlaceAbilityMoneyGain(self, other, book, px, py)
+					end
 					if self.emptySpot then
 						local pos = GetSpotPosition(self.emptySpot)
 						love.graphics.setLineWidth(4)
 						if not other then
 							love.graphics.setColor(0.3, 0.95, 0.2, 0.4)
-						elseif self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, other) then
+						elseif self.heldStamp.def.PlaceAbilityCheck(self.heldStamp, other, book, px, py) then
 							love.graphics.setColor(0.3, 0.95, 0.2, 1)
 						else
 							love.graphics.setColor(0.95, 0.1, 0.2, 1)
@@ -231,6 +246,8 @@ function api.Draw(drawQueue)
 				end
 			end
 		end})
+	else
+		self.heldSellAbilityAmount = false
 	end
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
@@ -297,7 +314,9 @@ function api.Draw(drawQueue)
 		end
 		
 		local moneyChangeString = ""
-		if self.underMouse and self.underMouse.cost then
+		if self.heldSellAbilityAmount then
+			moneyChangeString = " + " .. self.heldSellAbilityAmount
+		elseif self.underMouse and self.underMouse.cost then
 			moneyChangeString = " - " .. self.underMouse.cost
 		elseif self.underMouse and self.underMouse.income then
 			moneyChangeString = " + " .. self.underMouse.income

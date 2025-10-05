@@ -15,7 +15,6 @@ end
 local function InitRandomStamp(self)
 	self.cost = 20
 	self.color = 100
-	self.custom = {}
 end
 
 local def = {

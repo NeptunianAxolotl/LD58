@@ -22,19 +22,23 @@ local function NewStamp(def)
 		return self.def.GetSellValue(self)
 	end
 	
+	function self.GetStampMultiplier(book, x, y)
+		local multiplier = 1
+		if book then
+			multiplier = BookHelper.GetColScoreMultiplier(book.GetSelfData(), x) + BookHelper.GetRowScoreMultiplier(book.GetSelfData(), y) - 1
+		end
+		return multiplier
+	end
+	
 	function self.GetTooltip(book, x, y)
 		local tooltip = self.def.humanName
 		tooltip = tooltip .. "\nQuality: " .. StampDefData.qualityMap[self.quality]
 		tooltip = tooltip .. "\nValue: " .. self.GetSoloScore()
-		if book then
-			local multiplier = (BookHelper.GetColScoreMultiplier(book.GetSelfData(), x) - 1) + (BookHelper.GetRowScoreMultiplier(book.GetSelfData(), y) - 1)
-			if multiplier > 0 then
-				if multiplier%1 == 0 then
-					tooltip = tooltip .. " x " .. (multiplier + 1)
-				else
-					tooltip = tooltip .. string.format(" x %.1f", multiplier + 1)
-				end
-			end
+		local multiplier = self.GetStampMultiplier(book, x, y)
+		if multiplier%1 == 0 then
+			tooltip = tooltip .. " x " .. multiplier
+		else
+			tooltip = tooltip .. string.format(" x %.1f", multiplier)
 		end
 		tooltip = tooltip .. "\n" .. self.def.desc
 		return tooltip

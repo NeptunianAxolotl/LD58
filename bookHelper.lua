@@ -23,50 +23,54 @@ function api.GetColScoreMultiplier(self, colIndex)
 	quality = quality / self.width
 
 	-- Is the column full?
-	local isfull = true
 	for j = 1, self.height do
 		if not self.stamps[colIndex][j] then
-			isfull = false
-			break
+			return 1
 		end
 	end
-	if isfull then
-		-- EVALUATE FLUSHES
-		-- How many wilds are there? And if they are not all wilds, what might be the flush colour?
-		local nwilds = 0
-		local candfound = false
-		local candcolor = -100
-		for j = 1, self.height do
-			if self.stamps[colIndex][j].custom and self.stamps[colIndex][j].def.isWildColor then
-				nwilds = nwilds + 1
-			else
-				if candfound then
-					if candcolor ~= self.stamps[colIndex][j].color then
-						candcolor = -200
-					end
-				else
-					candfound = true
-					candcolor = self.stamps[colIndex][j].color
+	
+	-- EVALUATE FLUSHES
+	-- How many wilds are there? And if they are not all wilds, what might be the flush colour?
+	local nwilds = 0
+	local candfound = false
+	local candcolor = -100
+	for j = 1, self.height do
+		if self.stamps[colIndex][j].custom and self.stamps[colIndex][j].def.isWildColor then
+			nwilds = nwilds + 1
+		else
+			if candfound then
+				if candcolor ~= self.stamps[colIndex][j].color then
+					candcolor = -200
 				end
+			else
+				candfound = true
+				candcolor = self.stamps[colIndex][j].color
 			end
 		end
-		
-		if nwilds >= self.height then
-			-- full wilds
-			multiplier = 3 * quality
-		elseif nwilds > 1 then
-			multiplier = 1
-		else
-			-- check for colours
-			if candfound and candcolor >= 0 then
-				multiplier = math.max(1.5, math.ceil(quality*2)/2)
-			end
+	end
+	
+	if nwilds >= self.height then
+		-- full wilds
+		multiplier = 3 * quality
+	elseif nwilds > 1 then
+		multiplier = 1
+	else
+		-- check for colours
+		if candfound and candcolor >= 0 then
+			multiplier = math.max(1.5, math.ceil(quality*2)/2)
 		end
 	end
 	return multiplier
 end
 
 function api.GetRowScoreMultiplier(self, rowIndex)
+	-- Is the row full?
+	for i = 1, self.width do
+		if not self.stamps[i][rowIndex] then
+			return 1
+		end
+	end
+	
 	-- Do their costs form a sequence?
 	local dir = 0
 	local x = -100
@@ -79,6 +83,9 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 		end
 		dir = self.stamps[2][rowIndex].cost - x
 		x = x + dir
+	end
+	if self.width <= 2 and dir ~= -1 and dir ~= 1 then
+		return 1 -- No arbitrary sequence bonus for pairs
 	end
 	for i = 3, self.width do
 		if self.stamps[i][rowIndex] and self.stamps[i][rowIndex].cost and x+dir == self.stamps[i][rowIndex].cost then
@@ -118,7 +125,11 @@ function api.CalculateBookScore(self)
 	for i = 1, self.width do
 		for j = 1, self.height do
 			if self.stamps[i][j] then
-				local scoreme = self.stamps[i][j].GetSoloScore()
+				local scoreme = self.stamps[i][j].GetSoloScore() + self.stamps[i][j].GetAdjacencyScore(
+					self.stamps[i][j + 1],
+					self.stamps[i][j + 1],
+					self.stamps[i - 1] and self.stamps[i - 1][j],
+					self.stamps[i + 1] and self.stamps[i + 1][j])
 				score = score + scoreme
 				basic_scores = basic_scores + scoreme
 				basic_scores_row[j] = basic_scores_row[j] + scoreme
@@ -136,20 +147,6 @@ function api.CalculateBookScore(self)
 	for j = 1, self.height do
 		score = score + math.ceil(basic_scores_row[j] * (api.GetRowScoreMultiplier(self, j) - 1))
 	end
-	
-	-- Evaluate any other weird scoring stuff.
-	for i = 1, self.width do
-		for j = 1, self.height do
-			if self.stamps[i][j] then
-				score = score + self.stamps[i][j].GetAdjacencyScore(
-					self.stamps[i][j + 1],
-					self.stamps[i][j + 1],
-					self.stamps[i - 1] and self.stamps[i - 1][j],
-					self.stamps[i + 1] and self.stamps[i + 1][j])
-			end
-		end
-	end
-	
 	
 	return score
 end
