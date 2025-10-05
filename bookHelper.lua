@@ -130,8 +130,6 @@ local function RegenerateStamps(self)
 		for j = 1, self.height do
 			self.stamps[i][j] = NewStamp({
 				name = util.SampleListWeighted(self.stampDist).stamp,
-				cost = 1 + math.floor(math.random()*10),
-				color = 1 + math.floor(math.random()*8),
 				quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1)),
 			})
 		end

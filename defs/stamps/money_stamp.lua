@@ -36,10 +36,16 @@ local function GetSellValue(self)
 	end
 end
 
+local function InitRandomStamp(self)
+	self.cost = 1 + math.floor(math.random()*10)
+	self.color = 1 + math.floor(math.random()*8)
+end
+
 local def = {
 	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
+	InitRandomStamp = InitRandomStamp,
 	image = "money_stamp",
 }
 
