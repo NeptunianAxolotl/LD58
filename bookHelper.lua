@@ -126,6 +126,15 @@ function api.GetStampAdjacencyScore(self, i, j, bonusDisplayTable)
 		self.stamps[i][j + 1])
 end
 
+local function UpdateStampAdjacencyData(self, i, j)
+	return self.stamps[i][j].def.UpdateAdjacencyData(
+		self.stamps[i][j], i, j,
+		self.stamps[i - 1] and self.stamps[i - 1][j],
+		self.stamps[i + 1] and self.stamps[i + 1][j],
+		self.stamps[i][j - 1],
+		self.stamps[i][j + 1])
+end
+
 function api.CalculateBookScore(self, bonusDisplayTable)
 	local score = 0
 	
@@ -137,6 +146,15 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 	end
 	for j = 1, self.height do
 		basic_scores_row[j] = 0
+	end
+	
+	-- Cache information that stamps need to figure out how their adjacency works (eg disabling if there are too many adjacent).
+	for i = 1, self.width do
+		for j = 1, self.height do
+			if self.stamps[i][j] and self.stamps[i][j].def.UpdateAdjacencyData then
+				UpdateStampAdjacencyData(self, i, j)
+			end
+		end
 	end
 	
 	-- Evaluate each stamp's individual value.
