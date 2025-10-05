@@ -47,8 +47,16 @@ local function GetSwapIndecies()
 	end
 end
 
+local function GetBookDrawPosition(index)
+	local book = self.books[index]
+	local bookPos = book.GetPosition()
+	local baseX = bookPos[1]*450 + 860 - self.bookScale*Global.STAMP_WIDTH*book.GetWidth()/2
+	local baseY = 650 + 45*bookPos[1]*bookPos[1] - bookPos[2]*30
+	return baseX, baseY
+end
+
 local function GetBookDimensions(book, index)
-	local bx, by = self.bookDrawX + self.bookDrawSpacing*(index - 1), self.bookDrawY
+	local bx, by = GetBookDrawPosition(index)
 	local bw, bh = book.GetWidth() * self.bookScale * Global.STAMP_WIDTH, book.GetHeight() * self.bookScale * Global.STAMP_HEIGHT
 	return bx, by, bw, bh
 end
@@ -109,9 +117,13 @@ local function MousePlaceClick(placePos)
 			local bookIndex, shopIndex = GetSwapIndecies()
 			local shopBook = ShopHandler.ReplaceBook(self.books[bookIndex], shopIndex)
 			if shopBook then
+				local bookPos = self.books[bookIndex].GetPosition()
+				shopBook.SetPosition({bookPos[1] + math.random()*0.06 - 0.03, 0.2 + math.random()*0.3})
 				self.books[bookIndex] = shopBook
 				self.swapSelected = false
 			end
+		elseif self.oldSwapSelected and self.oldSwapSelected.type == self.swapSelected.type and self.oldSwapSelected.index == self.swapSelected.index then
+			self.swapSelected = false
 		end
 	elseif placePos.type == "selectShop" then
 		if api.CanEnterShop(ShopDefs[placePos.index]) then
@@ -147,6 +159,10 @@ function api.PlaceStampAndMaybeDoAbility(placing, target, book, px, py)
 		target, placing = placing, target -- Swap stamps if no ability
 	end
 	return placing, target
+end
+
+function api.BookOnOffer()
+	return self.swapSelected and self.swapSelected.type == "mySwapSelected" and self.swapSelected.index
 end
 
 function api.GetSelected()
@@ -221,26 +237,28 @@ end
 
 function api.Update(dt)
 	self.underMouse = false
+	for i = 1, #self.books do
+		self.books[i].UpdatePhysics(dt, i, self.books)
+	end
 end
 
-local function DrawBook(index, xOff, yOff, xScale, yScale, scale, mousePos, drawnTooltip)
+local function DrawBook(index, xScale, yScale, scale, mousePos, drawnTooltip)
 	local book = self.books[index]
-	Resources.DrawImage("book_width_" .. book.GetWidth(), xOff - 60, yOff - 94)
-	book.Draw(xOff, yOff, scale, "book", index)
+	local baseX, baseY = GetBookDrawPosition(index)
+	Resources.DrawImage("book_width_" .. book.GetWidth(), baseX - 60, baseY - 94)
+	book.Draw(baseX, baseY, scale, "book", index)
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
-	if InterfaceUtil.DrawButton(xOff + 5, yOff - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
+	if InterfaceUtil.DrawButton(baseX + 5, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
 		api.SetUnderMouse({type = "mySwapSelected", index = index})
 	end
 	Font.SetSize(2)
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.printf("♥ " .. book.GetScore(), xOff + 142, yOff - 54, xScale*3)
+	love.graphics.printf("♥ " .. book.GetScore(), baseX + 142, baseY - 54, xScale*3)
 	
 	-- Draw bonuses
-	local baseX = xOff
-	local baseY = yOff
-	yOff = yOff + yScale*book.GetHeight() + yScale / 2
-	xOff = xOff + xScale * 0.35
+	local xOff = baseX + xScale * 0.35
+	local yOff = baseY + yScale*book.GetHeight() + yScale / 2
 	local bonusCount, keyByIndex, bonusByKey = book.GetBonusIterationData()
 	for i = 1, bonusCount do
 		local bonus = bonusByKey[keyByIndex[i]]
@@ -328,11 +346,8 @@ function api.Draw(drawQueue)
 		end
 		
 		local drawnTooltip = false
-		xOff = self.bookDrawX
-		yOff = self.bookDrawY
 		for i = 1, #self.books do
-			drawnTooltip = DrawBook(i, xOff, yOff, xScale, yScale, scale, mousePos, drawnTooltip)
-			xOff = xOff + self.bookDrawSpacing
+			drawnTooltip = DrawBook(i, xScale, yScale, scale, mousePos, drawnTooltip)
 		end
 		
 		xOff = self.tooltipX
@@ -385,8 +400,6 @@ function api.Initialize(world)
 		sideboardX = Global.WINDOW_X*0.06,
 		sideboardY = Global.WINDOW_Y*0.6 - 36,
 		sideboardGap = 18,
-		bookDrawX = Global.WINDOW_X*0.15,
-		bookDrawY = Global.WINDOW_Y*0.6,
 		bookDrawSpacing = 390,
 		bookScale = 1,
 	}

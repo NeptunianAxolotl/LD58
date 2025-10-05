@@ -10,6 +10,45 @@ local function NewBook(def)
 	self.height = def.height
 	self.stamps = def.stamps
 	self.score = BookHelper.CalculateBookScore(self, self.bonusDisplayTable)
+	self.position = def.position or {math.random()*2 - 1, 0}
+	self.velocity = {0, 0}
+	
+	function api.SetPosition(newPos)
+		self.position = newPos
+		self.velocity = {0, 0}
+	end
+	
+	function api.GetPosition()
+		return self.position
+	end
+	
+	function api.UpdatePhysics(dt, index, otherBooks)
+		local accel = {-12*self.position[1], 0}
+		for i = 1, #otherBooks do
+			if i ~= index then
+				local other = otherBooks[i]
+				local oPos = other.GetPosition()
+				local width = math.max(2.25, other.GetWidth()) + math.max(2.25, self.width) + 1.2
+				if math.abs(self.position[1] - oPos[1]) < width*0.15 then
+					local sign = (oPos[1] > self.position[1]) and 1 or -1
+					local val = (width*0.15 - math.abs(self.position[1] - oPos[1]))
+					accel[1] = accel[1] - 250*sign*val*val
+				end
+			end
+		end
+		accel[1] = math.min(200, math.max(-200, accel[1]))
+		local speed = math.abs(self.velocity[1]) + 0.05
+		self.velocity = util.Add(util.Mult(dt, accel), self.velocity)
+		self.velocity = util.Mult(math.max(0, (0.8 - speed/(0.8 + speed))), self.velocity)
+		self.position = util.Add(util.Mult(dt, self.velocity), self.position)
+		if TableHandler.BookOnOffer() == index then
+			self.position[2] = self.position[2] + 6*dt
+		else
+			self.position[2] = self.position[2] - 6*dt
+		end
+		self.position[1] = math.max(-1, math.min(1, self.position[1]))
+		self.position[2] = math.max(0, math.min(1, self.position[2]))
+	end
 	
 	function api.GetSelfData()
 		return self
