@@ -77,13 +77,26 @@ function api.CalculateBookScore(self)
 		end
 		quality_row[j] = quality_row[j] / self.width
 		-- Do their costs form a sequence?
+		local dir = 0
 		local x = -100
 		if self.stamps[1][j] and self.stamps[1][j].cost then
-			 x = self.stamps[1][j].cost
+			x = self.stamps[1][j].cost
 		end
-		for i = 2, self.width do
-			if self.stamps[i][j] and self.stamps[i][j].cost and x+1 == self.stamps[i][j].cost then
-				x = x + 1
+		if x >= 0 and self.stamps[2][j] and self.stamps[2][j].cost then
+			if x+1 == self.stamps[2][j].cost then
+				dir = 1
+				x = x + dir
+			elseif x-1 == self.stamps[2][j].cost then
+				dir = -1
+				x = x + dir
+			else
+				x = -100
+				break
+			end
+		end
+		for i = 3, self.width do
+			if self.stamps[i][j] and self.stamps[i][j].cost and x+dir == self.stamps[i][j].cost then
+				x = x + dir
 			else
 				x = -100
 				break
