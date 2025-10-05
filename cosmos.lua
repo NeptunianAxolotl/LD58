@@ -1,7 +1,8 @@
 
 local World = require("world")
 SoundHandler = require("soundHandler")
-MusicHandler = require("musicHandler")
+--MusicHandler = require("musicHandler")
+MusicHandler = require("bgmHandler")
 
 local self = {}
 local api = {}
