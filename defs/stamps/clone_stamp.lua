@@ -23,6 +23,7 @@ end
 
 local function DoPlaceAbility(self, other, book)
 	self.def = other.def
+	self.name = other.name
 	self.color = other.color
 	self.cost = other.cost
 	self.rarity = other.rarity
