@@ -98,6 +98,10 @@ No standards.
 Costs $1 to visit, if you can pay.]]
 	},
 	{
+		name = "Reroll",
+		rerollButton = true,
+	},
+	{
 		name = "Test",
 		bookType = util.NormaliseWeightedList({
 			{probability = 1, bookType = "large_test"},

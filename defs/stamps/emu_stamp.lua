@@ -7,7 +7,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
 		return 0
 	end
-	if other.name == "emu_stamp"  and not other.spookedBySnake then
+	if other.name == "emu_stamp" and not other.spookedBySnake then
 		return 1
 	end
 	return 0

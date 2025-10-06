@@ -161,7 +161,15 @@ function api.Draw(drawQueue)
 		--love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
 		for i = 1, #ShopDefs do
 			local shopDef = ShopDefs[i]
-			if i >= self.bestShopSoFar - ShopDefsData.shopLookahead or self.world.IsGodMode() then
+			if shopDef.rerollButton then
+				if self.currentShopIndex and ShopDefs[self.currentShopIndex] then
+					shopDef = ShopDefs[self.currentShopIndex]
+					local canEnter = TableHandler.CanEnterShop(shopDef)
+					if InterfaceUtil.DrawButton(xOff, yOff, 150, 60, mousePos, "Reroll", not canEnter, false, true, false, 2, 8) then
+						TableHandler.SetUnderMouse({type = "selectShop", index = self.currentShopIndex, cost = shopDef.cost, tooltip = "Revisit current location, paying travel costs."})
+					end
+				end
+			elseif i >= self.bestShopSoFar - ShopDefsData.shopLookahead or self.world.IsGodMode() then
 				local canEnter = TableHandler.CanEnterShop(shopDef) or self.world.IsGodMode()
 				local flash = canEnter and (not self.bestShopSoFar or i < self.bestShopSoFar)
 				if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, flash, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then

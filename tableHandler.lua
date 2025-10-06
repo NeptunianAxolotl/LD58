@@ -425,7 +425,7 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
-		love.graphics.printf("Improve the ♥ of your books to gain access to better shops and assemble the ultimate stamp book.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.33, 950)
+		love.graphics.printf("Improve the ♥ of your books to gain access to better shops and assemble the ultimate stamp book.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
 	end
 end
 

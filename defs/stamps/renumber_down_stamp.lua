@@ -36,7 +36,7 @@ local def = {
 	placeConsumes = true,
 	image = "pen",
 	humanName = "Subtraction Stamp(Single Use)",
-	desc = "Increases the cost of a stamp by 1¢.",
+	desc = "Decreases the cost of a stamp by 1¢.",
 }
 
 return def
