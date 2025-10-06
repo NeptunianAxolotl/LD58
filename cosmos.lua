@@ -76,6 +76,13 @@ function api.IsGodMode(state)
 	return self.godMode
 end
 
+function api.IsColorblindMode()
+	return self.colorblindMode
+end
+
+function api.ToggleColorblindMode()
+	self.colorblindMode = not self.colorblindMode
+end
 --------------------------------------------------
 -- Draw
 --------------------------------------------------
@@ -175,6 +182,7 @@ function api.Initialize()
 		grabInput = Global.MOUSE_SCROLL_MULT > 0,
 		transposePlacementMode = false,
 		skipTutorial = false,
+		colorblindMode = false,
 	}
 	MainMenuHandler.Initialize(api)
 	MusicHandler.Initialize(api)

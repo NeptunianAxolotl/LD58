@@ -9,6 +9,7 @@ local api = {}
 local menuOptions = {
 	"Quit",
 	"Restart",
+	"Colourblind Mode",
 	"Toggle Music",
 	"Money++",
 	"Disable Tutorial",
@@ -28,6 +29,8 @@ function api.MousePressed(x, y, button)
 		self.cosmos.RestartWorld()
 	elseif self.hoveredMenuAction == "Toggle Music" then
 		self.cosmos.ToggleMusic()
+	elseif self.hoveredMenuAction == "Colourblind Mode" then
+		self.cosmos.ToggleColorblindMode()
 	elseif self.hoveredMenuAction == "Money++" then
 		TableHandler.AddMoney(1000)
 	elseif self.hoveredMenuAction == "Disable Tutorial" then
@@ -60,7 +63,7 @@ function api.Draw(drawQueue)
 		local overX = 150
 		local offset = Global.WINDOW_Y * 0.035 + 80*6
 		for i = 1, #menuOptions do
-			self.hoveredMenuAction = InterfaceUtil.DrawButton(overX + 20, offset, 270, 60, mousePos, menuOptions[i], false, false, false, false, 2, 8) or self.hoveredMenuAction
+			self.hoveredMenuAction = InterfaceUtil.DrawButton(overX + 20, offset, 350, 60, mousePos, menuOptions[i], false, false, false, false, 2, 8) or self.hoveredMenuAction
 			offset = offset - 80
 		end
 	end})

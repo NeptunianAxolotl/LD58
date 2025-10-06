@@ -84,6 +84,14 @@ local function NewStamp(def)
 			costString = self.def.costDrawAppend .. costString
 		end
 		love.graphics.printf(costString, x - Global.STAMP_WIDTH*scale*0.39, y - Global.STAMP_HEIGHT*scale*0.41, Global.STAMP_WIDTH*scale)
+		if BookHelper.WantColorBlindSymbol() and StampConst.colorBlindMap[self.color] then
+			--if colorDef and colorDef[1] then
+			--	love.graphics.setColor(1 - colorDef[1][1], 1 - colorDef[1][2], 1 - colorDef[1][3], alpha or 1)
+			--else
+			love.graphics.setColor(1, 1, 1, alpha or 1)
+			--end
+			love.graphics.printf(StampConst.colorBlindMap[self.color], x - Global.STAMP_WIDTH*scale*0.39, y + Global.STAMP_HEIGHT*scale*0.13, Global.STAMP_WIDTH*scale)
+		end
 	end
 	
 	return self
