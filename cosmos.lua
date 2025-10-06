@@ -176,7 +176,7 @@ end
 function api.Initialize()
 	self = {
 		realTime = 0,
-		musicEnabled = false,
+		musicEnabled = true,
 		mouseScrollSpeed = Global.MOUSE_SCROLL_MULT,
 		keyScrollSpeed = Global.KEYBOARD_SCROLL_MULT,
 		grabInput = Global.MOUSE_SCROLL_MULT > 0,

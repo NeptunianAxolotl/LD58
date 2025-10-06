@@ -406,7 +406,7 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
-		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nRows are multiplied by runs of price. Columns are multiplied by matching colours.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
+		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
 		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 55", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then

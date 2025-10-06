@@ -50,11 +50,7 @@ local function NewStamp(def)
 			tooltip = tooltip .. "\nValue: ♥ " .. (multiplier > 1 and "(" or "") .. self.GetSoloScore() .. " - " .. (-1*adjBonus) .. (multiplier > 1 and ")" or "")
 		end
 		if multiplier > 1 then
-			if multiplier%1 == 0 then
-				tooltip = tooltip .. " x " .. multiplier
-			else
-				tooltip = tooltip .. string.format(" x %.1f", multiplier)
-			end
+			tooltip = tooltip .. " + " .. ((multiplier - 1) * 100) .. "%"
 		end
 		tooltip = tooltip .. "\n" .. self.def.desc
 		return tooltip
