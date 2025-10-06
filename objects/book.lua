@@ -1,7 +1,4 @@
 
-local StampDefData = require("defs/stampDefs")
-local StampDefs = StampDefData.defs
-
 local function NewBook(def)
 	local self = {}
 	local api = {}

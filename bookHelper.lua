@@ -1,6 +1,6 @@
 
-local StampDefData = require("defs/stampDefs")
-local StampDefs = StampDefData.defs
+StampConst = require("defs/stampDefs")
+StampDefs = StampConst.defs
 
 local BookDefData = require("defs/bookDefs")
 local BookDefs = BookDefData.defs
@@ -216,7 +216,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 		score = score + basic_scores_row[j] * (mult - 1)
 	end
 	
-	return math.floor(score)
+	return math.max(0, math.floor(score))
 end
 
 function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
@@ -301,21 +301,37 @@ local function ForceRocketPlanet(self)
 	
 	self.stamps[i][j] = NewStamp({
 		name = "rocket_stamp", 
-		quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
 	})
 	self.stamps[i2][j2] = NewStamp({
 		name = "planet_stamp", 
-		quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
+		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
 	})
 end
 
+local function SelectRandomStamp(self, stampTypeCounts)
+	local name, def
+	local tries = 20
+	while (not def) or (def.shopLimitCategory and (stampTypeCounts[def.shopLimitCategory] or 0) > def.shopLimit and tries > 0) do
+		name = util.SampleListWeighted(self.stampDist).stamp
+		def = StampDefs[name]
+		tries = tries - 1
+	end
+	if def.shopLimitCategory then
+		stampTypeCounts[def.shopLimitCategory] = (stampTypeCounts[def.shopLimitCategory] or 0) + 1
+	end
+	return name
+end
+
 local function RegenerateStamps(self)
+	local stampTypeCounts = {}
 	for i = 1, self.width do
 		self.stamps[i] = {}
 		for j = 1, self.height do
+			local name = SelectRandomStamp(self, stampTypeCounts)
 			self.stamps[i][j] = NewStamp({
-				name = util.SampleListWeighted(self.stampDist).stamp,
-				quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1)),
+				name = name,
+				quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality),
 			})
 		end
 	end

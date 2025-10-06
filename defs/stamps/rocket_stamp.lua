@@ -49,9 +49,9 @@ local function GetSellValue(self)
 end
 
 local function InitRandomStamp(self, def)
-	self.cost = def.cost or (1 + math.floor(math.random()*8))
-	self.color = def.color or (1 + math.floor(math.random()*8))
-	self.rarity = def.rarity or (1 + math.floor(math.random()*3))
+	self.cost = def.cost or util.RandomIntegerInRange(1, StampConst.COST_RANGE)
+	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
+	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
 end
 
 
