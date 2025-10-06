@@ -10,7 +10,9 @@ local def = {
 		bookRequirement = 600,
 		continuoValue = 5,
 		shopImage = "international",
-		desc = [[Ascend to stamp collector glory.]]
+		desc = [[The very best collectors gather for international trade.
+Bring a ♥ 500 book to enter.
+Cost: $5]]
 	},
 	{
 		name = "World Stamp Congress",
@@ -26,12 +28,12 @@ local def = {
 		},
 		size = 3,
 		cost = 5,
-		bookRequirement = 400,
+		bookRequirement = 500,
 		shopImage = "international",
 		continuoValue = 4,
-		desc = [[The fanciest stamps.
-Bring a value 400 book to enter.
-Costs $40 to visit.]]
+		desc = [[The very best collectors gather for international trade.
+Bring a ♥ 500 book to enter.
+Cost: $5]]
 	},
 	{
 		name = "National Stamp Show",
@@ -47,12 +49,12 @@ Costs $40 to visit.]]
 		},
 		size = 3,
 		cost = 4,
-		bookRequirement = 300,
+		bookRequirement = 250,
 		shopImage = "national",
 		continuoValue = 3,
-		desc = [[The fanciest stamps.
-Bring a value 300 book to enter.
-Costs $20 to visit.]]
+		desc = [[Collectors from all over the nation gather to trade stamps.
+Bring a ♥ 250 book to enter.
+Cost: $4]]
 	},
 	{
 		name = "Stan's Fine Stamps",
@@ -68,12 +70,12 @@ Costs $20 to visit.]]
 		},
 		size = 3,
 		cost = 3,
-		bookRequirement = 200,
+		bookRequirement = 150,
 		shopImage = "stan",
 		continuoValue = 2,
-		desc = [[The fanciest stamps.
-Bring a value 200 book to enter.
-Costs $10 to visit.]]
+		desc = [[The finest stamps Stan has to offer.
+Bring a ♥ 150 book to enter.
+Cost: $3]]
 	},
 	{
 		name = "Serviceable Stamps",

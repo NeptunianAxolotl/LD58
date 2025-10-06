@@ -412,7 +412,7 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)
-		love.graphics.printf("Mix and match the stamps of two books to make a book worth ♥ 70. Hover your mouse over the icons below the stamp to see bonuses.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
+		love.graphics.printf("Mix and match the stamps of two books to make a book worth ♥ 70. Hover your mouse over the icons below the album to see bonuses.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
 		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 70", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
 		Font.SetSize(2)
@@ -632,9 +632,9 @@ function api.Draw(drawQueue)
 			moneyChangeString = " - " .. buySideboard
 		elseif self.heldSellAbilityAmount then
 			moneyChangeString = " + " .. self.heldSellAbilityAmount
-		elseif self.underMouse and self.underMouse.cost then
+		elseif self.underMouse and self.underMouse.cost and self.underMouse.cost > 0 then
 			moneyChangeString = " - " .. self.underMouse.cost
-		elseif self.underMouse and self.underMouse.income then
+		elseif self.underMouse and self.underMouse.income and self.underMouse.income ~= 0 then
 			moneyChangeString = " + " .. self.underMouse.income
 		end
 		Font.SetSize(1)

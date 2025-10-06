@@ -11,7 +11,7 @@ local function UpdateAdjacencyData(self, x, y, bookSelf, bonusDisplayTable, left
 				posList = {{x, y}, {x + 1, y}, {x, y + 1}, {x + 1, y + 1}},
 				image = "big_ne",
 				humanName = "Cog Multiplier",
-				desc = string.format("Double row and column multipliers. Only one per book.", bonus, otherBonus),
+				desc = string.format("Double row and column multipliers (one per book)", bonus, otherBonus),
 			})
 		end
 	end
@@ -43,12 +43,12 @@ local def = {
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	image = "big_nw",
-	humanName = "Cog Segment",
+	humanName = "Laurel Segment",
 	shopLimitCategory = "huge_stamp",
 	maxQuality = 3,
 	minQuality = 2,
 	shopLimit = 1,
-	desc = "Part of something larger?",
+	desc = "Legend speaks of a collector that assembled a full laurel.",
 }
 
 return def

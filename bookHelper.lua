@@ -117,7 +117,7 @@ function api.GetColScoreMultiplier(self, colIndex, bonusDisplayTable)
 		end
 	end
 	quality = quality / self.height
-	local mult = 1 + math.floor(quality) * self.rowColumnGlobalMult
+	local mult = 1 + math.max(1, math.floor(quality*2)/2)*self.rowColumnGlobalMult
 	
 	if bonusDisplayTable then
 		local posList = {}
@@ -126,13 +126,13 @@ function api.GetColScoreMultiplier(self, colIndex, bonusDisplayTable)
 		end
 		if sequenceBonus then
 			TrackMultiplier(
-				self, mult, posList, "Column ♥ +" .. (mult - 1)*100 .. "%",
+				self, mult, posList, "Column ♥ + " .. (mult - 1)*100 .. "%",
 				"Column multiplier for sequential stamp prices, improves with better quality stamps. Requires a sequence of at least three.",
 				colIndex, bonusDisplayTable, "colnumber")
 		end
 		if colorBonus then
 			TrackMultiplier(
-				self, mult, posList, "Column ♥ +" .. (mult - 1)*100 .. "%",
+				self, mult, posList, "Column ♥ + " .. (mult - 1)*100 .. "%",
 				"Column multiplier for matching stamp colours, improves with better quality stamps.",
 				colIndex, bonusDisplayTable, "colcombo")
 		end
@@ -187,7 +187,7 @@ function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
 		end
 	end
 	quality = quality / self.width
-	local mult = 1 + math.floor(quality) * self.rowColumnGlobalMult
+	local mult = 1 + math.max(1, math.floor(quality*2)/2)*self.rowColumnGlobalMult
 	
 	if bonusDisplayTable then
 		local posList = {}
@@ -196,13 +196,13 @@ function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
 		end
 		if sequenceBonus then
 			TrackMultiplier(
-				self, mult, posList, "Row ♥ +" .. (mult - 1)*100 .. "%",
+				self, mult, posList, "Row ♥ + " .. (mult - 1)*100 .. "%",
 				"Row multiplier for sequential stamp prices, improves with better quality stamps. Requires a sequence of at least three.",
 				rowIndex, bonusDisplayTable, "rowcombo")
 		end
 		if colorBonus then
 			TrackMultiplier(
-				self, mult, posList, "Row ♥ +" .. (mult - 1)*100 .. "%",
+				self, mult, posList, "Row ♥ + " .. (mult - 1)*100 .. "%",
 				"Row multiplier for matching stamp colours, improves with better quality stamps.",
 				rowIndex, bonusDisplayTable, "rowcolor")
 		end
@@ -302,13 +302,13 @@ function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
 	
 	if colMult > 1 then
 		local ex = bx + bw * (placePos.x - 0.5) / self.width
-		EffectsHandler.SpawnEffect("popup", {ex, by}, {text = "x" .. colMult, velocity = {0, -5}})
-		EffectsHandler.SpawnEffect("popup", {ex, by + bh}, {text = "x" .. colMult, velocity = {0, 5}})
+		EffectsHandler.SpawnEffect("popup", {ex, by}, {text = "+" .. ((colMult - 1)*100) .. "%", velocity = {0, -5}})
+		EffectsHandler.SpawnEffect("popup", {ex, by + bh}, {text = "+" .. ((colMult - 1)*100) .. "%", velocity = {0, 5}})
 	end
 	if rowMult > 1 then
 		local ey = by + bh * (placePos.y - 0.5) / self.height
-		EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "x" .. rowMult, velocity = {-5, 0}})
-		EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
+		EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "+" .. ((rowMult - 1)*100) .. "%", velocity = {-5, 0}})
+		EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "+" .. ((rowMult - 1)*100) .. "%", velocity = {5, 0}})
 	end
 end
 
@@ -317,16 +317,16 @@ function api.SpawnAllMultiplierEffects(self, bx, by, bw, bh)
 		local colMult = api.GetColScoreMultiplier(self, i)
 		if colMult > 1 then
 			local ex = bx + bw * (i - 0.5) / self.width
-			EffectsHandler.SpawnEffect("popup", {ex, by}, {text = "x" .. colMult, velocity = {0, -5}})
-			EffectsHandler.SpawnEffect("popup", {ex, by + bh}, {text = "x" .. colMult, velocity = {0, 5}})
+			EffectsHandler.SpawnEffect("popup", {ex, by}, {text = "+" .. ((colMult - 1)*100) .. "%", velocity = {0, -5}})
+			EffectsHandler.SpawnEffect("popup", {ex, by + bh}, {text = "+" .. ((colMult - 1)*100) .. "%", velocity = {0, 5}})
 		end
 	end
 	for j = 1, self.height do
 		local rowMult = api.GetRowScoreMultiplier(self, j)
 		if rowMult > 1 then
 			local ey = by + bh * (j - 0.5) / self.height
-			EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "x" .. rowMult, velocity = {-5, 0}})
-			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
+			EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "+" .. ((rowMult - 1)*100) .. "%", velocity = {-5, 0}})
+			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "+" .. ((rowMult - 1)*100) .. "%", velocity = {5, 0}})
 		end
 	end
 end

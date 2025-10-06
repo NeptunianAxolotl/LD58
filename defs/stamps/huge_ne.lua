@@ -28,12 +28,12 @@ local def = {
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	image = "big_ne",
-	humanName = "Cog Segment",
+	humanName = "Laurel Segment",
 	shopLimitCategory = "huge_stamp",
 	maxQuality = 3,
 	minQuality = 2,
 	shopLimit = 1,
-	desc = "Part of something larger?",
+	desc = "Legend speaks of a collector that assembled a full laurel.",
 }
 
 return def
