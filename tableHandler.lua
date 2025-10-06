@@ -361,11 +361,11 @@ local function DoTutorial(dt)
 		return
 	end
 	if self.tutorialPhase == 1 then
-		if MaxBookScore() >= 40 then
+		if MaxBookScore() >= 36 then
 			self.wantedTutorialPhase = math.max(2, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 2 then
-		if MaxBookScore() >= 55 then
+		if MaxBookScore() >= 50 then
 			self.wantedTutorialPhase = math.max(3, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 3 then
@@ -402,13 +402,13 @@ local function DrawTutorial()
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 1) * 2)
 		love.graphics.printf("Nothing beats a well organised stamp collection. Improve this one by shifting the bird stamp up so the prices read 2¢, 3¢, 4¢.\n\nClick on the bird to pick it up, then click on a slot to place it.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
-		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 40", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 36", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
 		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
-		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 55", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 50", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)

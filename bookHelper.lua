@@ -117,7 +117,7 @@ function api.GetColScoreMultiplier(self, colIndex, bonusDisplayTable)
 		end
 	end
 	quality = quality / self.height
-	local mult = math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
+	local mult = 1 + math.floor(quality) * self.rowColumnGlobalMult
 	
 	if bonusDisplayTable then
 		local posList = {}
@@ -187,7 +187,7 @@ function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
 		end
 	end
 	quality = quality / self.width
-	local mult = math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
+	local mult = 1 + math.floor(quality) * self.rowColumnGlobalMult
 	
 	if bonusDisplayTable then
 		local posList = {}

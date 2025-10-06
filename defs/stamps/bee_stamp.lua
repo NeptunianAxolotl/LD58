@@ -17,7 +17,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	score = score + ScorePair(self, top,     x, y, x, y - 1, bonusDisplayTable)
 	score = score + ScorePair(self, bottom,  x, y, x, y + 1, bonusDisplayTable)
 	if score > 0 then
-		score = math.ceil(self.quality / 2)
+		score = self.quality
 		if bonusDisplayTable then
 			local key = "bees_like_flowers"
 			local data = IterableMap.Get(bonusDisplayTable, key)

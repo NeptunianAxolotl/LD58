@@ -8,7 +8,7 @@ local def = {
 		{name = "bird_stamp", quality = 2, cost = 3, color = 5, rarity = 1,},
 		false,
 		{name = "tree_stamp", quality = 1, cost = 4, color = 4, rarity = 1,},
-		{name = "kangaroo_stamp", quality = 3, cost = 8, color = 2, rarity = 2,},
+		{name = "kangaroo_stamp", quality = 1, cost = 8, color = 2, rarity = 2,},
 	}
 }
 

@@ -32,7 +32,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	score = score + ScorePair(self, top,     x, y, x, y - 1, bonusDisplayTable)
 	score = score + ScorePair(self, bottom,  x, y, x, y + 1, bonusDisplayTable)
 	if score == 1 or score == 2 then
-		score = math.ceil(self.quality / 2)
+		score = self.quality
 		if bonusDisplayTable then
 			local key = "herd"
 			local data = IterableMap.Get(bonusDisplayTable, key)
@@ -51,9 +51,9 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 		end
 	end
 	if OtherMatches(right, "emu_stamp") and not right.spookedBySnake then
-		score = score + 2 + math.ceil(right.quality / 2)
+		score = score + 1 + right.quality
 		if bonusDisplayTable then
-			local coatOfArmsScore = 4 + math.ceil(self.quality / 2) + math.ceil(right.quality / 2)
+			local coatOfArmsScore = 2 + self.quality + right.quality
 			local key = "coat_of_arms_" .. x .. "_" .. y
 			IterableMap.Add(bonusDisplayTable, key, {
 				posList = {{x, y}, {x + 1, y}},

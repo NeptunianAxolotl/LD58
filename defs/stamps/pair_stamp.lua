@@ -8,7 +8,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 		return 0
 	end
 	if other.name == "pair_stamp" then
-		local bonus = 3 + math.floor(self.quality / 2)
+		local bonus = 2 + self.quality
 		if bonusDisplayTable then
 			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
 			if not IterableMap.Get(bonusDisplayTable, key) then
@@ -44,8 +44,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2
-	return math.ceil(score)
+	return BookHelper.BaseStampScore(self)
 end
 
 local function GetSellValue(self)
