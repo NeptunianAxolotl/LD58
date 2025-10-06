@@ -1,15 +1,21 @@
 
-
-local StampDefData = require("defs/stampDefs")
-local StampDefs = StampDefData.defs
+local function PostInitStamp(self)
+	local def = self.def
+	if def.minQuality then
+		self.quality = math.max(def.minQuality, self.quality)
+	end
+	if def.maxQuality then
+		self.quality = math.min(def.maxQuality, self.quality)
+	end
+end
 
 local function NewStamp(def)
 	local self = {}
 	self.def = StampDefs[def.name]
 	self.name = def.name
 	self.quality = def.quality
-	self.rarity = def.rarity or 1
-	self.def.InitRandomStamp(self)
+	self.def.InitRandomStamp(self, def)
+	PostInitStamp(self)
 	
 	function self.GetAdjacencyScore(x, y, bonusDisplayTable, left, right, top, bottom)
 		return self.def.GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
@@ -33,7 +39,7 @@ local function NewStamp(def)
 	
 	function self.GetTooltip(book, x, y)
 		local tooltip = self.def.humanName
-		tooltip = tooltip .. "\nQuality: " .. StampDefData.qualityMap[self.quality]
+		tooltip = tooltip .. "\nQuality: " .. StampConst.qualityMap[self.quality]
 		local adjBonus = book and BookHelper.GetStampAdjacencyScore(book.GetSelfData(), x, y) or 0
 		local multiplier = self.GetStampMultiplier(book, x, y)
 		if adjBonus == 0 then
@@ -55,10 +61,16 @@ local function NewStamp(def)
 	end
 	
 	function self.Draw(x, y, scale, alpha)
-		local colorDef = StampDefData.colorMap[self.color]
-		Resources.DrawImage("stamp_back", x, y, false, alpha or false, scale, colorDef and colorDef[1])
-		Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, colorDef and colorDef[2])
-		Resources.DrawImage("stamp", x, y, false, alpha or false, scale, StampDefData.rarityColorMap[self.rarity] or false)
+		local colorDef = StampConst.colorMap[self.color]
+		Resources.DrawImage(self.def.backImage or "stamp_back", x, y, false, alpha or false, scale, colorDef and colorDef[1])
+		if self.def.image then
+			Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, colorDef and colorDef[2])
+		end
+		if self.def.DoPlaceAbility then
+			Resources.DrawImage("stamp_zigzag", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
+		else
+			Resources.DrawImage("stamp", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
+		end
 		Resources.DrawImage("quality_" .. self.quality, x, y, false, alpha or false, scale)
 		
 		Font.SetSize(4)

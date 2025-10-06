@@ -4,7 +4,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = -10
+	local score = 10
 	return math.ceil(score)
 end
 
@@ -12,9 +12,10 @@ local function GetSellValue(self)
 	return 1
 end
 
-local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*3)
-	self.color = 1 + math.floor(math.random()*8)
+local function InitRandomStamp(self, def)
+	self.cost = def.cost or (5 + math.floor(math.random()*3))
+	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
+	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
 end
 
 local function PlaceAbilityMoneyGain(self, other, book, px, py)
@@ -40,9 +41,9 @@ local def = {
 	DoPlaceAbility = DoPlaceAbility,
 	PlaceAbilityMoneyGain = PlaceAbilityMoneyGain, -- For tooltips
 	placeConsumes = true,
-	image = "sell_stamp",
-	humanName = "Sell Stamp",
-	desc = "Place this on another stamp to sell it for its ♥ value. Consumes the sell stamp.",
+	image = "bank",
+	humanName = "Bank Stamp",
+	desc = "Place this on another stamp to sell it for its ♥ value. Consumes the bank stamp.",
 }
 
 return def

@@ -1,6 +1,6 @@
 
-local StampDefData = require("defs/stampDefs")
-local StampDefs = StampDefData.defs
+StampConst = require("defs/stampDefs")
+StampDefs = StampConst.defs
 
 local BookDefData = require("defs/bookDefs")
 local BookDefs = BookDefData.defs
@@ -108,10 +108,10 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	return 1
 end
 
-local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable)
+local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable, chosenImage)
 	IterableMap.Add(bonusDisplayTable, humanName .. index .. "_mult", {
 		posList = posList,
-		image = "renumber_stamp",
+		image = chosenImage,
 		humanName = humanName,
 		desc = desc,
 	})
@@ -180,8 +180,8 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 			end
 			TrackMultiplier(
 				self, mult, posList, "Column ♥ x" .. mult,
-				"Column multiplier for matching stamp colours, improved with better quality stamps.",
-				i, bonusDisplayTable)
+				"Column multiplier for matching stamp colours, improves with better quality stamps.",
+				i, bonusDisplayTable, "colcombo")
 		end
 		score = score + basic_scores_col[i] * (mult - 1)
 	end
@@ -196,8 +196,8 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 			end
 			TrackMultiplier(
 				self, mult, posList, "Row ♥ x" .. mult,
-				"Row multiplier for sequential stamp prices, improved with better quality stamps.",
-				j, bonusDisplayTable)
+				"Row multiplier for sequential stamp prices, improves with better quality stamps.",
+				j, bonusDisplayTable, "rowcombo")
 		end
 		--if bonusDisplayTable then
 		--TrackMultiplier(
@@ -216,7 +216,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 		score = score + basic_scores_row[j] * (mult - 1)
 	end
 	
-	return math.floor(score)
+	return math.max(0, math.floor(score))
 end
 
 function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
@@ -247,7 +247,7 @@ local function ForceBasicFlush(self)
 	c = 1 + math.floor(math.random() * 8)
 	for j = 1, self.height do
 		self.stamps[i][j] = NewStamp({
-								name = "basic_stamp", 
+								name = "blank_stamp", 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
 		self.stamps[i][j].color = c
@@ -267,7 +267,7 @@ local function ForceBasicSequence(self)
 	
 	for i = 1, self.width do
 		self.stamps[i][j] = NewStamp({
-								name = "basic_stamp", 
+								name = "blank_stamp", 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
 		self.stamps[i][j].cost = seqstart + jumpsize*(i-1)
@@ -300,22 +300,38 @@ local function ForceRocketPlanet(self)
 	end
 	
 	self.stamps[i][j] = NewStamp({
-								name = "rocket_stamp", 
-								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
-								})
+		name = "rocket_stamp", 
+		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
+	})
 	self.stamps[i2][j2] = NewStamp({
-								name = "planet_stamp", 
-								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
-								})							
+		name = "planet_stamp", 
+		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
+	})
+end
+
+local function SelectRandomStamp(self, stampTypeCounts)
+	local name, def
+	local tries = 20
+	while (not def) or (def.shopLimitCategory and (stampTypeCounts[def.shopLimitCategory] or 0) > def.shopLimit and tries > 0) do
+		name = util.SampleListWeighted(self.stampDist).stamp
+		def = StampDefs[name]
+		tries = tries - 1
+	end
+	if def.shopLimitCategory then
+		stampTypeCounts[def.shopLimitCategory] = (stampTypeCounts[def.shopLimitCategory] or 0) + 1
+	end
+	return name
 end
 
 local function RegenerateStamps(self)
+	local stampTypeCounts = {}
 	for i = 1, self.width do
 		self.stamps[i] = {}
 		for j = 1, self.height do
+			local name = SelectRandomStamp(self, stampTypeCounts)
 			self.stamps[i][j] = NewStamp({
-				name = util.SampleListWeighted(self.stampDist).stamp,
-				quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1)),
+				name = name,
+				quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality),
 			})
 		end
 	end
@@ -337,10 +353,28 @@ local function RegenerateStamps(self)
 	self.score = api.CalculateBookScore(self)
 end
 
+local function FillStamps(self, stampsToUse)
+	local index = 1
+	for i = 1, self.width do
+		self.stamps[i] = {}
+		for j = 1, self.height do
+			if stampsToUse[index] then
+				self.stamps[i][j] = NewStamp(stampsToUse[index])
+			end
+			index = index + 1
+		end
+	end
+	self.score = api.CalculateBookScore(self)
+end
+
 function api.GetBook(defName)
 	local self = util.CopyTable(BookDefs[defName])
 	self.stamps = {}
-	RegenerateStamps(self)
+	if self.predeterminedStamps then
+		FillStamps(self, self.predeterminedStamps)
+	else
+		RegenerateStamps(self)
+	end
 	if self.scoreRange then
 		local tries = 100
 		while (self.score < self.scoreRange[1] or self.score > self.scoreRange[2]) and tries > 0 do

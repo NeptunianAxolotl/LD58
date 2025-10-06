@@ -1,26 +1,12 @@
 
 
-local function ScorePair(self, other)
-	if not other then
-		return 0
-	end
-	if other.name == "money_stamp" then
-		return -5 * self.quality
-	end
+
+local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	return 0
 end
 
-local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
-	local score = 0
-	score = score + ScorePair(self, left)
-	score = score + ScorePair(self, right)
-	score = score + ScorePair(self, top)
-	score = score + ScorePair(self, bottom)
-	return score
-end
-
 local function GetSoloScore(self)
-	local score = math.ceil(self.cost / 3) * self.quality
+	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2 + 5
 	return math.ceil(score)
 end
 
@@ -28,9 +14,10 @@ local function GetSellValue(self)
 	return self.cost
 end
 
-local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*8)
-	self.color = 1 + math.floor(math.random()*8)
+local function InitRandomStamp(self, def)
+	self.cost = def.cost or (3 + math.floor(math.random()*6))
+	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
+	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
 end
 
 local def = {
@@ -38,7 +25,7 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "money_stamp",
+	image = "gold",
 	humanName = "Money Stamp",
 	desc = "Contains gold dust that is of no value to true collectors.",
 }

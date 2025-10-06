@@ -669,6 +669,11 @@ end
 --------------------------------------------------
 -- Probability
 
+
+function util.RandomIntegerInRange(bot, top)
+	return bot + math.floor(math.random()*(top - bot + 1))
+end
+
 function util.WeightsToDistribution(weights)
 	local sum = 0
 	for i = 1, #weights do

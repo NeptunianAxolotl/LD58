@@ -4,17 +4,17 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = 15
-	return math.ceil(score)
+	return 15
 end
 
 local function GetSellValue(self)
 	return 1
 end
 
-local function InitRandomStamp(self)
+local function InitRandomStamp(self, def)
 	self.cost = 26
 	self.color = 1 + math.floor(math.random()*8)
+	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
 end
 
 local function PlaceAbilityCheck(self, other, book, px, py)

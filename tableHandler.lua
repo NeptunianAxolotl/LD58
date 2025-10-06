@@ -1,5 +1,7 @@
-local ShopDefs = require("defs/shopDefs")
+local ShopDefsData = require("defs/shopDefs")
+local ShopDefs = ShopDefsData.def 
 local NewStamp = require("objects/stamp")
+local SideboardDefs = require("defs/sideboardDefs")
 
 local self = {}
 local api = {}
@@ -7,6 +9,12 @@ local api = {}
 --------------------------------------------------
 -- Helpers
 --------------------------------------------------
+
+local function DecayTempText()
+	if self.tempText then
+		self.tempTextDecay = (self.tempTextDecay or 1)
+	end
+end
 
 local function GetTooltipStamp()
 	if self.heldStamp then
@@ -55,9 +63,20 @@ local function GetBookDrawPosition(index)
 	return baseX, baseY
 end
 
-local function GetSideboardDrawPosition(index)
-	index = index + (self.maxSideboard - self.sideboardDrawSize)
-	local x = self.sideboardX + (index - 1) * self.sideboardGap/2
+function api.GetSideboardDrawPosition(index)
+	local alwaysShow = (index == 0)
+	index = index + (SideboardDefs.maxSlots - self.sideboardDrawSize)
+	if self.tutorialPhase then
+		if self.tutorialPhase <= self.enabledOnPhase.sideboard - 0.6 then
+			index = index + 4
+		elseif self.tutorialPhase <= self.enabledOnPhase.sideboard then
+			index = index + (self.enabledOnPhase.sideboard - self.tutorialPhase) * 4
+		end
+	end
+	if alwaysShow then
+		index = math.min(index, 5)
+	end
+	local x = self.sideboardX + (index - 1) * self.sideboardLean
 	local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
 	return x, y
 end
@@ -68,12 +87,25 @@ local function GetBookDimensions(book, index)
 	return bx, by, bw, bh
 end
 
+local function GetMoneyPosition()
+	if not self.tutorialPhase then
+		return self.moneyX, self.moneyY
+	end
+	local mx = self.moneyX
+	if self.tutorialPhase <= self.enabledOnPhase.money - 0.7 then
+		mx = mx + 1200
+	elseif self.tutorialPhase <= self.enabledOnPhase.money then
+		mx = mx + (self.enabledOnPhase.money - self.tutorialPhase) * 1200
+	end
+	return mx, self.moneyY
+end
+
 local function GetSpotPosition(placePos)
 	if not placePos then
 		return false
 	end
 	if placePos.type == "sideboard" then
-		local x, y = GetSideboardDrawPosition(placePos.index)
+		local x, y = api.GetSideboardDrawPosition(placePos.index)
 		return {x + self.bookScale * Global.STAMP_WIDTH/2, y + self.bookScale * Global.STAMP_HEIGHT/2}
 	elseif placePos.type == "book" then
 		local book = placePos.book
@@ -121,6 +153,8 @@ local function MousePlaceClick(placePos)
 		if self.oldSwapSelected and self.oldSwapSelected.type ~= self.swapSelected.type then
 			local bookIndex, shopIndex = GetSwapIndecies()
 			local shopBook = ShopHandler.ReplaceBook(self.books[bookIndex], shopIndex)
+			api.TutorialBoughtBook()
+			DecayTempText()
 			if shopBook then
 				local bookPos = self.books[bookIndex].GetPosition()
 				shopBook.SetPosition({bookPos[1] + math.random()*0.06 - 0.03, 0.2 + math.random()*0.3})
@@ -131,11 +165,18 @@ local function MousePlaceClick(placePos)
 			self.swapSelected = false
 		end
 	elseif placePos.type == "selectShop" then
-		if api.CanEnterShop(ShopDefs[placePos.index]) then
+		if api.CanEnterShop(ShopDefs[placePos.index]) or self.world.IsGodMode() then
+			DecayTempText()
 			if ShopDefs[placePos.index].cost then
 				self.money = math.max(0, self.money - ShopDefs[placePos.index].cost)
 			end
 			ShopHandler.RefreshShop(placePos.index)
+		end
+	elseif placePos.type == "buyMoreSideboard" then
+		local cost = SideboardDefs.unlockCosts[self.sideboardSize + 1]
+		if cost and cost <= self.money and self.sideboardSize < SideboardDefs.maxSlots then
+			self.money = self.money - cost
+			self.sideboardSize = self.sideboardSize + 1
 		end
 	end
 end
@@ -143,6 +184,19 @@ end
 --------------------------------------------------
 -- API
 --------------------------------------------------
+
+function api.GetBookCount()
+	return #self.books
+end
+
+function api.AddBook(bookType, text)
+	self.books[#self.books + 1] = BookHelper.GetBook(bookType)
+	self.books[#self.books].SetPosition({1 - math.random()*0.1, 0})
+	if text then
+		self.tempText = text
+		self.tempTextDecay = false
+	end
+end
 
 function api.AddMoney(amount)
 	self.money = self.money + amount
@@ -253,6 +307,104 @@ function api.MousePressed(x, y, button)
 end
 
 --------------------------------------------------
+-- Tutorial
+--------------------------------------------------
+
+function api.GetTutorialPhase()
+	return self.tutorialPhase
+end
+
+function api.TutorialBoughtBook()
+	if self.tutorialPhase then
+		self.wantedTutorialPhase = self.wantedTutorialPhase + 1
+	end
+end
+
+local function TotalBookScore()
+	local score = 0
+	for i = 1, #self.books do
+		score = score + self.books[i].GetScore()
+	end
+	return score
+end
+
+local function DoTutorial(dt)
+	if self.world.GetCosmos().WantSkipTutorial() then
+		self.tutorialPhase = false
+		if #self.books == 1 then
+			self.books[#self.books + 1] = BookHelper.GetBook("starter_2")
+			self.books[1].SetPosition({0.3, 0})
+			self.books[1].SetVelocity({10, 0})
+			self.books[2].SetPosition({-0.25, 0})
+		end
+		return
+	end
+	if self.tutorialPhase == 1 then
+		if TotalBookScore() >= 30 then
+			self.wantedTutorialPhase = math.max(2, self.wantedTutorialPhase)
+		end
+	elseif self.tutorialPhase == 2 then
+		if TotalBookScore() >= 41 then
+			self.wantedTutorialPhase = math.max(3, self.wantedTutorialPhase)
+		end
+	elseif self.tutorialPhase == 3 then
+		if TotalBookScore() >= 80 then
+			self.wantedTutorialPhase = math.max(4, self.wantedTutorialPhase)
+		end
+	elseif self.tutorialPhase == 4 then
+		if ShopHandler.GetCurrentShopIndex() then
+			self.wantedTutorialPhase = math.max(5, self.wantedTutorialPhase)
+		end
+	end
+	if self.tutorialPhase < self.wantedTutorialPhase then
+		self.tutorialPhase = math.min(self.tutorialPhase + dt*0.75, self.wantedTutorialPhase)
+	end
+	
+	if self.tutorialPhase > 2.6 and #self.books == 1 then
+		self.books[#self.books + 1] = BookHelper.GetBook("starter_2")
+		self.books[1].SetPosition({0.3, 0})
+		self.books[1].SetVelocity({10, 0})
+		self.books[2].SetPosition({-0.25, 0})
+	end
+	if self.tutorialPhase >= 7 then
+		self.tutorialPhase = false
+	end
+end
+
+local function DrawTutorial()
+	if self.tutorialPhase < 1.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 1) * 2)
+		love.graphics.printf("Nothing beats a well organised stamp collection. Improve this one by shifting the bird stamp up so the prices read 2¢, 3¢, 4¢.\n\nClick on the bird to pick it up, then click on a slot to place it.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
+		Font.SetSize(2)
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 30", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.74, 490, "center")
+	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
+		love.graphics.printf("\nEvery collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nRows are multiplied by runs of price. Columns are multiplied by matching colours.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
+		Font.SetSize(2)
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 41", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.74 + 40, 490, "center")
+	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)
+		love.graphics.printf("Mix and match the stamps of two books to make combined ♥ of at least 80. Keep an eye out for stamps that work well together.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 80", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.45, 780, "center")
+	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)
+		love.graphics.printf("Take a visit to Stamp Alley to find collectors willing to trade books. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.28, Global.WINDOW_Y*0.345, 850)
+	elseif self.tutorialPhase > 4.8 and self.tutorialPhase <= 5.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 5) * 2)
+		love.graphics.printf("Offer a book to trade. All trades lose ♥ so pick up books with undervalued stamps.\nClick Stamp Alley again to see new trades. This costs $1, but the fee is waived when out of money.", Global.WINDOW_X*0.12, Global.WINDOW_Y*0.345, 900)
+	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
+		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for $ stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.345, 850)
+	end
+end
+
+--------------------------------------------------
 -- Updating
 --------------------------------------------------
 
@@ -261,8 +413,19 @@ function api.Update(dt)
 	for i = 1, #self.books do
 		self.books[i].UpdatePhysics(dt, i, self.books)
 	end
-	if self.sideboardDrawSize < self.sideboardSize then
-		self.sideboardDrawSize = math.min(self.sideboardDrawSize + dt, self.sideboardSize)
+	local wantToSeeSlots = math.min(self.sideboardSize + 1, SideboardDefs.maxSlots)
+	if self.sideboardDrawSize < wantToSeeSlots then
+		self.sideboardDrawSize = math.min(self.sideboardDrawSize + dt, wantToSeeSlots)
+	end
+	if self.tutorialPhase then
+		DoTutorial(dt)
+	end
+	if self.tempTextDecay then
+		self.tempTextDecay = self.tempTextDecay - dt*1.8
+		if self.tempTextDecay <= 0 then
+			self.tempTextDecay = false
+			self.tempText = false
+		end
 	end
 end
 
@@ -271,14 +434,16 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local baseX, baseY = GetBookDrawPosition(index)
 	Resources.DrawImage("book_width_" .. book.GetWidth(), baseX - 60, baseY - 94)
 	book.Draw(baseX + 1, baseY + 2, scale, "book", index)
+	local buttonX = baseX + book.GetOfferOffset()
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
-	if InterfaceUtil.DrawButton(baseX + 5, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
+	local tradeSelected = self.swapSelected and (self.swapSelected.type == "shopSwapSelected")
+	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, canAfford and tradeSelected, false, highlight, 2, 5) then
 		api.SetUnderMouse({type = "mySwapSelected", index = index})
 	end
 	Font.SetSize(2)
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.printf("♥ " .. book.GetScore(), baseX + 142, baseY - 54, xScale*3)
+	love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, baseY - 55, xScale*3)
 	
 	-- Draw bonuses
 	local xOff = baseX + xScale * 0.35
@@ -346,6 +511,13 @@ function api.Draw(drawQueue)
 	end
 	drawQueue:push({y=20; f=function()
 		Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.6)
+		if self.tempText then
+			Font.SetSize(2)
+			love.graphics.setColor(0, 0, 0, self.tempTextDecay or 1)
+			love.graphics.printf(self.tempText, Global.WINDOW_X*0.25, Global.WINDOW_Y*0.345, 850)
+		elseif self.tutorialPhase then
+			DrawTutorial()
+		end
 	end})
 	drawQueue:push({y=100; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
@@ -358,18 +530,18 @@ function api.Draw(drawQueue)
 			wantTooltip = DrawBook(i, xScale, yScale, scale, mousePos, wantTooltip)
 		end
 		
-		local sideX, sideY = GetSideboardDrawPosition(1)
+		local sideX, sideY = api.GetSideboardDrawPosition(1)
 		Resources.DrawImage("sideboard", sideX - 412, sideY - 108)
 		
 		for i = 1, self.sideboardSize do
-			local x, y = GetSideboardDrawPosition(i)
+			local x, y = api.GetSideboardDrawPosition(i)
 			local underMouse = api.CheckAndSetUnderMouse(x, y, xScale, yScale, {type = "sideboard", index = i})
 			if underMouse then
 				love.graphics.setLineWidth(3)
 				love.graphics.setColor(0.2, 1, 0.2, 1)
 			else
 				love.graphics.setLineWidth(2)
-				love.graphics.setColor(0, 0, 0, 1)
+				love.graphics.setColor(0.4, 0.4, 0.4, 1)
 			end
 			love.graphics.rectangle("line", x, y, xScale, yScale)
 			if self.sideboard[i] then
@@ -377,10 +549,30 @@ function api.Draw(drawQueue)
 			end
 		end
 		
-		Resources.DrawImage("tooltip", self.tooltipX - 80, self.tooltipY - 80)
-		Resources.DrawImage("money_bag", self.moneyX, self.moneyY, false, false, 1.8)
+		local buySideboard = false
+		if self.sideboardSize < SideboardDefs.maxSlots then
+			local x, y = api.GetSideboardDrawPosition(self.sideboardSize + 1)
+			local underMouse = api.CheckAndSetUnderMouse(x, y, xScale, yScale, {type = "buyMoreSideboard"})
+			if underMouse then
+				love.graphics.setLineWidth(3)
+				love.graphics.setColor(0.2, 1, 0.2, 1)
+				wantTooltip = "Tray Upgrade\nSpend $" .. SideboardDefs.unlockCosts[self.sideboardSize + 1] .. " to increase the size of your stamp tray."
+				buySideboard = SideboardDefs.unlockCosts[self.sideboardSize + 1]
+			else
+				love.graphics.setLineWidth(2)
+				love.graphics.setColor(0.4, 0.4, 0.4, 1)
+			end
+			love.graphics.rectangle("line", x, y, xScale, yScale)
+			Font.SetSize(2)
+			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.printf("$" .. SideboardDefs.unlockCosts[self.sideboardSize + 1], x, y + yScale*0.2, xScale, "center")
+		end
 		
-		if InterfaceUtil.DrawButton(self.moneyX - 125, self.moneyY - 15, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
+		local moneyPosX, moneyPosY = GetMoneyPosition()
+		Resources.DrawImage("tooltip", self.tooltipX - 80, self.tooltipY - 80)
+		Resources.DrawImage("money_bag", moneyPosX, moneyPosY, false, false, 1.8)
+		
+		if InterfaceUtil.DrawButton(moneyPosX - 125, moneyPosY - 12, 220, 70, mousePos, "Sell Stamp", false, false, false, false, 2, 12) then
 			if self.heldStamp then
 				api.SetUnderMouse({type = "sellStamp", income = self.heldStamp.GetSellValue()})
 			else
@@ -394,6 +586,9 @@ function api.Draw(drawQueue)
 				wantTooltip = tooltipStamp.GetTooltip(tBook, tX, tY)
 			end
 		end
+		if not wantTooltip and self.underMouse and self.underMouse.tooltip then
+			wantTooltip = self.underMouse.tooltip
+		end
 		
 		if wantTooltip then
 			Font.SetSize(3)
@@ -402,7 +597,9 @@ function api.Draw(drawQueue)
 		end
 		
 		local moneyChangeString = ""
-		if self.heldSellAbilityAmount then
+		if buySideboard then
+			moneyChangeString = " - " .. buySideboard
+		elseif self.heldSellAbilityAmount then
 			moneyChangeString = " + " .. self.heldSellAbilityAmount
 		elseif self.underMouse and self.underMouse.cost then
 			moneyChangeString = " - " .. self.underMouse.cost
@@ -411,7 +608,7 @@ function api.Draw(drawQueue)
 		end
 		Font.SetSize(1)
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.printf("$" .. self.money .. moneyChangeString, self.moneyX - 110, self.moneyY - 90, 500)
+		love.graphics.printf("$" .. self.money .. moneyChangeString, moneyPosX - 120, moneyPosY - 85, 500)
 		
 	end})
 end
@@ -420,10 +617,15 @@ function api.Initialize(world)
 	self = {
 		world = world,
 		books = {},
-		sideboardSize = 2,
-		sideboardDrawSize = 2,
-		maxSideboard = 5,
+		sideboardSize = SideboardDefs.startSlots,
+		sideboardDrawSize = SideboardDefs.startSlots + 1,
 		sideboard = {},
+		tutorialPhase = 1,
+		wantedTutorialPhase = 1,
+		enabledOnPhase = {
+			money = 4,
+			sideboard = 2,
+		},
 		money = 10,
 		moneyX = Global.WINDOW_X * 0.9 + 20,
 		moneyY = Global.WINDOW_Y * 0.65,
@@ -431,15 +633,16 @@ function api.Initialize(world)
 		tooltipY = Global.WINDOW_Y * 0.6 + 180,
 		sideboardX = 40,
 		sideboardY = Global.WINDOW_Y*0.52 + 18,
+		sideboardLean = 10,
 		sideboardGap = 18,
 		bookDrawSpacing = 390,
 		bookScale = 1,
 	}
-	self.sideboard[1] = NewStamp({name = "basic_stamp", cost = 1 + math.floor(math.random()*3), quality = 1 + math.floor(math.random()*4)})
+	self.sideboard[1] = NewStamp({name = "planet_stamp", cost = 7, quality = 2, color = 1, rarity = 2})
+	
 	
 	self.books[#self.books + 1] = BookHelper.GetBook("starter")
-	self.books[#self.books + 1] = BookHelper.GetBook("starter")
-	self.books[#self.books + 1] = BookHelper.GetBook("starter")
+	self.books[1].SetPosition({0, 0})
 end
 
 return api

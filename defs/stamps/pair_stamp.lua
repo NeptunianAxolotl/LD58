@@ -17,7 +17,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 					posList = {{sx, sy}, {ox, oy}},
 					image = "pair",
 					humanName = "Pair Bonus",
-					desc = string.format("Paired stamps gaining %d and %d to base ♥, varies with quality.", bonus, otherBonus),
+					desc = string.format("Paired stamps gaining %d and %d to base ♥, improves with quality.", bonus, otherBonus),
 				})
 			end
 		end
@@ -53,9 +53,9 @@ local function GetSellValue(self)
 	return 1
 end
 
-local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*8)
-	self.color = 1 + math.floor(math.random()*8)
+local function InitRandomStamp(self, def)
+	self.cost = def.cost or util.RandomIntegerInRange(1, StampConst.COST_RANGE)
+	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
 end
 
 local def = {

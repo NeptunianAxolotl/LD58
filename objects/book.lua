@@ -1,7 +1,4 @@
 
-local StampDefData = require("defs/stampDefs")
-local StampDefs = StampDefData.defs
-
 local function NewBook(def)
 	local self = {}
 	local api = {}
@@ -13,6 +10,10 @@ local function NewBook(def)
 	self.position = def.position or {math.random()*2 - 1, 0}
 	self.velocity = {0, 0}
 	
+	function api.SetVelocity(newVelocity)
+		self.velocity = newVelocity
+	end
+	
 	function api.SetPosition(newPos)
 		self.position = newPos
 		self.velocity = {0, 0}
@@ -22,13 +23,17 @@ local function NewBook(def)
 		return self.position
 	end
 	
+	function api.GetOfferOffset()
+		return self.width == 2 and -10 or self.width == 3 and -2 or 4
+	end
+	
 	function api.UpdatePhysics(dt, index, otherBooks)
 		local accel = {-12*self.position[1], 0}
 		for i = 1, #otherBooks do
 			if i ~= index then
 				local other = otherBooks[i]
 				local oPos = other.GetPosition()
-				local width = math.max(2.35, other.GetWidth()) + math.max(2.35, self.width) + 1.2
+				local width = math.max(2.4, other.GetWidth()) + math.max(2.4, self.width) + 1.2
 				if math.abs(self.position[1] - oPos[1]) < width*0.15 then
 					local sign = (oPos[1] > self.position[1]) and 1 or -1
 					local val = (width*0.15 - math.abs(self.position[1] - oPos[1]))
@@ -102,7 +107,7 @@ local function NewBook(def)
 		for i = 1, self.width do
 			for j = 1, self.height do
 				if not hoverType or not TableHandler.JustCheckUnderMouse(x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale) then
-					love.graphics.setColor(0, 0, 0, 1)
+					love.graphics.setColor(0.4, 0.35, 0.2, 1)
 					love.graphics.setLineWidth(2)
 					love.graphics.rectangle("line", x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale)
 				end

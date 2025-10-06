@@ -45,6 +45,10 @@ function api.GetCosmos()
 	return self.cosmos
 end
 
+function api.IsGodMode()
+	return self.cosmos.IsGodMode()
+end
+
 function api.SetGameOver(hasWon, overType)
 	if self.gameWon or self.gameLost or TerrainHandler.InEditMode() then
 		return
@@ -78,6 +82,9 @@ function api.KeyPressed(key, scancode, isRepeat)
 end
 
 function api.MousePressed(x, y, button)
+	if MainMenuHandler.MousePressed(x, y, button) then
+		return
+	end
 	if GameHandler.MousePressed(x, y, button) then
 		return
 	end
@@ -213,6 +220,7 @@ function api.Draw()
 	TableHandler.Draw(drawQueue)
 	ShopHandler.Draw(drawQueue)
 	EffectsHandler.Draw(drawQueue)
+	MainMenuHandler.Draw(drawQueue)
 	
 	while true do
 		local d = drawQueue:pop()

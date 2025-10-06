@@ -1,20 +1,21 @@
 
+
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	return 0
 end
 
 local function GetSoloScore(self)
-	local score = math.ceil(self.cost / 3) * self.quality
-	return math.ceil(score)
+	return -100
 end
 
 local function GetSellValue(self)
-	return 1
+	return 0
 end
 
-local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*8)
-	self.color = 1 + math.floor(math.random()*8)
+local function InitRandomStamp(self, def)
+	self.cost = 0
+	self.color = 200
+	self.rarity = 2
 end
 
 local def = {
@@ -22,9 +23,13 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "emu",
-	humanName = "Basic Stamp",
-	desc = "Bog standard stamp",
+	image = "censored_stamp",
+	humanName = "CENSORED",
+	desc = "Why would that be on a stamp???",
+	maxQuality = 2,
+	minQuality = 1,
+	shopLimitCategory = "negative",
+	shopLimit = 1,
 }
 
 return def

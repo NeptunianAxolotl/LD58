@@ -1,6 +1,6 @@
 return {
 	file = "music/LD58-Flute.ogg",
-	volMult = 0.4 * Global.MUSIC_VOLUME,
+	volMult = 0.3 * Global.MUSIC_VOLUME,
     handler = 1,
     group = "principal",
     minVal = 100,

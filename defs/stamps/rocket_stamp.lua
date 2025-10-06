@@ -11,7 +11,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},
-					image = "pair",
+					image = "rocket_stamp",
 					humanName = "Rocket Bonus",
 					desc = string.format("With an adjacent planet Rocket gains %d to base ♥, based on quality of both.", bonus),
 				})
@@ -40,7 +40,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = math.ceil(self.cost / 3) * self.quality
+	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2
 	return math.ceil(score)
 end
 
@@ -48,10 +48,12 @@ local function GetSellValue(self)
 	return 1
 end
 
-local function InitRandomStamp(self)
-	self.cost = 1 + math.floor(math.random()*8)
-	self.color = 1 + math.floor(math.random()*8)
+local function InitRandomStamp(self, def)
+	self.cost = def.cost or util.RandomIntegerInRange(1, StampConst.COST_RANGE)
+	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
+	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
 end
+
 
 local def = {
 	GetAdjacencyScore = GetAdjacencyScore,

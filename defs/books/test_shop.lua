@@ -1,21 +1,33 @@
 
 local def = {
-	width = 3,
-	height = 3,
-	scoreRange = {1, 120},
+	width = 4,
+	height = 4,
+	scoreRange = {-200, 1000},
 	minQuality = 1,
-	maxQuality = 3,
+	maxQuality = 5,
 	stampDist = util.NormaliseWeightedList({
-		{probability = 0.4, stamp = "bird_stamp"},
-		{probability = 0.4, stamp = "tree_stamp"},
-		{probability = 0.2, stamp = "wild_stamp"},
-		{probability = 0.2, stamp = "money_stamp"},
-		{probability = 0.2, stamp = "quality_stamp"},
-		{probability = 0.2, stamp = "paint_stamp"},
-		{probability = 0.2, stamp = "renumber_stamp"},
-		{probability = 0.2, stamp = "sell_stamp"},
-		{probability = 0.2, stamp = "clone_stamp"},
-		{probability = 1, stamp = "basic_stamp"},
+		-- Basic stamps
+		{probability = 1, stamp = "bird_stamp"},
+		{probability = 1, stamp = "tree_stamp"},
+		{probability = 1, stamp = "kangaroo_stamp"},
+		{probability = 1, stamp = "emu_stanp"},
+		{probability = 1, stamp = "rocket_stamp"},
+		{probability = 1, stamp = "planet_stamp"},
+		{probability = 1, stamp = "pair_stamp"},
+		
+		-- Weird stamps
+		{probability = 1, stamp = "blank_stamp"},
+		{probability = 1, stamp = "misprint_stamp"},
+		{probability = 1, stamp = "money_stamp"},
+		{probability = 1, stamp = "wild_stamp"},
+		{probability = 1, stamp = "negative_stamp"},
+		
+		-- Abilities
+		{probability = 1, stamp = "sell_stamp"},
+		{probability = 1, stamp = "clone_stamp"},
+		{probability = 1, stamp = "quality_stamp"},
+		{probability = 1, stamp = "paint_stamp"},
+		{probability = 1, stamp = "renumber_stamp"},
 	}),
 	forcingDist = util.NormaliseWeightedList({
 		{probability = 0.4, forcing = "force_rocket"},
