@@ -66,26 +66,50 @@ end
 function api.Draw(drawQueue)
 	drawQueue:push({y=50; f=function()
 		local mousePos = self.world.GetMousePositionInterface()
-		local xOff = Global.WINDOW_X * 0.1
+		local xOff = Global.WINDOW_X * 0.68
 		local yOff = Global.WINDOW_Y * 0.05
 		local scale = 1
 		
 		local swapSelected = TableHandler.GetSelected()
+		if self.books[1] then
+			local minSize = self.books[1].GetWidth()
+			for i = 2, #self.books do
+				minSize = math.min(self.books[i].GetWidth())
+			end
+			if minSize == 4 then
+				xOff = xOff + 56
+			end
+		end
 		for i = 1, #self.books do
 			local book = self.books[i]
-			book.Draw(xOff, yOff, scale, "shopBook")
+			local extraHeight = math.max(0, 3 - book.GetHeight()) * Global.STAMP_HEIGHT
+			xOff = xOff - book.GetWidth() * Global.STAMP_WIDTH
+			if book.GetWidth() == 2 then
+				xOff = xOff - 8
+			elseif book.GetWidth() == 4 then
+				xOff = xOff + 10
+			end
+			
+			Resources.DrawImage("book_width_" .. book.GetWidth(), xOff - 60, yOff - 630 + Global.STAMP_HEIGHT*book.GetHeight() + extraHeight)
+			book.Draw(xOff, yOff + extraHeight, scale, "shopBook")
 			local buttonX = xOff + book.GetOfferOffset()
 			local canAfford = TableHandler.CanAffordShopBook(book.GetScore())
 			local highlight = canAfford and swapSelected and (swapSelected.type == "shopSwapSelected") and (swapSelected.index == i)
 			if InterfaceUtil.DrawButton(
-					buttonX, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 10, 120, 50, mousePos,
+					buttonX, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 10 + extraHeight, 120, 50, mousePos,
 					"Trade", not canAfford, false, false, highlight, 2, 5) then
 				TableHandler.SetUnderMouse({type = "shopSwapSelected", index = i})
 			end
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 15, Global.STAMP_WIDTH*3)
-			xOff = xOff + 420
+			love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 15 + extraHeight, Global.STAMP_WIDTH*3)
+			
+			xOff = xOff - 120
+			if book.GetWidth() == 2 then
+				xOff = xOff - 8
+			elseif book.GetWidth() == 4 then
+				xOff = xOff + 10
+			end
 		end
 		
 		local tutorialPhase = TableHandler.GetTutorialPhase()

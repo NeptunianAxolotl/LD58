@@ -72,9 +72,11 @@ Costs $1 to visit, if you can pay.]]
 	},
 	{
 		name = "Test",
-		bookType = {
+		bookType = util.NormaliseWeightedList({
+			{probability = 1, bookType = "large_test"},
 			{probability = 1, bookType = "test_shop"},
-		},
+			{probability = 1, bookType = "shop_1_thin"},
+		}),
 		size = 3,
 		cost = false,
     continuoValue = 4,
