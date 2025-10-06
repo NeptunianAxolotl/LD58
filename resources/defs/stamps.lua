@@ -10,6 +10,8 @@ local scales = {
 	quality_5 = 1/5,
 	colcombo = 1/1.3,
 	rowcombo = 1/1.3,
+	colnumber = 1/1.3,
+	rowcolor = 1/1.3,
 }
 
 for i = 1, #names do

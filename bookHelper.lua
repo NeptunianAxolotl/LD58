@@ -71,17 +71,7 @@ local function ColorsMatch(currentCol, stamp)
 	return stamp.color == currentCol
 end
 
-function api.GetColScoreMultiplier(self, colIndex)
-	local multiplier = 1
-	-- Get average quality
-	local quality = 0
-	for j = 1, self.height do
-		if self.stamps[colIndex][j] and self.stamps[colIndex][j].quality then
-			quality = quality + self.stamps[colIndex][j].quality
-		end
-	end
-	quality = quality / self.height
-
+function api.GetColScoreMultiplier(self, colIndex, bonusDisplayTable)
 	-- Is the column full?
 	for j = 1, self.height do
 		if not self.stamps[colIndex][j] then
@@ -89,39 +79,66 @@ function api.GetColScoreMultiplier(self, colIndex)
 		end
 	end
 	
-	-- EVALUATE FLUSHES
-	-- How many wilds are there? And if they are not all wilds, what might be the flush colour?
-	local nwilds = 0
-	local candfound = false
-	local candcolor = -100
-	for j = 1, self.height do
-		if self.stamps[colIndex][j].def.isWildColor then
-			nwilds = nwilds + 1
+	-- Do their costs form a sequence?
+	local sequenceBonus = true
+	local colorBonus = true
+	local dir = 0
+	local x = self.stamps[colIndex][1].cost
+	local colorBonus = ColorsMatch(colorBonus, self.stamps[colIndex][1])
+	if self.stamps[colIndex][2] and self.stamps[colIndex][2].cost then
+		dir = self.stamps[colIndex][2].cost - x
+		x = x + dir
+		colorBonus = ColorsMatch(colorBonus, self.stamps[colIndex][2])
+	end
+	if self.height <= 2 then
+		sequenceBonus = false
+	end
+	for j = 3, self.height do
+		if self.stamps[colIndex][j] and self.stamps[colIndex][j].cost and x+dir == self.stamps[colIndex][j].cost then
+			x = x + dir
 		else
-			if candfound then
-				if candcolor ~= self.stamps[colIndex][j].color then
-					candcolor = -200
-				end
-			else
-				candfound = true
-				candcolor = self.stamps[colIndex][j].color
-			end
+			sequenceBonus = false
+		end
+		colorBonus = ColorsMatch(colorBonus, self.stamps[colIndex][j])
+	end
+	
+	if not (colorBonus or sequenceBonus) then
+		return 1
+	end
+	
+	-- Get average quality
+	local quality = 0
+	for j = 1, self.height do
+		if self.stamps[colIndex][j] and self.stamps[colIndex][j].quality  then
+			quality = quality + self.stamps[colIndex][j].quality
+		end
+	end
+	quality = quality / self.height
+	local mult = math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
+	
+	if bonusDisplayTable then
+		local posList = {}
+		for j = 1, self.height do
+			posList[#posList + 1] = {colIndex, j}
+		end
+		if sequenceBonus then
+			TrackMultiplier(
+				self, mult, posList, "Column ♥+" .. (quality - 1)*100 .. "%",
+				"Column multiplier for sequential stamp prices, improves with better quality stamps. Requires a sequence of at least three.",
+				colIndex, bonusDisplayTable, "colnumber")
+		end
+		if colorBonus then
+			TrackMultiplier(
+				self, mult, posList, "Column ♥+" .. (quality - 1)*100 .. "%",
+				"Column multiplier for matching stamp colours, improves with better quality stamps.",
+				colIndex, bonusDisplayTable, "colcombo")
 		end
 	end
 	
-	local quality = math.max(2, math.ceil(quality*2)/2)
-	if nwilds >= self.height then
-		-- full wilds
-		multiplier = 3 * quality
-	elseif nwilds > 1 then
-		multiplier = 1
-	else
-		-- check for colours
-		if candfound and candcolor >= 0 then
-			multiplier = quality * self.rowColumnGlobalMult
-		end
+	if colorBonus and sequenceBonus then
+		mult = mult*2 - 1
 	end
-	return multiplier
+	return mult
 end
 
 function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
@@ -143,7 +160,7 @@ function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
 		x = x + dir
 		colorBonus = ColorsMatch(colorBonus, self.stamps[2][rowIndex])
 	end
-	if self.width <= 2 and dir ~= -1 and dir ~= 1 and dir ~= 0 then
+	if self.width <= 2 then
 		sequenceBonus = false
 	end
 	for i = 3, self.width do
@@ -177,13 +194,13 @@ function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
 		if sequenceBonus then
 			TrackMultiplier(
 				self, mult, posList, "Row ♥+" .. (quality - 1)*100 .. "%",
-				"Row multiplier for sequential stamp prices, improves with better quality stamps.",
+				"Row multiplier for sequential stamp prices, improves with better quality stamps. Requires a sequence of at least three.",
 				rowIndex, bonusDisplayTable, "rowcombo")
 		end
 		if colorBonus then
 			TrackMultiplier(
 				self, mult, posList, "Row ♥+" .. (quality - 1)*100 .. "%",
-				"Column multiplier for matching stamp colours, improves with better quality stamps.",
+				"Row multiplier for matching stamp colours, improves with better quality stamps.",
 				rowIndex, bonusDisplayTable, "rowcolor")
 		end
 	end
@@ -257,17 +274,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 	
 	-- Evaluate the score on each column.
 	for i = 1, self.width do
-		local mult = api.GetColScoreMultiplier(self, i)
-		if mult > 1 and bonusDisplayTable then
-			local posList = {}
-			for j = 1, self.height do
-				posList[#posList + 1] = {i, j}
-			end
-			TrackMultiplier(
-				self, mult, posList, "Column ♥ x" .. mult,
-				"Column multiplier for matching stamp colours, improves with better quality stamps.",
-				i, bonusDisplayTable, "colcombo")
-		end
+		local mult = api.GetColScoreMultiplier(self, i, bonusDisplayTable)
 		score = score + basic_scores_col[i] * (mult - 1)
 	end
 	
