@@ -1,4 +1,5 @@
-local ShopDefs = require("defs/shopDefs")
+local ShopDefsData = require("defs/shopDefs")
+local ShopDefs = ShopDefsData.def 
 local NewStamp = require("objects/stamp")
 local SideboardDefs = require("defs/sideboardDefs")
 
@@ -56,14 +57,18 @@ local function GetBookDrawPosition(index)
 	return baseX, baseY
 end
 
-local function GetSideboardDrawPosition(index)
+function api.GetSideboardDrawPosition(index)
+	local alwaysShow = (index == 0)
 	index = index + (SideboardDefs.maxSlots - self.sideboardDrawSize)
 	if self.tutorialPhase then
 		if self.tutorialPhase <= self.enabledOnPhase.sideboard - 0.6 then
-			index = index + 10
+			index = index + 4
 		elseif self.tutorialPhase <= self.enabledOnPhase.sideboard then
 			index = index + (self.enabledOnPhase.sideboard - self.tutorialPhase) * 4
 		end
+	end
+	if alwaysShow then
+		index = math.min(index, 5)
 	end
 	local x = self.sideboardX + (index - 1) * self.sideboardLean
 	local y = self.sideboardY + self.bookScale * Global.STAMP_HEIGHT * (index - 0.5) + self.sideboardGap * (index - 1)
@@ -84,7 +89,7 @@ local function GetMoneyPosition()
 	if self.tutorialPhase <= self.enabledOnPhase.money - 0.7 then
 		mx = mx + 1200
 	elseif self.tutorialPhase <= self.enabledOnPhase.money then
-		mx = mx + (self.enabledOnPhase.money - self.tutorialPhase) * 1000
+		mx = mx + (self.enabledOnPhase.money - self.tutorialPhase) * 1200
 	end
 	return mx, self.moneyY
 end
@@ -94,7 +99,7 @@ local function GetSpotPosition(placePos)
 		return false
 	end
 	if placePos.type == "sideboard" then
-		local x, y = GetSideboardDrawPosition(placePos.index)
+		local x, y = api.GetSideboardDrawPosition(placePos.index)
 		return {x + self.bookScale * Global.STAMP_WIDTH/2, y + self.bookScale * Global.STAMP_HEIGHT/2}
 	elseif placePos.type == "book" then
 		local book = placePos.book
@@ -312,7 +317,7 @@ local function TotalBookScore()
 end
 
 local function DoTutorial(dt)
-	if self.world.GetCosmos().SkipTutorial() then
+	if self.world.GetCosmos().WantSkipTutorial() then
 		self.tutorialPhase = false
 		if #self.books == 1 then
 			self.books[#self.books + 1] = BookHelper.GetBook("starter_2")
@@ -502,11 +507,11 @@ function api.Draw(drawQueue)
 			wantTooltip = DrawBook(i, xScale, yScale, scale, mousePos, wantTooltip)
 		end
 		
-		local sideX, sideY = GetSideboardDrawPosition(1)
+		local sideX, sideY = api.GetSideboardDrawPosition(1)
 		Resources.DrawImage("sideboard", sideX - 412, sideY - 108)
 		
 		for i = 1, self.sideboardSize do
-			local x, y = GetSideboardDrawPosition(i)
+			local x, y = api.GetSideboardDrawPosition(i)
 			local underMouse = api.CheckAndSetUnderMouse(x, y, xScale, yScale, {type = "sideboard", index = i})
 			if underMouse then
 				love.graphics.setLineWidth(3)
@@ -523,7 +528,7 @@ function api.Draw(drawQueue)
 		
 		local buySideboard = false
 		if self.sideboardSize < SideboardDefs.maxSlots then
-			local x, y = GetSideboardDrawPosition(self.sideboardSize + 1)
+			local x, y = api.GetSideboardDrawPosition(self.sideboardSize + 1)
 			local underMouse = api.CheckAndSetUnderMouse(x, y, xScale, yScale, {type = "buyMoreSideboard"})
 			if underMouse then
 				love.graphics.setLineWidth(3)

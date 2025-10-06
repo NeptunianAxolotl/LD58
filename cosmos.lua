@@ -3,6 +3,7 @@ local World = require("world")
 SoundHandler = require("soundHandler")
 --MusicHandler = require("musicHandler")
 MusicHandler = require("bgmHandler")
+MainMenuHandler = require("mainMenuHandler")
 
 local self = {}
 local api = {}
@@ -55,8 +56,16 @@ function api.TransposePlacementMode()
 	return self.transposePlacementMode
 end
 
-function api.SkipTutorial()
+function api.SetSkipTutorial(state)
+	self.skipTutorial = state
+end
+
+function api.WantSkipTutorial()
 	return self.skipTutorial
+end
+
+function api.QuitGame()
+	love.event.quit()
 end
 
 --------------------------------------------------
@@ -83,12 +92,24 @@ function api.GetRealTime()
 end
 
 --------------------------------------------------
+-- Get
+--------------------------------------------------
+
+function api.GetWorld()
+	return World
+end
+
+--------------------------------------------------
 -- Input
 --------------------------------------------------
 
 function api.KeyPressed(key, scancode, isRepeat)
 	if key == "r" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
 		api.RestartWorld()
+		return true
+	end
+	if key == "escape" then
+		MainMenuHandler.ToggleMenu()
 		return true
 	end
 	if key == "m" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
@@ -141,8 +162,9 @@ function api.Initialize()
 		keyScrollSpeed = Global.KEYBOARD_SCROLL_MULT,
 		grabInput = Global.MOUSE_SCROLL_MULT > 0,
 		transposePlacementMode = false,
-		skipTutorial = Global.DEV_TOOLS_ENABLED,
+		skipTutorial = false,
 	}
+	MainMenuHandler.Initialize(api)
 	MusicHandler.Initialize(api)
 	SoundHandler.Initialize(api)
 	World.Initialize(api, self.curLevelData)

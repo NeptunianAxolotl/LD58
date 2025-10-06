@@ -1,6 +1,7 @@
 
 local NewStamp = require("objects/stamp")
-local ShopDefs = require("defs/shopDefs")
+local ShopDefsData = require("defs/shopDefs")
+local ShopDefs = ShopDefsData.def
 
 local self = {}
 local api = {}
@@ -33,6 +34,7 @@ function api.ReplaceBook(tableBook, shopIndex)
 end
 
 function api.RefreshShop(index)
+	self.bestShopSoFar = math.min(index, self.bestShopSoFar)
 	TableHandler.ClearShopSelected()
 	self.currentShopIndex = index
 	self.books = {}
@@ -131,16 +133,18 @@ function api.Draw(drawQueue)
 		end
 		local mousePos = self.world.GetMousePositionInterface()
 		
-		local xOff = Global.WINDOW_X * 0.75
-		local yOff = Global.WINDOW_Y * 0.05
+		local xOff = Global.WINDOW_X * 0.76
+		local yOff = Global.WINDOW_Y * 0.035
 		--love.graphics.setColor(0, 0, 0, 1)
 		--Font.SetSize(2)
 		--love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
 		for i = 1, #ShopDefs do
 			local shopDef = ShopDefs[i]
-			local canEnter = TableHandler.CanEnterShop(shopDef)
-			if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, false, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then
-				TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost, tooltip = shopDef.desc})
+			if i >= self.bestShopSoFar - ShopDefsData.shopLookahead then
+				local canEnter = TableHandler.CanEnterShop(shopDef)
+				if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, false, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then
+					TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost, tooltip = shopDef.desc})
+				end
 			end
 			yOff = yOff + 80
 		end
@@ -150,6 +154,7 @@ end
 function api.Initialize(world)
 	self = {
 		world = world,
+		bestShopSoFar = ShopDefsData.starterShop,
 		books = {}
 	}
 end

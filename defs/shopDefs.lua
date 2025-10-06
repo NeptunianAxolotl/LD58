@@ -1,6 +1,18 @@
 
 local def = {
 	{
+		name = "Join Stamp Elite",
+		bookType = {
+			{probability = 0.8, bookType = "shop_3"},
+			{probability = 0.2, bookType = "shop_3_tall"},
+		},
+		size = 3,
+		cost = 20,
+		bookRequirement = 200,
+		continuoValue = 3,
+		desc = [[Do it.]]
+	},
+	{
 		name = "World Stamp Congress",
 		bookType = {
 			{probability = 0.8, bookType = "shop_3"},
@@ -87,4 +99,10 @@ Costs $1 to visit, if you can pay.]]
 	},
 }
 
-return def
+local data = {
+	def = def,
+	starterShop = 6,
+	shopLookahead = 2,
+}
+
+return data

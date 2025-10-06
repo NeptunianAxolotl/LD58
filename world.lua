@@ -78,6 +78,9 @@ function api.KeyPressed(key, scancode, isRepeat)
 end
 
 function api.MousePressed(x, y, button)
+	if MainMenuHandler.MousePressed(x, y, button) then
+		return
+	end
 	if GameHandler.MousePressed(x, y, button) then
 		return
 	end
@@ -213,6 +216,7 @@ function api.Draw()
 	TableHandler.Draw(drawQueue)
 	ShopHandler.Draw(drawQueue)
 	EffectsHandler.Draw(drawQueue)
+	MainMenuHandler.Draw(drawQueue)
 	
 	while true do
 		local d = drawQueue:pop()
