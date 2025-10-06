@@ -12,17 +12,17 @@ local function GetSellValue(self)
 end
 
 local function InitRandomStamp(self, def)
-	self.cost = def.cost or util.RandomIntegerInRange(1, StampConst.COST_RANGE)
+	self.cost = 1
 	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
-	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
+	self.rarity = StampConst.ABILITY_RAITY
 end
 
 local function PlaceAbilityCheck(self, other, book, px, py)
-	return true
+	return not other.def.fixedCost
 end
 
 local function DoPlaceAbility(self, other, book)
-	other.cost = self.cost
+	other.cost = other.cost + 1
 end
 
 local def = {
@@ -32,10 +32,12 @@ local def = {
 	InitRandomStamp = InitRandomStamp,
 	PlaceAbilityCheck = PlaceAbilityCheck,
 	DoPlaceAbility = DoPlaceAbility,
+	fixedCost = true,
 	placeConsumes = true,
-	image = "pen",
-	humanName = "Pen Stamp (Single Use)",
-	desc = "Overrides the cost of the stamp it is placed on. Consumes pen stamp.",
+	costDrawAppend = "+",
+	image = "pen_reverse",
+	humanName = "Addition Stamp (Single Use)",
+	desc = "Increases the cost of a stamp by 1¢.",
 }
 
 return def

@@ -17,8 +17,8 @@ local def = {
 		{probability = 1, stamp = "sword_stamp"},
 		{probability = 1, stamp = "bridge_stamp"},
 		{probability = 1, stamp = "snake_stamp"},
-		{probability = 10, stamp = "flower_stamp"},
-		{probability = 10, stamp = "bee_stamp"},
+		{probability = 1, stamp = "flower_stamp"},
+		{probability = 1, stamp = "bee_stamp"},
 		
 		-- Weird stamps
 		{probability = 1, stamp = "blank_stamp"},
@@ -38,7 +38,8 @@ local def = {
 		{probability = 1, stamp = "clone_stamp"},
 		{probability = 1, stamp = "quality_stamp"},
 		{probability = 1, stamp = "paint_stamp"},
-		{probability = 1, stamp = "renumber_stamp"},
+		{probability = 10, stamp = "renumber_stamp"},
+		{probability = 10, stamp = "renumber_down_stamp"},
 	}),
 	earlyForceDist = util.NormaliseWeightedList({
 		{probability = 0.4, forcing = "force_rocket"},

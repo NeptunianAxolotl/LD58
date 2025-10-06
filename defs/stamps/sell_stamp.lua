@@ -14,7 +14,7 @@ end
 local function InitRandomStamp(self, def)
 	self.cost = def.cost or (5 + math.floor(math.random()*3))
 	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
-	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
+	self.rarity = StampConst.ABILITY_RAITY
 end
 
 local function PlaceAbilityMoneyGain(self, other, book, px, py)
