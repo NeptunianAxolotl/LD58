@@ -23,7 +23,7 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "planet_stamp",
+	image = "saturn",
 	humanName = "Planet Stamp",
 	desc = "Gives bonuses to adjacent Rockets.",
 }

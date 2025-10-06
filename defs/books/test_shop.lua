@@ -10,7 +10,7 @@ local def = {
 		{probability = 1, stamp = "bird_stamp"},
 		{probability = 1, stamp = "tree_stamp"},
 		{probability = 1, stamp = "kangaroo_stamp"},
-		{probability = 1, stamp = "emu_stanp"},
+		{probability = 1, stamp = "emu_stamp"},
 		{probability = 1, stamp = "rocket_stamp"},
 		{probability = 1, stamp = "planet_stamp"},
 		{probability = 1, stamp = "pair_stamp"},

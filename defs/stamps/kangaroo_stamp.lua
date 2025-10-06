@@ -1,4 +1,8 @@
 
+local function OtherMatches(other, name)
+	return (other and other.name == name)
+end
+
 
 local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
@@ -33,6 +37,19 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 			data.score = data.score + score
 			data.posList[#data.posList + 1] = {x, y}
 			data.desc = "♥ " .. data.score .. " for kangaroos with one or two neighbours. Improved by quality."
+		end
+	end
+	if OtherMatches(right, "emu_stamp") then
+		score = score + self.quality + 1
+		if bonusDisplayTable then
+			local coatOfArmsScore = self.quality + right.quality + 2
+			local key = "coat_of_arms_" .. x .. "_" .. y
+			IterableMap.Add(bonusDisplayTable, key, {
+				posList = {{x, y}, {x + 1, y}},
+				image = "coat_of_arms",
+				humanName = "Coat of Arms",
+				desc = string.format("Gaining %d ♥, based on quality of both.", coatOfArmsScore),
+			})
 		end
 	end
 	return score

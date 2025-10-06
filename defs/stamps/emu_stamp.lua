@@ -1,4 +1,8 @@
 
+local function OtherMatches(other, name)
+	return (other and other.name == name)
+end
+
 
 local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
@@ -19,7 +23,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	if score == 1 or score == 2 then
 		score = math.ceil(self.quality / 2)
 		if bonusDisplayTable then
-			local key = "herd"
+			local key = "emu_herd"
 			local data = IterableMap.Get(bonusDisplayTable, key)
 			if not data then
 				data = {
@@ -34,6 +38,10 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 			data.posList[#data.posList + 1] = {x, y}
 			data.desc = "♥ " .. data.score .. " for emus with one or two neighbours. Improved by quality."
 		end
+	end
+	if OtherMatches(left, "kangaroo_stamp") then
+		score = score + self.quality + 1
+		-- Kangaroo adds the bonus icon
 	end
 	return score
 end

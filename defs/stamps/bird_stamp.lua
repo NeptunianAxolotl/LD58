@@ -11,7 +11,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},
-					image = "bird",
+					image = "bird_tree",
 					humanName = "Nesting Bonus",
 					desc = string.format("This bird nesting in a tree gains %d to base ♥, based on quality of both.", bonus),
 				})

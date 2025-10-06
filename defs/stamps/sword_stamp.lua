@@ -10,7 +10,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},
-					image = "sword",
+					image = "clash_sword",
 					humanName = "Clashing Swords",
 					desc = "Swords score nothing when adjacent.",
 				})
