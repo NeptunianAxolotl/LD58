@@ -30,6 +30,8 @@ local def = {
 	image = "big_ne",
 	humanName = "Cog Segment",
 	shopLimitCategory = "huge_stamp",
+	maxQuality = 3,
+	minQuality = 2,
 	shopLimit = 1,
 	desc = "Part of something larger?",
 }

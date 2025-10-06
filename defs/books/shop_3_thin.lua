@@ -1,32 +1,11 @@
 
+local shop = require("defs/shopLevelDefs")
+
 local def = {
 	width = 2,
 	height = 4,
 	scoreRange = {120, 260},
-	stampDist = util.NormaliseWeightedList({
-		{probability = 2*0.10, stamp = "money_stamp"},
-		{probability = 2*0.10, stamp = "wild_stamp"},
-		{probability = 2*0.05, stamp = "pair_stamp"},
-		{probability = 2*0.15, stamp = "kangaroo_stamp"},
-		{probability = 2*0.15, stamp = "emu_stamp"},
-		{probability = 2*0.05, stamp = "bird_stamp"},
-		{probability = 2*0.05, stamp = "tree_stamp"},
-		{probability = 2*0.10, stamp = "rocket_stamp"},
-		{probability = 2*0.05, stamp = "planet_stamp"},
-		{probability = 2*0.10, stamp = "snake_stamp"},
-		{probability = 2*0.10, stamp = "bee_stamp"},
-		{probability = 2*0.10, stamp = "flower_stamp"},
-		{probability = 2*0.10, stamp = "sword_stamp"},
-		{probability = 2*0.10, stamp = "bridge_stamp"},
-		{probability = 0.1, stamp = "misprint_stamp"},
-		{probability = 0.1, stamp = "clone_stamp"},
-		{probability = 0.1, stamp = "sell_stamp"},
-		{probability = 0.1, stamp = "renumber_stamp"},
-		{probability = 0.1, stamp = "renumber_down_stamp"},
-		{probability = 0.1, stamp = "paint_stamp"},
-		{probability = 0.1, stamp = "quality_stamp"},
-		{probability = 0.16, stamp = "blank_stamp"},
-	}),
+	stampDist = shop.stampDist[3],
 	earlyForceDist = util.NormaliseWeightedList({
 		{probability = 0.01, forcing = "force_flush"},
 		{probability = 0.01, forcing = "force_sequence"},

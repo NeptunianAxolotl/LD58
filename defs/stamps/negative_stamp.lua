@@ -26,9 +26,9 @@ local def = {
 	image = "censored_stamp",
 	humanName = "CENSORED",
 	desc = "Why would that be on a stamp???",
-	maxQuality = 2,
-	noColor = true,
+	maxQuality = 1,
 	minQuality = 1,
+	noColor = true,
 	shopLimitCategory = "negative",
 	shopLimit = 1,
 }

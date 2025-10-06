@@ -369,7 +369,7 @@ local function DoTutorial(dt)
 			self.wantedTutorialPhase = math.max(3, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 3 then
-		if MaxBookScore() >= 80 then
+		if MaxBookScore() >= 75 then
 			self.wantedTutorialPhase = math.max(4, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 4 then
@@ -406,14 +406,14 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
-		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
+		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to reach ♥ 50.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
 		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 50", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)
-		love.graphics.printf("Mix and match the stamps of two books to make a book worth ♥ 80. Keep an eye out for stamps that work well together.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
-		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 80", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("Mix and match the stamps of two books to make a book worth ♥ 75. Hover your mouse over the icons below the stamp to see bonuses.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
+		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 75", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)
@@ -463,8 +463,7 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
 	local tradeSelected = self.swapSelected and (self.swapSelected.type == "shopSwapSelected")
-	local flash = (api.GetTutorialPhase() == 5) and (not self.swapSelected)
-	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, canAfford and (tradeSelected or flash), false, highlight, 2, 5) then
+	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, canAfford and tradeSelected, false, highlight, 2, 5) then
 		api.SetUnderMouse({type = "mySwapSelected", index = index})
 	end
 	Font.SetSize(2)
