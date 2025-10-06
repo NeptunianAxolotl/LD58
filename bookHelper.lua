@@ -62,13 +62,16 @@ local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonu
 end
 
 local function ColorsMatch(currentCol, stamp)
+	if stamp.def.noColor then
+		return false
+	end
 	if stamp.def.isWildColor then
 		return currentCol
 	end
 	if currentCol == true then
 		return stamp.color
 	end
-	return stamp.color == currentCol
+	return (stamp.color == currentCol) and stamp.color
 end
 
 function api.GetColScoreMultiplier(self, colIndex, bonusDisplayTable)
@@ -123,13 +126,13 @@ function api.GetColScoreMultiplier(self, colIndex, bonusDisplayTable)
 		end
 		if sequenceBonus then
 			TrackMultiplier(
-				self, mult, posList, "Column ♥+" .. (quality - 1)*100 .. "%",
+				self, mult, posList, "Column ♥ +" .. (mult - 1)*100 .. "%",
 				"Column multiplier for sequential stamp prices, improves with better quality stamps. Requires a sequence of at least three.",
 				colIndex, bonusDisplayTable, "colnumber")
 		end
 		if colorBonus then
 			TrackMultiplier(
-				self, mult, posList, "Column ♥+" .. (quality - 1)*100 .. "%",
+				self, mult, posList, "Column ♥ +" .. (mult - 1)*100 .. "%",
 				"Column multiplier for matching stamp colours, improves with better quality stamps.",
 				colIndex, bonusDisplayTable, "colcombo")
 		end
@@ -193,13 +196,13 @@ function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
 		end
 		if sequenceBonus then
 			TrackMultiplier(
-				self, mult, posList, "Row ♥+" .. (quality - 1)*100 .. "%",
+				self, mult, posList, "Row ♥ +" .. (mult - 1)*100 .. "%",
 				"Row multiplier for sequential stamp prices, improves with better quality stamps. Requires a sequence of at least three.",
 				rowIndex, bonusDisplayTable, "rowcombo")
 		end
 		if colorBonus then
 			TrackMultiplier(
-				self, mult, posList, "Row ♥+" .. (quality - 1)*100 .. "%",
+				self, mult, posList, "Row ♥ +" .. (mult - 1)*100 .. "%",
 				"Row multiplier for matching stamp colours, improves with better quality stamps.",
 				rowIndex, bonusDisplayTable, "rowcolor")
 		end
@@ -350,7 +353,7 @@ local function ForceBasicFlush(self, stampTypeCounts)
 								name = SelectRandomStamp(self, stampTypeCounts), 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
-		if not self.stamps[i][j].def.noColor then
+		if not (self.stamps[i][j].def.noColor or self.stamps[i][j].def.isWildColor) then
 			self.stamps[i][j].color = c
 		end
 	end
@@ -372,7 +375,7 @@ local function ForceBasicSequence(self, stampTypeCounts)
 								name = SelectRandomStamp(self, stampTypeCounts), 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
-		if not self.stamps[i][j].def.fixedCost then
+		if not self.stamps[i][j].def.fixedCost and self.stamps[i][j].cost >= 1 and self.stamps[i][j].cost <= StampConst.COST_RANGE then
 			self.stamps[i][j].cost = seqstart + jumpsize*(i-1)
 		end
 	end
