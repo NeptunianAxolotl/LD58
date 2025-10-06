@@ -18,6 +18,7 @@ local def = {
 		{probability = 1, stamp = "bridge_stamp"},
 		{probability = 1, stamp = "snake_stamp"},
 		{probability = 10, stamp = "flower_stamp"},
+		{probability = 10, stamp = "bee_stamp"},
 		
 		-- Weird stamps
 		{probability = 1, stamp = "blank_stamp"},

@@ -3,16 +3,16 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
 		return 0
 	end
-	if other.name == "tree_stamp" then
-		local bonus = 2 * (self.quality + other.quality + 1)
+	if other.name == "tree_stamp" or other.name == "flower_stamp" then
+		local bonus = 2 * (self.quality + other.quality + 1) - (other.name == "flower_stamp" and 1 or 0) * other.quality
 		if bonusDisplayTable then
 			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},
-					image = "bird_tree",
+					image = other.name == "flower_stamp" and "bird_flower" or "bird_tree",
 					humanName = "Nesting Bonus",
-					desc = string.format("This bird nesting in a tree gains %d to base ♥, based on quality of both.", bonus),
+					desc = string.format("This bird %s gains %d to base ♥, based on quality of both.", (other.name == "flower_stamp" and "perched on a flower" or "nesting in a tree"), bonus),
 				})
 			end
 		end

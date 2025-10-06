@@ -3,7 +3,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
 		return 0
 	end
-	if other.name == "bee_stamp" then
+	if other.name == "flower_stamp" then
 		local bonus = other.quality
 		return bonus
 	end
@@ -17,7 +17,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	score = score + ScorePair(self, top,     x, y, x, y - 1, bonusDisplayTable)
 	score = score + ScorePair(self, bottom,  x, y, x, y + 1, bonusDisplayTable)
 	if score > 0 then
-		score = math.ceil((self.quality + score) / 4)
+		score = math.ceil((self.quality + score) / 4) + 1
 		if bonusDisplayTable then
 			local key = "bees_like_flowers"
 			local data = IterableMap.Get(bonusDisplayTable, key)
@@ -32,14 +32,14 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 			end
 			data.score = data.score + score
 			data.posList[#data.posList + 1] = {x, y}
-			data.desc = "♥ " .. data.score .. " for pairs of adjacent flowers and bees. Improved by quality."
+			data.desc = "♥ " .. data.score .. " total for bees neighbouring flowers. Improved by quality."
 		end
 	end
 	return score
 end
 
 local function GetSoloScore(self)
-	local score = (self.rarity + 1) * self.quality / 4 + self.rarity / 2
+	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2
 	return math.ceil(score)
 end
 
@@ -53,14 +53,15 @@ local function InitRandomStamp(self, def)
 	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
 end
 
+
 local def = {
 	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "flower",
-	humanName = "Flower Stamp",
-	desc = "Depicts a flower which may be enjoyed by birds and bees.",
+	image = "bee",
+	humanName = "Bee Stamp",
+	desc = "Bees like flowers and flowers like bees.",
 }
 
 return def
