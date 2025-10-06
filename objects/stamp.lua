@@ -64,7 +64,7 @@ local function NewStamp(def)
 		local colorDef = StampConst.colorMap[self.color]
 		Resources.DrawImage(self.def.backImage or "stamp_back", x, y, false, alpha or false, scale, colorDef and colorDef[1])
 		if self.def.image then
-			Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, colorDef and colorDef[2])
+			Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, (not self.def.noForegroundColor) and colorDef and colorDef[2])
 		end
 		if self.def.DoPlaceAbility then
 			Resources.DrawImage("border2", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)

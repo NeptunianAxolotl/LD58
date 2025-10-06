@@ -33,7 +33,8 @@ local def = {
 	PlaceAbilityCheck = PlaceAbilityCheck,
 	DoPlaceAbility = DoPlaceAbility,
 	placeConsumes = true,
-	image = "paint_stamp",
+	noForegroundColor = true,
+	image = "palette",
 	humanName = "Paint Stamp",
 	desc = "Place this stamp on another to paint it a new colour. Consumes the paint stamp.",
 }
