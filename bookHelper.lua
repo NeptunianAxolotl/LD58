@@ -52,6 +52,25 @@ function api.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bott
 	return false
 end
 
+local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable, chosenImage)
+	IterableMap.Add(bonusDisplayTable, humanName .. index .. chosenImage .. "_mult", {
+		posList = posList,
+		image = chosenImage,
+		humanName = humanName,
+		desc = desc,
+	})
+end
+
+local function ColorsMatch(currentCol, stamp)
+	if stamp.def.isWildColor then
+		return currentCol
+	end
+	if currentCol == true then
+		return stamp.color
+	end
+	return stamp.color == currentCol
+end
+
 function api.GetColScoreMultiplier(self, colIndex)
 	local multiplier = 1
 	-- Get average quality
@@ -105,7 +124,7 @@ function api.GetColScoreMultiplier(self, colIndex)
 	return multiplier
 end
 
-function api.GetRowScoreMultiplier(self, rowIndex)
+function api.GetRowScoreMultiplier(self, rowIndex, bonusDisplayTable)
 	-- Is the row full?
 	for i = 1, self.width do
 		if not self.stamps[i][rowIndex] then
@@ -114,22 +133,32 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	end
 	
 	-- Do their costs form a sequence?
+	local sequenceBonus = true
+	local colorBonus = true
 	local dir = 0
 	local x = self.stamps[1][rowIndex].cost
+	local colorBonus = ColorsMatch(colorBonus, self.stamps[1][rowIndex])
 	if self.stamps[2][rowIndex] and self.stamps[2][rowIndex].cost then
 		dir = self.stamps[2][rowIndex].cost - x
 		x = x + dir
+		colorBonus = ColorsMatch(colorBonus, self.stamps[2][rowIndex])
 	end
 	if self.width <= 2 and dir ~= -1 and dir ~= 1 and dir ~= 0 then
-		return 1 -- No arbitrary sequence bonus for pairs
+		sequenceBonus = false
 	end
 	for i = 3, self.width do
 		if self.stamps[i][rowIndex] and self.stamps[i][rowIndex].cost and x+dir == self.stamps[i][rowIndex].cost then
 			x = x + dir
 		else
-			return 1
+			sequenceBonus = false
 		end
+		colorBonus = ColorsMatch(colorBonus, self.stamps[i][rowIndex])
 	end
+	
+	if not (colorBonus or sequenceBonus) then
+		return 1
+	end
+	
 	-- Get average quality
 	local quality = 0
 	for i = 1, self.width do
@@ -138,16 +167,31 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 		end
 	end
 	quality = quality / self.width
-	return math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
-end
-
-local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable, chosenImage)
-	IterableMap.Add(bonusDisplayTable, humanName .. index .. "_mult", {
-		posList = posList,
-		image = chosenImage,
-		humanName = humanName,
-		desc = desc,
-	})
+	local mult = math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
+	
+	if bonusDisplayTable then
+		local posList = {}
+		for i = 1, self.width do
+			posList[#posList + 1] = {i, rowIndex}
+		end
+		if sequenceBonus then
+			TrackMultiplier(
+				self, mult, posList, "Row ♥+" .. (quality - 1)*100 .. "%",
+				"Row multiplier for sequential stamp prices, improves with better quality stamps.",
+				rowIndex, bonusDisplayTable, "rowcombo")
+		end
+		if colorBonus then
+			TrackMultiplier(
+				self, mult, posList, "Row ♥+" .. (quality - 1)*100 .. "%",
+				"Column multiplier for matching stamp colours, improves with better quality stamps.",
+				rowIndex, bonusDisplayTable, "rowcolor")
+		end
+	end
+	
+	if colorBonus and sequenceBonus then
+		mult = mult*2 - 1
+	end
+	return mult
 end
 
 function api.GetStampAdjacencyScore(self, i, j, bonusDisplayTable)
@@ -176,7 +220,6 @@ end
 
 function api.CalculateBookScore(self, bonusDisplayTable)
 	local score = 0
-	
 	local basic_scores = 0
 	local basic_scores_row = {}
 	local basic_scores_col = {}
@@ -230,31 +273,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 	
 	-- Evaluate the score on each row.
 	for j = 1, self.height do
-		local mult = api.GetRowScoreMultiplier(self, j)
-		if mult > 1 and bonusDisplayTable then
-			local posList = {}
-			for i = 1, self.width do
-				posList[#posList + 1] = {i, j}
-			end
-			TrackMultiplier(
-				self, mult, posList, "Row ♥ x" .. mult,
-				"Row multiplier for sequential stamp prices, improves with better quality stamps.",
-				j, bonusDisplayTable, "rowcombo")
-		end
-		--if bonusDisplayTable then
-		--TrackMultiplier(
-		--	self, 4, {{1, 1}}, math.random(),
-		--	"Row multiplier for sequential stamp prices, improved with better quality stamps.",
-		--	7, bonusDisplayTable)
-		--TrackMultiplier(
-		--	self, 4, {{1, 1}}, math.random(),
-		--	"Row multiplier for sequential stamp prices, improved with better quality stamps.",
-		--	7, bonusDisplayTable)
-		--TrackMultiplier(
-		--	self, 4, {{1, 1}}, math.random(),
-		--	"Row multiplier for sequential stamp prices, improved with better quality stamps.",
-		--	7, bonusDisplayTable)
-		--end
+		local mult = api.GetRowScoreMultiplier(self, j, bonusDisplayTable)
 		score = score + basic_scores_row[j] * (mult - 1)
 	end
 	
