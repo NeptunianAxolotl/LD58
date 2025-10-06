@@ -9,6 +9,10 @@ end
 
 local data = {
 	defs = newStamps,
+	COST_RANGE = 9,
+	COLOR_RANGE = 8,
+	RAIRTY_RANGE = 3,
+	QUALITY_RANGE = 5,
 	colorMap = {
 		[1] = {{1, 0.5, 0}, {1, 0.5, 0}},
 		[2] = {{0, 0.5, 1}, {0, 0.5, 1}},
