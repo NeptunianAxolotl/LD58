@@ -365,11 +365,11 @@ local function DoTutorial(dt)
 			self.wantedTutorialPhase = math.max(2, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 2 then
-		if MaxBookScore() >= 50 then
+		if MaxBookScore() >= 48 then
 			self.wantedTutorialPhase = math.max(3, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 3 then
-		if MaxBookScore() >= 75 then
+		if MaxBookScore() >= 70 then
 			self.wantedTutorialPhase = math.max(4, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 4 then
@@ -406,14 +406,14 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
-		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to reach ♥ 50.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
+		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to reach ♥ 48.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
-		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 50", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 48", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)
-		love.graphics.printf("Mix and match the stamps of two books to make a book worth ♥ 75. Hover your mouse over the icons below the stamp to see bonuses.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
-		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 75", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("Mix and match the stamps of two books to make a book worth ♥ 70. Hover your mouse over the icons below the stamp to see bonuses.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
+		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 70", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)

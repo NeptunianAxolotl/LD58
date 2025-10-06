@@ -12,7 +12,7 @@ local api = {}
 local world
 
 function api.BaseStampScore(self)
-	return math.floor((self.rarity + 2) * (self.quality + 1) / 2)
+	return math.floor(3 * (self.quality + 1) / 2)
 end
 
 function api.WantColorBlindSymbol()

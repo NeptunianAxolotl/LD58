@@ -93,11 +93,11 @@ Costs $10 to visit.]]
 		giveBooksUpTo = 3,
 		giveBookType = "shop_1_thin",
 		giveBookText = "Welcome to Serviceable Stamps. You look like an avid collector, have another stamp book, on the house.",
-		bookRequirement = 100,
+		bookRequirement = 90,
 		shopImage = "auspost",
-		desc = [[Decent stamps.
-Bring a value 100 book to enter.
-Costs $5 to visit.]]
+		desc = [[Trade stamps indoors.
+Bring a ♥ 90 book to enter.
+Cost: $2]]
 	},
 	{
 		name = "Stamp Alley",
@@ -118,9 +118,8 @@ Costs $5 to visit.]]
 		waiveCostIfNoMoney = true,
 		bookRequirement = false,
 		shopImage = "alley",
-		desc = [[Terrible stamps, terribly organised.
-No standards.
-Costs $1 to visit, if you can pay.]]
+		desc = [[Poorly kept stamps, poorly organised.
+Cost: $1, but free to enter if you have no money.]]
 	},
 	{
 		name = "Reroll",
