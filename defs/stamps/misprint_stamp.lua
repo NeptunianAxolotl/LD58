@@ -3,7 +3,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2
+	local score = (self.rarity + 1) * self.quality / 2 + self.rarity
 	return math.ceil(score)
 end
 
@@ -22,7 +22,7 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "emu",
+	image = "emu_flip",
 	humanName = "Misprinted Stamp",
 	desc = "What good is a stamp with no postage value?",
 }

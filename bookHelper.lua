@@ -247,7 +247,7 @@ local function ForceBasicFlush(self)
 	c = 1 + math.floor(math.random() * 8)
 	for j = 1, self.height do
 		self.stamps[i][j] = NewStamp({
-								name = "basic_stamp", 
+								name = "blank_stamp", 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
 		self.stamps[i][j].color = c
@@ -267,7 +267,7 @@ local function ForceBasicSequence(self)
 	
 	for i = 1, self.width do
 		self.stamps[i][j] = NewStamp({
-								name = "basic_stamp", 
+								name = "blank_stamp", 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
 		self.stamps[i][j].cost = seqstart + jumpsize*(i-1)

@@ -64,6 +64,7 @@ Costs $20 to visit.]]
 		continuoValue = 2,
 		giveBooksUpTo = 1,
 		giveBookType = "shop_1_thin",
+		giveBookText = "Have another stamp book, on the house.",
 		bookRequirement = 80,
 		desc = [[Decent stamps.
 Bring a value 80 book to enter.

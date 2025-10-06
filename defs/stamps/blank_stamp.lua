@@ -23,7 +23,7 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "emu",
+	image = false,
 	humanName = "Basic Stamp",
 	desc = "Bog standard stamp",
 }

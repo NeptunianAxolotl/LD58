@@ -10,6 +10,12 @@ local api = {}
 -- Helpers
 --------------------------------------------------
 
+local function DecayTempText()
+	if self.tempText then
+		self.tempTextDecay = (self.tempTextDecay or 1)
+	end
+end
+
 local function GetTooltipStamp()
 	if self.heldStamp then
 		return self.heldStamp
@@ -148,6 +154,7 @@ local function MousePlaceClick(placePos)
 			local bookIndex, shopIndex = GetSwapIndecies()
 			local shopBook = ShopHandler.ReplaceBook(self.books[bookIndex], shopIndex)
 			api.TutorialBoughtBook()
+			DecayTempText()
 			if shopBook then
 				local bookPos = self.books[bookIndex].GetPosition()
 				shopBook.SetPosition({bookPos[1] + math.random()*0.06 - 0.03, 0.2 + math.random()*0.3})
@@ -158,7 +165,8 @@ local function MousePlaceClick(placePos)
 			self.swapSelected = false
 		end
 	elseif placePos.type == "selectShop" then
-		if api.CanEnterShop(ShopDefs[placePos.index]) then
+		if api.CanEnterShop(ShopDefs[placePos.index]) or self.world.IsGodMode() then
+			DecayTempText()
 			if ShopDefs[placePos.index].cost then
 				self.money = math.max(0, self.money - ShopDefs[placePos.index].cost)
 			end
@@ -181,9 +189,13 @@ function api.GetBookCount()
 	return #self.books
 end
 
-function api.AddBook(bookType)
+function api.AddBook(bookType, text)
 	self.books[#self.books + 1] = BookHelper.GetBook(bookType)
 	self.books[#self.books].SetPosition({1 - math.random()*0.1, 0})
+	if text then
+		self.tempText = text
+		self.tempTextDecay = false
+	end
 end
 
 function api.AddMoney(amount)
@@ -408,6 +420,13 @@ function api.Update(dt)
 	if self.tutorialPhase then
 		DoTutorial(dt)
 	end
+	if self.tempTextDecay then
+		self.tempTextDecay = self.tempTextDecay - dt*1.8
+		if self.tempTextDecay <= 0 then
+			self.tempTextDecay = false
+			self.tempText = false
+		end
+	end
 end
 
 local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
@@ -492,7 +511,11 @@ function api.Draw(drawQueue)
 	end
 	drawQueue:push({y=20; f=function()
 		Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.6)
-		if self.tutorialPhase then
+		if self.tempText then
+			Font.SetSize(2)
+			love.graphics.setColor(0, 0, 0, self.tempTextDecay or 1)
+			love.graphics.printf(self.tempText, Global.WINDOW_X*0.25, Global.WINDOW_Y*0.345, 850)
+		elseif self.tutorialPhase then
 			DrawTutorial()
 		end
 	end})
