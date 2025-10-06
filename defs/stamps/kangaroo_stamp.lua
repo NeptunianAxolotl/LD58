@@ -59,7 +59,7 @@ local def = {
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	image = "kangaroo",
-	humanName = "Kangaroo",
+	humanName = "Kangaroo Stamp",
 	desc = "Likes other kangaroos.",
 }
 

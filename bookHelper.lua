@@ -441,14 +441,19 @@ local function RegenerateStamps(self)
 			ForceBasicFlush(self)
 		elseif forcing == "force_rocket" then
 			ForcePair(self,"rocket_stamp","planet_stamp")
+		elseif forcing == "force_pair" then
+			ForcePair(self,"pair_stamp","pair_stamp")
+		elseif forcing == "force_roo" then
+			ForcePair(self,"kangaroo_stamp","kangaroo_stamp")
 		else
 			error("Error in book generation")
 		end
 	end
 	if self.scramble then
-		if self.scramble.doWithProb and math.random() < self.scramble.doWithProb then
-			target = self.scramble.target -- 0 to 1, what fraction of the other attempts is the selected permutation better than. NOT a book score target.
-			attempts = self.scramble.attempts
+		scramset = util.SampleListWeighted(self.scramble)
+		if scramset.attempts > 0 then
+			target = scramset.target -- 0 to 1, what fraction of the other attempts is the selected permutation better than. NOT a book score target.
+			attempts = scramset.attempts
 			ScrambleForTarget(self, target, attempts)
 		end
 	end
