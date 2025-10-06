@@ -23,9 +23,9 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "tree",
-	humanName = "Tree Stamp",
-	desc = "Depicts a tree which birds might nest in.",
+	image = "branch",
+	humanName = "Branch Stamp",
+	desc = "Depicts a branch which birds might nest on.",
 }
 
 return def

@@ -145,7 +145,8 @@ function api.Draw(drawQueue)
 			local shopDef = ShopDefs[i]
 			if i >= self.bestShopSoFar - ShopDefsData.shopLookahead or self.world.IsGodMode() then
 				local canEnter = TableHandler.CanEnterShop(shopDef) or self.world.IsGodMode()
-				if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, false, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then
+				local flash = (TableHandler.GetTutorialPhase() == 4) and (i == ShopDefsData.starterShop)
+				if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, flash, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then
 					TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost, tooltip = shopDef.desc})
 				end
 			end

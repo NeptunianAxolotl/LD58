@@ -210,6 +210,10 @@ end
 -- Updating
 --------------------------------------------------
 
+function api.ResetAnimDt()
+	self.animDt = 0
+end
+
 function api.Update(dt)
 	for i = 1, #self.smoothNumberList do
 		UpdateSmoothNumber(dt, self.smoothNumberList[i])

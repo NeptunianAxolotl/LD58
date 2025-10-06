@@ -156,6 +156,7 @@ local function MousePlaceClick(placePos)
 		end
 	elseif placePos.type == "mySwapSelected" or placePos.type == "shopSwapSelected" then
 		self.swapSelected = placePos
+		InterfaceUtil.ResetAnimDt()
 		if self.oldSwapSelected and self.oldSwapSelected.type ~= self.swapSelected.type then
 			local bookIndex, shopIndex = GetSwapIndecies()
 			local shopBook = ShopHandler.ReplaceBook(self.books[bookIndex], shopIndex)
@@ -171,6 +172,7 @@ local function MousePlaceClick(placePos)
 			self.swapSelected = false
 		end
 	elseif placePos.type == "selectShop" then
+		InterfaceUtil.ResetAnimDt()
 		if api.CanEnterShop(ShopDefs[placePos.index]) or self.world.IsGodMode() then
 			DecayTempText()
 			if ShopDefs[placePos.index].cost then
@@ -375,7 +377,7 @@ local function DoTutorial(dt)
 		self.books[1].SetVelocity({10, 0})
 		self.books[2].SetPosition({-0.25, 0})
 	end
-	if self.tutorialPhase >= 7 then
+	if self.tutorialPhase >= 8 then
 		self.tutorialPhase = false
 	end
 end
@@ -384,32 +386,36 @@ local function DrawTutorial()
 	if self.tutorialPhase < 1.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 1) * 2)
-		love.graphics.printf("Nothing beats a well organised stamp collection. Improve this one by shifting the bird stamp up so the prices read 2¢, 3¢, 4¢.\n\nClick on the bird to pick it up, then click on a slot to place it.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
+		love.graphics.printf("Nothing beats a well organised stamp collection. Improve this one by shifting the bird stamp up so the prices read 2¢, 3¢, 4¢.\n\nClick on the bird to pick it up, then click on a slot to place it.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
-		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 30", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.74, 490, "center")
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 30", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
-		love.graphics.printf("\nEvery collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nRows are multiplied by runs of price. Columns are multiplied by matching colours.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
+		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nRows are multiplied by runs of price. Columns are multiplied by matching colours.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
-		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 41", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.74 + 40, 490, "center")
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 41", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)
 		love.graphics.printf("Mix and match the stamps of two books to make combined ♥ of at least 80. Keep an eye out for stamps that work well together.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.25, 780)
-		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 80", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 80", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)
-		love.graphics.printf("Take a visit to Stamp Alley to find collectors willing to trade books. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.28, Global.WINDOW_Y*0.345, 850)
+		love.graphics.printf("Click on Stamp Alley to trade with other collectors. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
 	elseif self.tutorialPhase > 4.8 and self.tutorialPhase <= 5.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 5) * 2)
-		love.graphics.printf("Offer a book to trade. All trades lose ♥ so pick up books with undervalued stamps.\nClick Stamp Alley again to see new trades. This costs $1, but the fee is waived when out of money.", Global.WINDOW_X*0.12, Global.WINDOW_Y*0.345, 900)
+		love.graphics.printf("Offer a book for trade. Trade for books with low ♥ that can be rearranged for profit.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 850)
 	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
-		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for $ stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.345, 850)
+		love.graphics.printf("Click Stamp Alley again see new trades. This costs $1, but Stamp Alley waives the fee for the destitute.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
+	elseif self.tutorialPhase > 6.8 and self.tutorialPhase <= 7.5 then
+		Font.SetSize(2)
+		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 7) * 2)
+		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for $ stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
 	end
 end
 
@@ -447,7 +453,8 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
 	local tradeSelected = self.swapSelected and (self.swapSelected.type == "shopSwapSelected")
-	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, canAfford and tradeSelected, false, highlight, 2, 5) then
+	local flash = (api.GetTutorialPhase() == 5) and (not self.swapSelected)
+	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, canAfford and (tradeSelected or flash), false, highlight, 2, 5) then
 		api.SetUnderMouse({type = "mySwapSelected", index = index})
 	end
 	Font.SetSize(2)

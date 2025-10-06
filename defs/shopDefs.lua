@@ -62,9 +62,9 @@ Costs $20 to visit.]]
 		size = 3,
 		cost = 5,
 		continuoValue = 2,
-		giveBooksUpTo = 1,
+		giveBooksUpTo = 3,
 		giveBookType = "shop_1_thin",
-		giveBookText = "Have another stamp book, on the house.",
+		giveBookText = "Welcome to Serviceable Stamps. You look like an avid collector, have another stamp book, on the house.",
 		bookRequirement = 80,
 		desc = [[Decent stamps.
 Bring a value 80 book to enter.
