@@ -51,7 +51,7 @@ local def = {
 	InitRandomStamp = InitRandomStamp,
 	image = "bird",
 	humanName = "Bird Stamp",
-	desc = "A stamp with a picture of a bird.",
+	desc = "A stamp with a picture of a bird. Likes to perch on plants.",
 }
 
 return def

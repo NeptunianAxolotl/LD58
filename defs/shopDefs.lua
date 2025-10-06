@@ -3,10 +3,10 @@ local def = {
 	{
 		name = "Become Grandmaster",
 		shopImage = "outside",
-		bookRequirement = 1000,
+		bookRequirement = 1337,
 		continuoValue = 5,
 		winShop = true,
-		desc = [[Bring a ♥ 1000 book to the gathering of Stamp Masters.]]
+		desc = [[Bring a ♥ 1337 book to the gathering of Stamp Masters.]]
 	},
 	{
 		name = "World Stamp Congress",
@@ -22,11 +22,11 @@ local def = {
 		},
 		size = 3,
 		cost = 5,
-		bookRequirement = 400,
+		bookRequirement = 500,
 		shopImage = "international",
 		continuoValue = 4,
 		desc = [[The very best collectors gather for intense stamp swapping.
-Bring a ♥ 400 book to enter.
+Bring a ♥ 500 book to enter.
 Cost: $5]]
 	},
 	{

@@ -24,7 +24,7 @@ local def = {
 	InitRandomStamp = InitRandomStamp,
 	image = false,
 	humanName = "Basic Stamp",
-	desc = "Bog standard stamp",
+	desc = "Bog standard stamp.",
 }
 
 return def

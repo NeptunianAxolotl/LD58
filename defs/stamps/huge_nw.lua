@@ -9,9 +9,9 @@ local function UpdateAdjacencyData(self, x, y, bookSelf, bonusDisplayTable, left
 		if bonusDisplayTable then
 			IterableMap.Add(bonusDisplayTable, "huge_multiplier", {
 				posList = {{x, y}, {x + 1, y}, {x, y + 1}, {x + 1, y + 1}},
-				image = "big_ne",
-				humanName = "Cog Multiplier",
-				desc = string.format("Double row and column multipliers (one per book)", bonus, otherBonus),
+				image = "big_complete",
+				humanName = "Complete Laurel",
+				desc = string.format("Row and column multiplier are doubled throughout the book.", bonus, otherBonus),
 			})
 		end
 	end

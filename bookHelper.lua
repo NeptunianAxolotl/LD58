@@ -334,7 +334,7 @@ end
 local function SelectRandomStamp(self, stampTypeCounts)
 	local name, def
 	local tries = 20
-	while (not def) or (def.shopLimitCategory and (stampTypeCounts[def.shopLimitCategory] or 0) > def.shopLimit and tries > 0) do
+	while (not def) or (def.shopLimitCategory and (stampTypeCounts[def.shopLimitCategory] or 0) >= def.shopLimit and tries > 0) do
 		name = util.SampleListWeighted(self.stampDist).stamp
 		def = StampDefs[name]
 		tries = tries - 1

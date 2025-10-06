@@ -37,7 +37,7 @@ local def = {
 	costDrawAppend = "+",
 	image = "pen_reverse",
 	humanName = "Addition Stamp",
-	desc = "Increases the cost of a stamp by 1¢.",
+	desc = "Increases the cost of a stamp by 1¢. Consumes the stamp.",
 }
 
 return def

@@ -30,9 +30,9 @@ local def = {
 	image = "big_se",
 	humanName = "Laurel Segment",
 	shopLimitCategory = "huge_stamp",
+	shopLimit = 1,
 	maxQuality = 3,
 	minQuality = 2,
-	shopLimit = 1,
 	desc = "Legend speaks of a collector that assembled a full laurel.",
 }
 

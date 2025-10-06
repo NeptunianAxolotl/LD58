@@ -39,7 +39,7 @@ local def = {
 	DoPlaceAbility = DoPlaceAbility,
 	image = "clone_stamp",
 	humanName = "Clone Stamp",
-	desc = "Place this stamp on another to copy it. Only quality is preserved.",
+	desc = "Place this stamp on another to copy it.",
 }
 
 return def
