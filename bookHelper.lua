@@ -181,7 +181,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 			TrackMultiplier(
 				self, mult, posList, "Column ♥ x" .. mult,
 				"Column multiplier for matching stamp colours, improves with better quality stamps.",
-				i, bonusDisplayTable, "rowcombo")
+				i, bonusDisplayTable, "colcombo")
 		end
 		score = score + basic_scores_col[i] * (mult - 1)
 	end
