@@ -8,8 +8,8 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 		return 0
 	end
 	if other.name == "pair_stamp" then
-		local bonus = 5 + self.quality
-		local otherBonus = 5 + other.quality
+		local bonus = 5 + other.quality
+		local otherBonus = 5 + self.quality
 		if bonusDisplayTable then
 			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
 			if not IterableMap.Get(bonusDisplayTable, key) then

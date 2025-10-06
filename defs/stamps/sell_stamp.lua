@@ -19,7 +19,7 @@ end
 
 local function PlaceAbilityMoneyGain(self, other, book, px, py)
 	local multiplier = other.GetStampMultiplier(book, px, py)
-	return math.ceil(multiplier * other.GetSoloScore())
+	return math.ceil(multiplier * (other.GetSoloScore() + BookHelper.GetStampAdjacencyScore(book.GetSelfData(), px, py)))
 end
 
 local function PlaceAbilityCheck(self, other, book, px, py)

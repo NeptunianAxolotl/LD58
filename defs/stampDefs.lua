@@ -13,6 +13,7 @@ local data = {
 	COLOR_RANGE = 8,
 	RAIRTY_RANGE = 3,
 	ABILITY_RAITY = 4,
+	HUGE_RARITY = 5,
 	QUALITY_RANGE = 3,
 	BASIC_SELL_VALUE = 2,
 	ADV_SELL_VALUE = 3,
@@ -44,10 +45,11 @@ local data = {
 		"Excellent",
 	},
 	rarityColorMap = {
-		{0.78, 0.6, 0.35},
-		{0.92, 0.8, 0.78},
-		{0.9, 0.8, 0.52},
+		{0.92, 0.7, 0.5},
+		{0.92, 0.8, 0.68},
+		{0.8, 0.72, 0.45},
 		{0.9, 0, 0.7},
+		{0.91, 0.83, 0.42},
 	},
 }
 

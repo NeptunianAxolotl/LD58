@@ -19,7 +19,7 @@ end
 local function InitRandomStamp(self, def)
 	self.cost = def.cost or util.RandomIntegerInRange(1, StampConst.COST_RANGE)
 	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
-	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
+	self.rarity = StampConst.HUGE_RARITY
 end
 
 local def = {
