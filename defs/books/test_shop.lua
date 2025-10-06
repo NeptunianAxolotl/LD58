@@ -3,8 +3,6 @@ local def = {
 	width = 4,
 	height = 4,
 	scoreRange = {-200, 1000},
-	minQuality = 1,
-	maxQuality = 5,
 	stampDist = util.NormaliseWeightedList({
 		-- Basic stamps
 		{probability = 1, stamp = "bird_stamp"},

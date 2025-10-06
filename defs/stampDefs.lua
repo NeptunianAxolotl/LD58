@@ -13,7 +13,7 @@ local data = {
 	COLOR_RANGE = 8,
 	RAIRTY_RANGE = 3,
 	ABILITY_RAITY = 4,
-	QUALITY_RANGE = 5,
+	QUALITY_RANGE = 3,
 	BASIC_SELL_VALUE = 2,
 	ADV_SELL_VALUE = 3,
 	QUALITY_CONSUMED_PER_ABILITY = 2,
@@ -39,11 +39,9 @@ local data = {
 		[8] = "H",
 	},
 	qualityMap = {
-		"Terrible",
 		"Poor",
 		"Good",
 		"Excellent",
-		"Pristine",
 	},
 	rarityColorMap = {
 		{0.7, 0.48, 0.3},

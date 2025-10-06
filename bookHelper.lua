@@ -350,9 +350,9 @@ local function ForceBasicFlush(self, stampTypeCounts)
 	c = 1 + math.floor(math.random() * 8)
 	for j = 1, self.height do
 		self.stamps[i][j] = NewStamp({
-								name = SelectRandomStamp(self, stampTypeCounts), 
-								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
-								})
+			name = SelectRandomStamp(self, stampTypeCounts),
+			quality = util.SampleListWeighted(self.qualityDist).qual,
+		})
 		if not (self.stamps[i][j].def.noColor or self.stamps[i][j].def.isWildColor) then
 			self.stamps[i][j].color = c
 		end
@@ -372,9 +372,9 @@ local function ForceBasicSequence(self, stampTypeCounts)
 	
 	for i = 1, self.width do
 		self.stamps[i][j] = NewStamp({
-								name = SelectRandomStamp(self, stampTypeCounts), 
-								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
-								})
+			name = SelectRandomStamp(self, stampTypeCounts),
+			quality = util.SampleListWeighted(self.qualityDist).qual,
+		})
 		if not self.stamps[i][j].def.fixedCost and self.stamps[i][j].cost >= 1 and self.stamps[i][j].cost <= StampConst.COST_RANGE then
 			self.stamps[i][j].cost = seqstart + jumpsize*(i-1)
 		end
@@ -406,12 +406,12 @@ local function ForcePair(self,stamp1,stamp2)
 	end
 	
 	self.stamps[i][j] = NewStamp({
-		name = stamp1, 
-		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
+		name = stamp1,
+		quality = util.SampleListWeighted(self.qualityDist).qual,
 	})
 	self.stamps[i2][j2] = NewStamp({
-		name = stamp2, 
-		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
+		name = stamp2,
+		quality = util.SampleListWeighted(self.qualityDist).qual,
 	})
 end
 
@@ -491,7 +491,7 @@ local function RegenerateStamps(self)
 			local name = SelectRandomStamp(self, stampTypeCounts)
 			self.stamps[i][j] = NewStamp({
 				name = name,
-				quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality),
+				quality = util.SampleListWeighted(self.qualityDist).qual,
 			})
 		end
 	end
@@ -539,8 +539,13 @@ local function FillStamps(self, stampsToUse)
 	self.score = api.CalculateBookScore(self)
 end
 
-function api.GetBook(defName)
+function api.GetBook(defName, qualityDist)
 	local self = util.CopyTable(BookDefs[defName])
+	self.qualityDist = qualityDist or {
+		{probability = 1, qual = 1},
+		{probability = 0, qual = 2},
+		{probability = 0, qual = 3},
+	}
 	self.stamps = {}
 	if self.predeterminedStamps then
 		FillStamps(self, self.predeterminedStamps)

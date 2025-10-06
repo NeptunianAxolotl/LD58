@@ -29,6 +29,8 @@ local def = {
 	InitRandomStamp = InitRandomStamp,
 	image = "big_se",
 	humanName = "Cog Segment",
+	shopLimitCategory = "huge_stamp",
+	shopLimit = 1,
 	desc = "Part of something larger?",
 }
 

@@ -1,7 +1,7 @@
 
 local def = {
 	{
-		name = "Join Stamp Elite",
+		name = "Join Elite Stamp Cabal",
 		bookType = {
 			{probability = 1.0, bookType = "shop_6"},
 		},
@@ -14,6 +14,11 @@ local def = {
 	},
 	{
 		name = "World Stamp Congress",
+		qualityDist = util.NormaliseWeightedList({
+			{probability = 0, qual = 1},
+			{probability = 1, qual = 2},
+			{probability = 0.8, qual = 3},
+		}),
 		bookType = {
 			{probability = 0.4, bookType = "shop_5"},
 			{probability = 0.3, bookType = "shop_5_thin"},
@@ -30,13 +35,18 @@ Costs $40 to visit.]]
 	},
 	{
 		name = "National Stamp Show",
+		qualityDist = util.NormaliseWeightedList({
+			{probability = 0.1, qual = 1},
+			{probability = 1, qual = 2},
+			{probability = 0.3, qual = 3},
+		}),
 		bookType = {
 			{probability = 0.2, bookType = "shop_4"},
 			{probability = 0.4, bookType = "shop_4_thin"},
 			{probability = 0.4, bookType = "shop_4_wide"},
 		},
 		size = 3,
-		cost = 12,
+		cost = 10,
 		bookRequirement = 300,
 		shopImage = "national",
 		continuoValue = 3,
@@ -46,6 +56,11 @@ Costs $20 to visit.]]
 	},
 	{
 		name = "Stan's Fine Stamps",
+		qualityDist = util.NormaliseWeightedList({
+			{probability = 0.5, qual = 1},
+			{probability = 1, qual = 2},
+			{probability = 0.1, qual = 3},
+		}),
 		bookType = {
 			{probability = 0.6, bookType = "shop_3"},
 			{probability = 0.2, bookType = "shop_3_thin"},
@@ -62,6 +77,11 @@ Costs $10 to visit.]]
 	},
 	{
 		name = "Serviceable Stamps",
+		qualityDist = util.NormaliseWeightedList({
+			{probability = 0.9, qual = 1},
+			{probability = 1, qual = 2},
+			{probability = 0, qual = 3},
+		}),
 		bookType = {
 			{probability = 0.6, bookType = "shop_2"},
 			{probability = 0.2, bookType = "shop_2_thin"},
@@ -81,6 +101,11 @@ Costs $5 to visit.]]
 	},
 	{
 		name = "Stamp Alley",
+		qualityDist = util.NormaliseWeightedList({
+			{probability = 1, qual = 1},
+			{probability = 0.2, qual = 2},
+			{probability = 0, qual = 3},
+		}),
 		bookType = {
 			{probability = 0.4, bookType = "shop_1"},
 			{probability = 0.2, bookType = "shop_1_thin"},
@@ -103,6 +128,11 @@ Costs $1 to visit, if you can pay.]]
 	},
 	{
 		name = "Test",
+		qualityDist = util.NormaliseWeightedList({
+			{probability = 1, qual = 1},
+			{probability = 1, qual = 2},
+			{probability = 1, qual = 3},
+		}),
 		bookType = util.NormaliseWeightedList({
 			{probability = 1, bookType = "large_test"},
 			{probability = 1, bookType = "test_shop"},
