@@ -8,7 +8,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	return 1
+	return 1 -- Intended
 end
 
 local function InitRandomStamp(self, def)

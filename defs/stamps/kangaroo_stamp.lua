@@ -51,9 +51,9 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 		end
 	end
 	if OtherMatches(right, "emu_stamp") and not right.spookedBySnake then
-		score = score + 1 + right.quality
+		score = score + 2 + right.quality
 		if bonusDisplayTable then
-			local coatOfArmsScore = 2 + self.quality + right.quality
+			local coatOfArmsScore = 4 + self.quality + right.quality
 			local key = "coat_of_arms_" .. x .. "_" .. y
 			IterableMap.Add(bonusDisplayTable, key, {
 				posList = {{x, y}, {x + 1, y}},
@@ -67,7 +67,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSellValue(self)
-	return 1
+	return StampConst.BASIC_SELL_VALUE
 end
 
 local function InitRandomStamp(self, def)

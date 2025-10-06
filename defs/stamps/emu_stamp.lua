@@ -50,7 +50,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 		end
 	end
 	if OtherMatches(left, "kangaroo_stamp") then
-		score = score + left.quality + 1
+		score = score + left.quality + 2
 		-- Kangaroo adds the bonus icon
 	end
 	return score

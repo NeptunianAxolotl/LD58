@@ -5,7 +5,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 		return 0
 	end
 	if other.name == "planet_stamp" then
-		local bonus = other.quality + self.quality + 4
+		local bonus = other.quality + self.quality + 5
 		if bonusDisplayTable then
 			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
 			if not IterableMap.Get(bonusDisplayTable, key) then
@@ -44,7 +44,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	return 1
+	return StampConst.BASIC_SELL_VALUE
 end
 
 local function InitRandomStamp(self, def)
