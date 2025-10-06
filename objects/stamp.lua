@@ -1,5 +1,6 @@
 
-local function PostInitStamp(self, def)
+local function PostInitStamp(self)
+	local def = self.def
 	if def.minQuality then
 		self.quality = math.max(def.minQuality, self.quality)
 	end
@@ -14,7 +15,7 @@ local function NewStamp(def)
 	self.name = def.name
 	self.quality = def.quality
 	self.def.InitRandomStamp(self, def)
-	PostInitStamp(self, def)
+	PostInitStamp(self)
 	
 	function self.GetAdjacencyScore(x, y, bonusDisplayTable, left, right, top, bottom)
 		return self.def.GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
