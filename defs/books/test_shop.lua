@@ -14,6 +14,7 @@ local def = {
 		{probability = 1, stamp = "rocket_stamp"},
 		{probability = 1, stamp = "planet_stamp"},
 		{probability = 1, stamp = "pair_stamp"},
+		{probability = 10, stamp = "sword_stamp"},
 		
 		-- Weird stamps
 		{probability = 1, stamp = "blank_stamp"},
@@ -23,10 +24,10 @@ local def = {
 		{probability = 1, stamp = "negative_stamp"},
 		
 		-- Assemble
-		{probability = 10, stamp = "huge_nw"},
-		{probability = 10, stamp = "huge_ne"},
-		{probability = 10, stamp = "huge_se"},
-		{probability = 10, stamp = "huge_sw"},
+		{probability = 1, stamp = "huge_nw"},
+		{probability = 1, stamp = "huge_ne"},
+		{probability = 1, stamp = "huge_se"},
+		{probability = 1, stamp = "huge_sw"},
 		
 		-- Abilities
 		{probability = 1, stamp = "sell_stamp"},
