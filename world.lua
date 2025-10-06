@@ -45,6 +45,10 @@ function api.GetCosmos()
 	return self.cosmos
 end
 
+function api.IsGodMode()
+	return self.cosmos.IsGodMode()
+end
+
 function api.SetGameOver(hasWon, overType)
 	if self.gameWon or self.gameLost or TerrainHandler.InEditMode() then
 		return

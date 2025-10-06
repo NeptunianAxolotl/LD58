@@ -12,6 +12,7 @@ local menuOptions = {
 	"Toggle Music",
 	"Money++",
 	"Disable Tutorial",
+	"God Mode",
 }
 
 --------------------------------------------------
@@ -31,6 +32,9 @@ function api.MousePressed(x, y, button)
 		TableHandler.AddMoney(1000)
 	elseif self.hoveredMenuAction == "Disable Tutorial" then
 		self.cosmos.SetSkipTutorial(true)
+	elseif self.hoveredMenuAction == "God Mode" then
+		TableHandler.AddMoney(10000)
+		self.cosmos.ToggleGodMode()
 	elseif self.menuOpen then
 		self.menuOpen = false
 		return true

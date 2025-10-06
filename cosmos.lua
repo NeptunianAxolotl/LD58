@@ -68,6 +68,14 @@ function api.QuitGame()
 	love.event.quit()
 end
 
+function api.ToggleGodMode(state)
+	self.godMode = not self.godMode
+end
+
+function api.IsGodMode(state)
+	return self.godMode
+end
+
 --------------------------------------------------
 -- Draw
 --------------------------------------------------
@@ -126,6 +134,10 @@ function api.KeyPressed(key, scancode, isRepeat)
 		end
 		if key == "space" then
 			self.skipTutorial = not self.skipTutorial
+		end
+		if key == "return" or key == "kpenter" then
+			api.ToggleGodMode()
+			self.skipTutorial = true
 		end
 	end
 	return World.KeyPressed(key, scancode, isRepeat)

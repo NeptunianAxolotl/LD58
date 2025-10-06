@@ -140,8 +140,8 @@ function api.Draw(drawQueue)
 		--love.graphics.printf("Visit Shop", xOff - 50, yOff, 250, "center")
 		for i = 1, #ShopDefs do
 			local shopDef = ShopDefs[i]
-			if i >= self.bestShopSoFar - ShopDefsData.shopLookahead then
-				local canEnter = TableHandler.CanEnterShop(shopDef)
+			if i >= self.bestShopSoFar - ShopDefsData.shopLookahead or self.world.IsGodMode() then
+				local canEnter = TableHandler.CanEnterShop(shopDef) or self.world.IsGodMode()
 				if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, false, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then
 					TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost, tooltip = shopDef.desc})
 				end
