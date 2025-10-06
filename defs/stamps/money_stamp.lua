@@ -1,13 +1,10 @@
 
-
-
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	return 0
 end
 
 local function GetSoloScore(self)
-	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2 + 5
-	return math.ceil(score)
+	return BookHelper.BaseStampScore(self)
 end
 
 local function GetSellValue(self)

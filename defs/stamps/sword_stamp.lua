@@ -22,10 +22,8 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 end
 
 local function GetSoloScore(self)
-	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2 + 8
-	return math.ceil(score)
+	return math.ceil(BookHelper.BaseStampScore(self) * 1.5)
 end
-
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	local score = 0

@@ -4,7 +4,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	return 8
+	return BookHelper.BaseStampScore(self)
 end
 
 local function GetSellValue(self)

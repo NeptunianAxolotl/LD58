@@ -11,6 +11,10 @@ local NewStamp = require("objects/stamp")
 local api = {}
 local world
 
+function api.BaseStampScore(self)
+	return math.floor((self.rarity + 2) * (self.quality + 1) / 2)
+end
+
 local function FindSnake(self, other, sx, sy, ox, oy, bonusDisplayTable, killImage)
 	if not other then
 		return 0

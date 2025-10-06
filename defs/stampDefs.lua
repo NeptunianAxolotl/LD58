@@ -12,7 +12,9 @@ local data = {
 	COST_RANGE = 9,
 	COLOR_RANGE = 8,
 	RAIRTY_RANGE = 3,
+	ABILITY_RAITY = 4,
 	QUALITY_RANGE = 5,
+	QUALITY_CONSUMED_PER_ABILITY = 2,
 	colorMap = {
 		[1] = {{1, 0.5, 0}, {1, 0.5, 0}},
 		[2] = {{0, 0.5, 1}, {0, 0.5, 1}},
@@ -35,6 +37,7 @@ local data = {
 		{0.7, 0.48, 0.3},
 		{0.92, 0.86, 0.78},
 		{0.9, 0.8, 0.4},
+		{0.9, 0, 0.7},
 	},
 }
 

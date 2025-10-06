@@ -213,7 +213,10 @@ end
 function api.PlaceStampAndMaybeDoAbility(placing, target, book, px, py)
 	if target and placing and placing.def.PlaceAbilityCheck then
 		if placing.def.PlaceAbilityCheck(placing, target, book, px, py) then
-			local destroySelf = placing.def.placeConsumes
+			if placing.def.placeConsumes then
+				placing.quality = placing.quality - StampConst.QUALITY_CONSUMED_PER_ABILITY
+			end
+			local destroySelf = (placing.quality < 1)
 			placing.def.DoPlaceAbility(placing, target, book, px, py)
 			if target.wantDestroy then
 				target = false

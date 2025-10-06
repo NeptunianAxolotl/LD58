@@ -1,7 +1,6 @@
 
 local function GetSoloScore(self)
-	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2 + 1
-	return math.ceil(score)
+	return BookHelper.BaseStampScore(self)
 end
 
 local function ScorePair(self, x, y, posList, other)
