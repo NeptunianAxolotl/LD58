@@ -8,7 +8,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	return 1
+	return self.cost
 end
 
 local function InitRandomStamp(self, def)
@@ -40,6 +40,7 @@ local def = {
 	DoPlaceAbility = DoPlaceAbility,
 	PlaceAbilityMoneyGain = PlaceAbilityMoneyGain, -- For tooltips
 	placeConsumes = true,
+	drawDollar = true,
 	image = "bank",
 	humanName = "Bank Stamp",
 	desc = "Place this on another stamp to sell it for its ♥ value. Consumes the bank stamp.",

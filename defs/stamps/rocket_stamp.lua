@@ -5,7 +5,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 		return 0
 	end
 	if other.name == "planet_stamp" then
-		local bonus = 2 * (self.quality + other.quality)
+		local bonus = other.quality + math.ceil(self.quality / 2) + 3
 		if bonusDisplayTable then
 			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
 			if not IterableMap.Get(bonusDisplayTable, key) then

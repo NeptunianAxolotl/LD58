@@ -46,18 +46,18 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 			end
 			data.score = data.score + score
 			data.posList[#data.posList + 1] = {x, y}
-			data.desc = "♥ " .. data.score .. " for emus with one or two neighbours. Improved by quality."
+			data.desc = "♥ " .. data.score .. " for emus with one or two neighbours, based on quality."
 		end
 	end
 	if OtherMatches(left, "kangaroo_stamp") then
-		score = score + self.quality + 1
+		score = score + left.quality + 1
 		-- Kangaroo adds the bonus icon
 	end
 	return score
 end
 
 local function GetSellValue(self)
-	return 1
+	return StampConst.BASIC_SELL_VALUE
 end
 
 local function InitRandomStamp(self, def)

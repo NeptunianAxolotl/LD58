@@ -23,6 +23,7 @@ local def = {
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	image = "gold",
+	drawDollar = true,
 	humanName = "Money Stamp",
 	desc = "Contains gold dust that is of no value to true collectors.",
 }

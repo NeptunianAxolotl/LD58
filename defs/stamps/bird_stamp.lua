@@ -4,7 +4,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 		return 0
 	end
 	if other.name == "tree_stamp" or other.name == "flower_stamp" then
-		local bonus = 2 * (self.quality + other.quality + 1) - (other.name == "flower_stamp" and 1 or 0) * other.quality
+		local bonus = other.quality + math.ceil(self.quality / 2) + (other.name == "flower_stamp" and 1 or 4)
 		if bonusDisplayTable then
 			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
 			if not IterableMap.Get(bonusDisplayTable, key) then
@@ -34,7 +34,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSellValue(self)
-	return 1
+	return StampConst.BASIC_SELL_VALUE
 end
 
 local function InitRandomStamp(self, def)

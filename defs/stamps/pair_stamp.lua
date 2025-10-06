@@ -8,8 +8,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 		return 0
 	end
 	if other.name == "pair_stamp" then
-		local bonus = 2 * (self.quality + 3)
-		local otherBonus = 2 * (other.quality + 3)
+		local bonus = 3 + math.floor(self.quality / 2)
 		if bonusDisplayTable then
 			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
 			if not IterableMap.Get(bonusDisplayTable, key) then
@@ -17,7 +16,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 					posList = {{sx, sy}, {ox, oy}},
 					image = "pear_pair",
 					humanName = "Pair Bonus",
-					desc = string.format("Paired pears are gaining ♥ %d and ♥ %d, improves with quality.", bonus, otherBonus),
+					desc = string.format("Paired pears are gaining ♥ %d.", bonus, otherBonus),
 				})
 			end
 		end

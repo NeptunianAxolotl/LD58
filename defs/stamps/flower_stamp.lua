@@ -17,7 +17,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	score = score + ScorePair(self, top,     x, y, x, y - 1, bonusDisplayTable)
 	score = score + ScorePair(self, bottom,  x, y, x, y + 1, bonusDisplayTable)
 	if score > 0 then
-		score = math.ceil((self.quality + score) / 4)
+		score = math.ceil(self.quality / 2)
 		if bonusDisplayTable then
 			local key = "bees_like_flowers"
 			local data = IterableMap.Get(bonusDisplayTable, key)
@@ -32,7 +32,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 			end
 			data.score = data.score + score
 			data.posList[#data.posList + 1] = {x, y}
-			data.desc = "♥ " .. data.score .. " for pairs of adjacent flowers and bees. Improved by quality."
+			data.desc = "♥ " .. data.score .. " total for bees neighbouring flowers. Improved by quality."
 		end
 	end
 	return score
@@ -43,7 +43,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	return 1
+	return StampConst.BASIC_SELL_VALUE
 end
 
 local function InitRandomStamp(self, def)

@@ -16,13 +16,13 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 		return -1*GetSoloScore(self)
 	end
 	local posList = {}
-	local score = 0
-	score = score + ScorePair(self, x - 1, y, posList, left)
-	score = score + ScorePair(self, x + 1, y, posList, right)
-	score = score + ScorePair(self, x, y - 1, posList, top)
-	score = score + ScorePair(self, x, y + 1, posList, bottom)
-	if score > 1 then
-		score = math.ceil(score * self.quality / 2)
+	local empty = 0
+	empty = empty + ScorePair(self, x - 1, y, posList, left)
+	empty = empty + ScorePair(self, x + 1, y, posList, right)
+	empty = empty + ScorePair(self, x, y - 1, posList, top)
+	empty = empty + ScorePair(self, x, y + 1, posList, bottom)
+	if empty >= 3 then
+		local score = 7 + self.quality
 		if bonusDisplayTable then
 			local key = "snake_" .. x .. "_" .. y
 			posList[#posList + 1] = {x, y}
@@ -30,7 +30,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 				posList = posList,
 				image = "snake",
 				humanName = "Solitary Snake",
-				desc = "♥ " .. score .. " for a snake that wants to be left alone.",
+				desc = "♥ " .. score .. " for a snake with nothing on at least three sides.",
 			}
 			IterableMap.Add(bonusDisplayTable, key, data)
 		end

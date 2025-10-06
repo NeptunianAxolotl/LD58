@@ -9,11 +9,11 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 end
 
 local function GetSoloScore(self)
-	return BookHelper.BaseStampScore(self)
+	return math.ceil(BookHelper.BaseStampScore(self) * 1.5)
 end
 
 local function GetSellValue(self)
-	return 10
+	return StampConst.ADV_SELL_VALUE
 end
 
 local function InitRandomStamp(self, def)

@@ -4,17 +4,16 @@ local function ScorePair(self, other)
 		return 0
 	end
 	if other.name == "bridge_stamp" then
-		return other.quality
+		return 3 + math.ceil(other.quality / 2)
 	end
 	return 0
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
 	local score = 0
-	score = score + math.ceil(ScorePair(self, left) / 2)
-	score = score + math.ceil(ScorePair(self, right) / 2)
+	score = score + ScorePair(self, left)
+	score = score + ScorePair(self, right)
 	if score > 0 then
-		score = score + math.ceil(self.quality / 2)
 		if bonusDisplayTable then
 			local key = "bridge_row_" .. y
 			local data = IterableMap.Get(bonusDisplayTable, key)
@@ -40,7 +39,7 @@ local function GetSoloScore(self)
 end
 
 local function GetSellValue(self)
-	return 1
+	return StampConst.BASIC_SELL_VALUE
 end
 
 local function InitRandomStamp(self, def)

@@ -86,7 +86,7 @@ function api.GetColScoreMultiplier(self, colIndex)
 		end
 	end
 	
-	local quality = math.max(1.5, math.ceil(quality*2)/2)
+	local quality = math.max(2, math.ceil(quality*2)/2)
 	if nwilds >= self.height then
 		-- full wilds
 		multiplier = 3 * quality
@@ -141,7 +141,7 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	end
 	quality = quality / self.width
 	if x >= 0 then
-		return math.max(1.5, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
+		return math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
 	end
 	return 1
 end

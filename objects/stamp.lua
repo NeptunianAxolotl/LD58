@@ -79,7 +79,7 @@ local function NewStamp(def)
 		else
 			love.graphics.setColor(0, 0.05, 0, alpha or 1)
 		end
-		local costString = self.def.GetSellValue(self) >= 4 and ("$" .. self.cost) or (self.cost .. "¢")
+		local costString = self.def.drawDollar and ("$" .. self.cost) or (self.cost .. "¢")
 		if self.def.costDrawAppend then
 			costString = self.def.costDrawAppend .. costString
 		end
