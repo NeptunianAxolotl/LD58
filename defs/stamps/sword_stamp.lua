@@ -22,7 +22,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 end
 
 local function GetSoloScore(self)
-	return math.ceil(BookHelper.BaseStampScore(self) * 1.5)
+	return math.ceil(BookHelper.BaseStampScore(self) * 1.5) + 2
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)

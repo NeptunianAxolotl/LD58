@@ -31,7 +31,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	score = score + ScorePair(self, top,     x, y, x, y - 1, bonusDisplayTable)
 	score = score + ScorePair(self, bottom,  x, y, x, y + 1, bonusDisplayTable)
 	if score == 1 or score == 2 then
-		score = self.quality
+		score = self.quality + 1
 		if bonusDisplayTable then
 			local key = "emu_herd"
 			local data = IterableMap.Get(bonusDisplayTable, key)

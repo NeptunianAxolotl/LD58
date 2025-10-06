@@ -361,7 +361,7 @@ local function DoTutorial(dt)
 		return
 	end
 	if self.tutorialPhase == 1 then
-		if MaxBookScore() >= 36 then
+		if MaxBookScore() >= 35 then
 			self.wantedTutorialPhase = math.max(2, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 2 then
@@ -402,7 +402,7 @@ local function DrawTutorial()
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 1) * 2)
 		love.graphics.printf("Nothing beats a well organised stamp collection. Improve this one by shifting the bird stamp up so the prices read 2¢, 3¢, 4¢.\n\nClick on the bird to pick it up, then click on a slot to place it.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
-		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 36", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 35", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)

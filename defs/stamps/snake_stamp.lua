@@ -22,7 +22,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	empty = empty + ScorePair(self, x, y - 1, posList, top)
 	empty = empty + ScorePair(self, x, y + 1, posList, bottom)
 	if empty >= 3 then
-		local score = 7 + self.quality
+		local score = 8 + self.quality
 		if bonusDisplayTable then
 			local key = "snake_" .. x .. "_" .. y
 			posList[#posList + 1] = {x, y}
