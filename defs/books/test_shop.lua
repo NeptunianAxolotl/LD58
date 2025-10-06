@@ -22,6 +22,12 @@ local def = {
 		{probability = 1, stamp = "wild_stamp"},
 		{probability = 1, stamp = "negative_stamp"},
 		
+		-- Assemble
+		{probability = 10, stamp = "huge_nw"},
+		{probability = 10, stamp = "huge_ne"},
+		{probability = 10, stamp = "huge_se"},
+		{probability = 10, stamp = "huge_sw"},
+		
 		-- Abilities
 		{probability = 1, stamp = "sell_stamp"},
 		{probability = 1, stamp = "clone_stamp"},

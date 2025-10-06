@@ -128,8 +128,8 @@ end
 
 local function UpdateStampAdjacencyData(self, i, j, bonusDisplayTable)
 	return self.stamps[i][j].def.UpdateAdjacencyData(
-		self.stamps[i][j], i, j,
-		bonusDisplayTable or false, self,
+		self.stamps[i][j], i, j, self,
+		bonusDisplayTable or false,
 		self.stamps[i - 1] and self.stamps[i - 1][j],
 		self.stamps[i + 1] and self.stamps[i + 1][j],
 		self.stamps[i][j - 1],
@@ -239,15 +239,14 @@ function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
 	local yFrac = math.max(0, math.min(1, (mousePos[2] - by) / bh))
 	
 	if colMult > 1 then
-		EffectsHandler.SpawnEffect("popup", {bx + bw * (placePos.x - 0.5) / self.width, by}, {text = "x" .. colMult, velocity = {0, -5}})
+		local ex = bx + bw * (placePos.x - 0.5) / self.width
+		EffectsHandler.SpawnEffect("popup", {ex, by}, {text = "x" .. colMult, velocity = {0, -5}})
+		EffectsHandler.SpawnEffect("popup", {ex, by + bh}, {text = "x" .. colMult, velocity = {0, 5}})
 	end
 	if rowMult > 1 then
 		local ey = by + bh * (placePos.y - 0.5) / self.height
-		if xFrac < 0.5 then
-			EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "x" .. rowMult, velocity = {-5, 0}})
-		else
-			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
-		end
+		EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "x" .. rowMult, velocity = {-5, 0}})
+		EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
 	end
 end
 
@@ -262,8 +261,8 @@ function api.SpawnAllMultiplierEffects(self, bx, by, bw, bh)
 	end
 	for j = 1, self.height do
 		local rowMult = api.GetRowScoreMultiplier(self, j)
-		if colMult > 1 then
-			local ey = by + bh * (placePos.y - 0.5) / self.height
+		if rowMult > 1 then
+			local ey = by + bh * (j - 0.5) / self.height
 			EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "x" .. rowMult, velocity = {-5, 0}})
 			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
 		end

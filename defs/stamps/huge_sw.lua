@@ -1,20 +1,6 @@
 
 local function OtherMatches(other, name)
-	return (other and other.name == name)
-end
-
-local function UpdateAdjacencyData(self, x, y, bookSelf, bonusDisplayTable, left, right, top, bottom, ne, nw, sw, se)
-	if (OtherMatches(right, "huge_ne") and OtherMatches(se, "huge_se") and OtherMatches(bottom, "huge_sw")) then
-		bookSelf.rowColumnGlobalMult = 2
-		if bonusDisplayTable then
-			IterableMap.Add(bonusDisplayTable, "huge_multiplier", {
-				posList = {{x, y}, {x + 1, y}, {x, y + 1}, {x + 1, y + 1}},
-				image = "big_ne",
-				humanName = "Cog Multiplier",
-				desc = string.format("Double row and column multipliers. Only one per book.", bonus, otherBonus),
-			})
-		end
-	end
+	return (other and other.name == name) and 1 or 0
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
@@ -38,12 +24,11 @@ local function InitRandomStamp(self, def)
 end
 
 local def = {
-	UpdateAdjacencyData = UpdateAdjacencyData,
 	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "big_nw",
+	image = "big_sw",
 	humanName = "Cog Segment",
 	desc = "Part of something larger?",
 }
