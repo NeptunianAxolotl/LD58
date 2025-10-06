@@ -108,10 +108,10 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	return 1
 end
 
-local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable)
+local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable, chosenImage)
 	IterableMap.Add(bonusDisplayTable, humanName .. index .. "_mult", {
 		posList = posList,
-		image = "renumber_stamp",
+		image = chosenImage,
 		humanName = humanName,
 		desc = desc,
 	})
@@ -181,7 +181,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 			TrackMultiplier(
 				self, mult, posList, "Column ♥ x" .. mult,
 				"Column multiplier for matching stamp colours, improves with better quality stamps.",
-				i, bonusDisplayTable)
+				i, bonusDisplayTable, "rowcombo")
 		end
 		score = score + basic_scores_col[i] * (mult - 1)
 	end
@@ -197,7 +197,7 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 			TrackMultiplier(
 				self, mult, posList, "Row ♥ x" .. mult,
 				"Row multiplier for sequential stamp prices, improves with better quality stamps.",
-				j, bonusDisplayTable)
+				j, bonusDisplayTable, "rowcombo")
 		end
 		--if bonusDisplayTable then
 		--TrackMultiplier(
