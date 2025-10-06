@@ -43,8 +43,8 @@ function api.RefreshShop(index)
 		self.books[#self.books + 1] = BookHelper.GetBook(util.SampleListWeighted(shopDef.bookType).bookType)
 	end
 	
-	if shopDef.giveBooksUpTo and shopDef.giveBooksUpTo < TableHandler.GetBookCount() then
-		TableHandler.AddBook("giveBookType")
+	if shopDef.giveBooksUpTo and TableHandler.GetBookCount() < shopDef.giveBooksUpTo then
+		TableHandler.AddBook(shopDef.giveBookType, shopDef.giveBookText)
 	end
 end
 
