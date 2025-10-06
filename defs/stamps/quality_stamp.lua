@@ -18,7 +18,7 @@ local function InitRandomStamp(self, def)
 end
 
 local function PlaceAbilityCheck(self, other, book, px, py)
-	return other.quality < 4
+	return other.quality < StampConst.QUALITY_RANGE
 end
 
 local function DoPlaceAbility(self, other, book)
