@@ -8,13 +8,25 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
 		return 0
 	end
-	if other.name == "kangaroo_stamp" then
+	if other.name == "kangaroo_stamp" and not other.spookedBySnake then
 		return 1
 	end
 	return 0
 end
 
+local function GetSoloScore(self)
+	local score = self.rarity * self.quality / 2 + self.rarity / 2
+	return math.ceil(score)
+end
+
+local function UpdateAdjacencyData(self, x, y, bookSelf, bonusDisplayTable, left, right, top, bottom)
+	self.spookedBySnake = BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom)
+end
+
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
+	if self.spookedBySnake then
+		return -1*GetSoloScore(self)
+	end
 	local score = 0
 	score = score + ScorePair(self, left,    x, y, x - 1, y, bonusDisplayTable)
 	score = score + ScorePair(self, right,   x, y, x + 1, y, bonusDisplayTable)
@@ -39,7 +51,7 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 			data.desc = "♥ " .. data.score .. " for kangaroos with one or two neighbours. Improved by quality."
 		end
 	end
-	if OtherMatches(right, "emu_stamp") then
+	if OtherMatches(right, "emu_stamp") and not right.spookedBySnake then
 		score = score + self.quality + 1
 		if bonusDisplayTable then
 			local coatOfArmsScore = self.quality + right.quality + 2
@@ -55,11 +67,6 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 	return score
 end
 
-local function GetSoloScore(self)
-	local score = self.rarity * self.quality / 2 + self.rarity / 2
-	return math.ceil(score)
-end
-
 local function GetSellValue(self)
 	return 1
 end
@@ -71,6 +78,7 @@ local function InitRandomStamp(self, def)
 end
 
 local def = {
+	UpdateAdjacencyData = UpdateAdjacencyData,
 	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,

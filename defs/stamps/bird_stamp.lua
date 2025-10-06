@@ -1,5 +1,4 @@
 
-
 local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
 		return 0
@@ -22,14 +21,17 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	return 0
 end
 
-local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
-	score = ScorePair(self, bottom, x, y, x, y + 1, bonusDisplayTable)
-	return score
-end
-
 local function GetSoloScore(self)
 	local score = (self.rarity + 1) * self.quality / 2 + self.rarity / 2
 	return math.ceil(score)
+end
+
+local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
+	if BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom) then
+		return -1*GetSoloScore(self)
+	end
+	score = ScorePair(self, bottom, x, y, x, y + 1, bonusDisplayTable)
+	return score
 end
 
 local function GetSellValue(self)
@@ -43,6 +45,7 @@ local function InitRandomStamp(self, def)
 end
 
 local def = {
+	UpdateAdjacencyData = UpdateAdjacencyData,
 	GetAdjacencyScore = GetAdjacencyScore,
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,

@@ -11,6 +11,39 @@ local NewStamp = require("objects/stamp")
 local api = {}
 local world
 
+local function FindSnake(self, other, sx, sy, ox, oy, bonusDisplayTable)
+	if not other then
+		return 0
+	end
+	if other.name == "snake_stamp" then
+		if bonusDisplayTable then
+			local key = "snakes_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
+			if not IterableMap.Get(bonusDisplayTable, key) then
+				IterableMap.Add(bonusDisplayTable, key, {
+					posList = {{sx, sy}, {ox, oy}},
+					image = "snake",
+					humanName = "Spooked by Snake",
+					desc = "Snakes spook other animals, wasting their ♥.",
+				})
+			end
+		end
+		return 1
+	end
+	return 0
+end
+
+function api.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom)
+	local score = 0
+	score = score + FindSnake(self, left,    x, y, x - 1, y, bonusDisplayTable, score)
+	score = score + FindSnake(self, right,   x, y, x + 1, y, bonusDisplayTable, score)
+	score = score + FindSnake(self, top,     x, y, x, y - 1, bonusDisplayTable, score)
+	score = score + FindSnake(self, bottom,  x, y, x, y + 1, bonusDisplayTable, score)
+	if score > 0 then
+		return true
+	end
+	return false
+end
+
 function api.GetColScoreMultiplier(self, colIndex)
 	local multiplier = 1
 	-- Get average quality
