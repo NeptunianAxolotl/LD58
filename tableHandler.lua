@@ -172,6 +172,15 @@ end
 -- API
 --------------------------------------------------
 
+function api.GetBookCount()
+	return #self.books
+end
+
+function api.AddBook(bookType)
+	self.books[#self.books + 1] = BookHelper.GetBook(bookType)
+	self.books[#self.books].SetPosition({1 - math.random()*0.1, 0})
+end
+
 function api.AddMoney(amount)
 	self.money = self.money + amount
 end

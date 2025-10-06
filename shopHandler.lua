@@ -40,6 +40,10 @@ function api.RefreshShop(index)
 	for i = 1, shopDef.size do
 		self.books[#self.books + 1] = BookHelper.GetBook(util.SampleListWeighted(shopDef.bookType).bookType)
 	end
+	
+	if shopDef.giveBooksUpTo and shopDef.giveBooksUpTo < TableHandler.GetBookCount() then
+		TableHandler.AddBook("giveBookType")
+	end
 end
 
 function api.GetCurrentShopIndex()

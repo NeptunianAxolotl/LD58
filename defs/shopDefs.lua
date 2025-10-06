@@ -9,7 +9,7 @@ local def = {
 		size = 3,
 		cost = 20,
 		bookRequirement = 200,
-    continuoValue = 3,
+		continuoValue = 3,
 		desc = [[The fanciest stamps.
 Bring a value 200 book to enter.
 Costs $20 to visit.]]
@@ -23,7 +23,7 @@ Costs $20 to visit.]]
 		size = 3,
 		cost = 20,
 		bookRequirement = 200,
-    continuoValue = 3,
+		continuoValue = 3,
 		desc = [[The fanciest stamps.
 Bring a value 200 book to enter.
 Costs $20 to visit.]]
@@ -37,7 +37,7 @@ Costs $20 to visit.]]
 		size = 3,
 		cost = 20,
 		bookRequirement = 200,
-    continuoValue = 3,
+		continuoValue = 3,
 		desc = [[The fanciest stamps.
 Bring a value 200 book to enter.
 Costs $20 to visit.]]
@@ -49,7 +49,9 @@ Costs $20 to visit.]]
 		},
 		size = 3,
 		cost = 5,
-    continuoValue = 2,
+		continuoValue = 2,
+		giveBooksUpTo = 3,
+		giveBookType = "shop_1_thin",
 		bookRequirement = 80,
 		desc = [[Decent stamps.
 Bring a value 80 book to enter.
@@ -63,7 +65,7 @@ Costs $5 to visit.]]
 		},
 		size = 3,
 		cost = 1,
-    continuoValue = 0,
+		continuoValue = 0,
 		waiveCostIfNoMoney = true,
 		bookRequirement = false,
 		desc = [[Terrible stamps, terribly organised.
@@ -79,7 +81,7 @@ Costs $1 to visit, if you can pay.]]
 		}),
 		size = 3,
 		cost = false,
-    continuoValue = 4,
+		continuoValue = 4,
 		bookRequirement = false,
 		desc = [[Test.]]
 	},
