@@ -20,7 +20,7 @@ local function GetSoloScore(self)
 end
 
 local function UpdateAdjacencyData(self, x, y, bookSelf, bonusDisplayTable, left, right, top, bottom)
-	self.spookedBySnake = BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom)
+	self.spookedBySnake = BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom, "snake_kill_kangaroo")
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)

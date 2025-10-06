@@ -13,7 +13,7 @@ local function ScorePair(self, x, y, posList, other)
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
-	if BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom) then
+	if BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom, "snake_kill_snake") then
 		return -1*GetSoloScore(self)
 	end
 	local posList = {}

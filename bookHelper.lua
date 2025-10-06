@@ -11,7 +11,7 @@ local NewStamp = require("objects/stamp")
 local api = {}
 local world
 
-local function FindSnake(self, other, sx, sy, ox, oy, bonusDisplayTable)
+local function FindSnake(self, other, sx, sy, ox, oy, bonusDisplayTable, killImage)
 	if not other then
 		return 0
 	end
@@ -21,7 +21,7 @@ local function FindSnake(self, other, sx, sy, ox, oy, bonusDisplayTable)
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},
-					image = "snake",
+					image = killImage,
 					humanName = "Spooked by Snake",
 					desc = "Snakes spook other animals, wasting their ♥.",
 				})
@@ -32,12 +32,12 @@ local function FindSnake(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	return 0
 end
 
-function api.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom)
+function api.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom, killImage)
 	local score = 0
-	score = score + FindSnake(self, left,    x, y, x - 1, y, bonusDisplayTable, score)
-	score = score + FindSnake(self, right,   x, y, x + 1, y, bonusDisplayTable, score)
-	score = score + FindSnake(self, top,     x, y, x, y - 1, bonusDisplayTable, score)
-	score = score + FindSnake(self, bottom,  x, y, x, y + 1, bonusDisplayTable, score)
+	score = score + FindSnake(self, left,    x, y, x - 1, y, bonusDisplayTable, killImage)
+	score = score + FindSnake(self, right,   x, y, x + 1, y, bonusDisplayTable, killImage)
+	score = score + FindSnake(self, top,     x, y, x, y - 1, bonusDisplayTable, killImage)
+	score = score + FindSnake(self, bottom,  x, y, x, y + 1, bonusDisplayTable, killImage)
 	if score > 0 then
 		return true
 	end

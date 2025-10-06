@@ -27,7 +27,7 @@ local function GetSoloScore(self)
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
-	if BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom) then
+	if BookHelper.IsNextToSnake(self, x, y, bonusDisplayTable, left, right, top, bottom, "snake_kill_bird") then
 		return -1*GetSoloScore(self)
 	end
 	score = ScorePair(self, bottom, x, y, x, y + 1, bonusDisplayTable)
