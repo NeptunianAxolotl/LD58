@@ -11,7 +11,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},
-					image = "pair",
+					image = "rocket_stamp",
 					humanName = "Rocket Bonus",
 					desc = string.format("With an adjacent planet Rocket gains %d to base ♥, based on quality of both.", bonus),
 				})
