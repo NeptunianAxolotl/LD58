@@ -37,6 +37,7 @@ function api.ReplaceBook(tableBook, shopIndex)
 end
 
 function api.RefreshShop(index)
+	self.previousShopIndex = self.currentShopIndex
 	self.bestShopSoFar = math.min(index, self.bestShopSoFar)
 	TableHandler.ClearShopSelected()
 	self.currentShopIndex = index
@@ -56,12 +57,12 @@ function api.GetCurrentShopIndex()
 end
 
 function api.GetCurrentContinuoScore(index)
-  if self.currentShopIndex == nil
-  then return 0
-  else
-    local shopDef = ShopDefs[self.currentShopIndex]
-    return shopDef.continuoValue
-  end
+	if not self.currentShopIndex then
+		return 0
+	else
+		local shopDef = ShopDefs[self.currentShopIndex]
+		return shopDef.continuoValue
+	end
 end
 --------------------------------------------------
 -- Drawing
@@ -125,12 +126,16 @@ end
 function api.Update(dt)
 end
 
+local function GetShopImage(index)
+	return index and ShopDefs[index] and ShopDefs[index].shopImage or ShopDefsData.defaultShopImage
+end
+
 
 function api.Draw(drawQueue)
 	drawQueue:push({y=0; f=function()
-		Resources.DrawImage("alley", Global.WINDOW_X*0.5, Global.WINDOW_Y*0.7, false, 0.5)
-		
-		Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.65)
+		local shopImage = GetShopImage(self.currentShopIndex)
+		Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.55, false, 0.5)
+		--Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.65)
 	end})
 	drawQueue:push({y=50; f=function()
 		DrawBooks(self.books, true)
@@ -164,6 +169,9 @@ function api.Initialize(world)
 	self = {
 		world = world,
 		bestShopSoFar = ShopDefsData.starterShop,
+		currentShopIndex = false,
+		previousShopIndex = false,
+		previousShopTime = false,
 		books = {}
 	}
 end

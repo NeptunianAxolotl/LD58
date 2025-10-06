@@ -9,9 +9,10 @@ local offset = {
 	international = 0.5,
 	national = 0.5,
 	stan = 0.5,
+	outside = 0.5,
 }
 
-local backgroundScale = 0.8
+local backgroundScale = 0.7
 local scale = {
 	["table"] = 1,
 	alley = backgroundScale,
@@ -19,6 +20,7 @@ local scale = {
 	international = backgroundScale,
 	national = backgroundScale,
 	stan = backgroundScale,
+	outside = backgroundScale,
 }
 
 for i = 1, #names do

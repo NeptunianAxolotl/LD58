@@ -9,6 +9,7 @@ local def = {
 		cost = 0,
 		bookRequirement = 600,
 		continuoValue = 5,
+		shopImage = "international",
 		desc = [[Ascend to stamp collector glory.]]
 	},
 	{
@@ -21,6 +22,7 @@ local def = {
 		size = 3,
 		cost = 40,
 		bookRequirement = 400,
+		shopImage = "international",
 		continuoValue = 4,
 		desc = [[The fanciest stamps.
 Bring a value 400 book to enter.
@@ -36,6 +38,7 @@ Costs $40 to visit.]]
 		size = 3,
 		cost = 20,
 		bookRequirement = 300,
+		shopImage = "national",
 		continuoValue = 3,
 		desc = [[The fanciest stamps.
 Bring a value 300 book to enter.
@@ -51,6 +54,7 @@ Costs $20 to visit.]]
 		size = 3,
 		cost = 10,
 		bookRequirement = 200,
+		shopImage = "stan",
 		continuoValue = 2,
 		desc = [[The fanciest stamps.
 Bring a value 200 book to enter.
@@ -70,6 +74,7 @@ Costs $10 to visit.]]
 		giveBookType = "shop_1_thin",
 		giveBookText = "Welcome to Serviceable Stamps. You look like an avid collector, have another stamp book, on the house.",
 		bookRequirement = 100,
+		shopImage = "auspost",
 		desc = [[Decent stamps.
 Bring a value 100 book to enter.
 Costs $5 to visit.]]
@@ -87,6 +92,7 @@ Costs $5 to visit.]]
 		continuoValue = 0,
 		waiveCostIfNoMoney = true,
 		bookRequirement = false,
+		shopImage = "alley",
 		desc = [[Terrible stamps, terribly organised.
 No standards.
 Costs $1 to visit, if you can pay.]]
@@ -102,12 +108,14 @@ Costs $1 to visit, if you can pay.]]
 		cost = false,
 		continuoValue = 4,
 		bookRequirement = false,
+		shopImage = "alley",
 		desc = [[Test.]]
 	},
 }
 
 local data = {
 	def = def,
+	defaultShopImage = "outside",
 	starterShop = 6,
 	shopLookahead = 2,
 }

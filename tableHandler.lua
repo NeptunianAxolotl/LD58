@@ -380,6 +380,10 @@ local function DoTutorial(dt)
 		self.books[1].SetVelocity({10, 0})
 		self.books[2].SetPosition({-0.25, 0})
 	end
+	if self.tutorialPhase > 4.6 and #self.books == 2 then
+		self.books[#self.books + 1] = BookHelper.GetBook("starter_3")
+		self.books[3].SetPosition({0.9, 0})
+	end
 	if self.tutorialPhase >= 8 then
 		self.tutorialPhase = false
 	end
@@ -406,19 +410,19 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)
-		love.graphics.printf("Click on Stamp Alley to trade with other collectors. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
+		love.graphics.printf("Click on Stamp Alley to trade with other collectors. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 950)
 	elseif self.tutorialPhase > 4.8 and self.tutorialPhase <= 5.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 5) * 2)
-		love.graphics.printf("Offer a book for trade. Trade for books with low ♥ that can be rearranged for profit.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 850)
+		love.graphics.printf("Offer a book for trade. Trade for books with low ♥ that can be rearranged for profit.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 850)
 	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
-		love.graphics.printf("Click Stamp Alley again see new trades. This costs $1, but Stamp Alley waives the fee for the destitute.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
+		love.graphics.printf("Reroll Stamp Alley again see new trades. This costs $1, but Stamp Alley waives the fee for the destitute.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 950)
 	elseif self.tutorialPhase > 6.8 and self.tutorialPhase <= 7.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 7) * 2)
-		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for $ stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
+		love.graphics.printf("Improve the ♥ of your books to climb .", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 950)
 	end
 end
 
