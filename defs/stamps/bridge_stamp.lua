@@ -10,11 +10,11 @@ local function ScorePair(self, other)
 end
 
 local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top, bottom)
-	local quality = 0
-	quality = quality + ScorePair(self, left)
-	quality = quality + ScorePair(self, right)
-	if quality > 0 then
-		score = math.ceil(self.quality / 2) + 1
+	local score = 0
+	score = score + math.ceil(ScorePair(self, left) / 2)
+	score = score + math.ceil(ScorePair(self, right) / 2)
+	if score > 0 then
+		score = score + math.ceil(self.quality / 2)
 		if bonusDisplayTable then
 			local key = "bridge_row_" .. y
 			local data = IterableMap.Get(bonusDisplayTable, key)
