@@ -1,7 +1,7 @@
 
 local Font = require("include/font")
 
-local EffectsHandler = require("EffectsHandler")
+local EffectsHandler = require("effectsHandler")
 local Resources = require("resourceHandler")
 MusicHandler = require("musicHandler")
 

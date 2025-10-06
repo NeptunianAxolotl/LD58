@@ -16,8 +16,8 @@ local def = {
 	}),
 	scramble = util.NormaliseWeightedList({
 		{probability = 0.2, target = 0, attempts = 30,},
-		{probability = 0.5, target = 0.5, attempts = 30,},
-		{probability = 0.3, target = 1, attempts = 30,}, -- should take the initial forced solution if no better is found
+		{probability = 0.6, target = 0.3, attempts = 30,},
+		{probability = 0.2, target = 0.6, attempts = 30,}, -- should take the initial forced solution if no better is found
 	}),
 }
 

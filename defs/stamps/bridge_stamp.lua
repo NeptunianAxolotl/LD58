@@ -4,7 +4,7 @@ local function ScorePair(self, other)
 		return 0
 	end
 	if other.name == "bridge_stamp" then
-		return 2 + other.quality 
+		return other.quality + 1
 	end
 	return 0
 end

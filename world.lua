@@ -1,5 +1,5 @@
 
-EffectsHandler = require("EffectsHandler")
+EffectsHandler = require("effectsHandler")
 TableHandler = require("tableHandler")
 ShopHandler = require("shopHandler")
 BookHelper = require("bookHelper")
@@ -178,6 +178,10 @@ function api.GetCameraInitalPosition()
 	return {500, 500}
 end
 
+function api.GetAspectRatio()
+	return self.aspectRatio or 1
+end
+
 --------------------------------------------------
 -- Updates
 --------------------------------------------------
@@ -206,6 +210,7 @@ function api.Draw()
 	local drawQueue = PriorityQueue.new(function(l, r) return l.y < r.y end)
 	
 	local windowX, windowY = love.window.getMode()
+	self.aspectRatio = windowX * Global.WINDOW_Y / (windowY * Global.WINDOW_X)
 	if windowX/windowY > Global.WINDOW_X/Global.WINDOW_Y then
 		local edge = (windowX - Global.WINDOW_X*windowY/Global.WINDOW_Y) / 2
 		self.interfaceTransform:setTransformation(edge, 0, 0, windowY/Global.WINDOW_Y, windowY/Global.WINDOW_Y, 0, 0)

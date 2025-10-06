@@ -4,9 +4,9 @@ local def = {
 	scoreRange = {
 		[1] = {0, 60},
 		[2] = {40, 70},
-		[3] = {70, 160},
-		[4] = {100, 200},
-		[5] = {180, 800},
+		[3] = {60, 140},
+		[4] = {80, 180},
+		[5] = {120, 600},
 	},
 	stampDist = {
 		[1] = util.NormaliseWeightedList({
@@ -124,7 +124,7 @@ local def = {
 			{probability = 3*0.05, stamp = "huge_se"},
 			{probability = 3*0.05, stamp = "huge_sw"},
 			{probability = 0.1, stamp = "misprint_stamp"},
-			{probability = 0.3, stamp = "clone_stamp"},
+			{probability = 0.05, stamp = "clone_stamp"},
 			{probability = 0.3, stamp = "sell_stamp"},
 			{probability = 0.3, stamp = "renumber_stamp"},
 			{probability = 0.3, stamp = "renumber_down_stamp"},

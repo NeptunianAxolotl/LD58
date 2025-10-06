@@ -51,6 +51,9 @@ function api.RefreshShop(index)
 	self.currentShopIndex = index
 	self.books = {}
 	local shopDef = ShopDefs[index]
+	if not shopDef.size then
+		return
+	end
 	for i = 1, shopDef.size do
 		self.books[#self.books + 1] = BookHelper.GetBook(util.SampleListWeighted(shopDef.bookType).bookType, shopDef.qualityDist)
 	end
@@ -58,6 +61,10 @@ function api.RefreshShop(index)
 	if shopDef.giveBooksUpTo and TableHandler.GetBookCount() < shopDef.giveBooksUpTo then
 		TableHandler.AddBook(shopDef.giveBookType, shopDef.giveBookText)
 	end
+end
+
+function api.GetCurrentShopIndex()
+	return self.currentShopIndex
 end
 
 function api.GetCurrentShopIndex()
@@ -72,6 +79,11 @@ function api.GetCurrentContinuoScore(index)
 		return shopDef.continuoValue
 	end
 end
+
+function api.InWinShop()
+	return self.currentShopIndex and ShopDefs[self.currentShopIndex] and ShopDefs[self.currentShopIndex].winShop
+end
+
 --------------------------------------------------
 -- Drawing
 --------------------------------------------------
@@ -142,7 +154,11 @@ end
 function api.Draw(drawQueue)
 	drawQueue:push({y=0; f=function()
 		local shopImage = GetShopImage(self.currentShopIndex)
-		Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.55, false, 0.5)
+		if self.world.GetAspectRatio() > 0.95 then
+			Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.5, false, 0.45, 0.75)
+		else
+			Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.5, false, 0.45)
+		end
 		--Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.65)
 	end})
 	drawQueue:push({y=50; f=function()
@@ -169,7 +185,7 @@ function api.Draw(drawQueue)
 						TableHandler.SetUnderMouse({type = "selectShop", index = self.currentShopIndex, cost = shopDef.cost, tooltip = "Revisit current location, paying travel costs."})
 					end
 				end
-			elseif i >= self.bestShopSoFar - ShopDefsData.shopLookahead or self.world.IsGodMode() then
+			elseif (i >= self.bestShopSoFar - ShopDefsData.shopLookahead and not shopDef.devTool) or self.world.IsGodMode() then
 				local canEnter = TableHandler.CanEnterShop(shopDef) or self.world.IsGodMode()
 				local flash = canEnter and (not self.bestShopSoFar or i < self.bestShopSoFar)
 				if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, flash, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then

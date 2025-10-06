@@ -35,7 +35,7 @@ local def = {
 	fixedCost = true,
 	placeConsumes = true,
 	image = "pen",
-	humanName = "Subtraction Stamp(Single Use)",
+	humanName = "Subtraction Stamp",
 	desc = "Decreases the cost of a stamp by 1¢.",
 }
 

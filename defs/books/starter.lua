@@ -12,4 +12,27 @@ local def = {
 	}
 }
 
+--def = {
+--	width = 4,
+--	height = 4,
+--	predeterminedStamps = {
+--		{name = "huge_nw", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "huge_sw", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "huge_ne", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "huge_se", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "bridge_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "pair_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--		{name = "pair_stamp", quality = 3, cost = 5, color = 2, rarity = 1,},
+--	}
+--}
+
 return def

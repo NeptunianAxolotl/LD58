@@ -35,7 +35,8 @@ local function NewBook(def)
 	function api.UpdatePhysics(dt, index, otherBooks)
 		local accel = {-12*self.position[1], 0}
 		for i = 1, #otherBooks do
-			if i ~= index then
+			local ascend = ShopHandler.InWinShop() and (TableHandler.UniqueBestBook() == i)
+			if i ~= index and not ascend then
 				local other = otherBooks[i]
 				local oPos = other.GetPosition()
 				local width = math.max(2.4, other.GetWidth()) + math.max(2.4, self.width) + 1.2
@@ -46,18 +47,25 @@ local function NewBook(def)
 				end
 			end
 		end
+		local ascend = ShopHandler.InWinShop() and (TableHandler.UniqueBestBook() == index)
+		if ascend then
+			accel[1] = -45*self.position[1]
+		end
+		
 		accel[1] = math.min(200, math.max(-200, accel[1]))
 		local speed = math.abs(self.velocity[1]) + 0.05
 		self.velocity = util.Add(util.Mult(dt, accel), self.velocity)
 		self.velocity = util.Mult(math.max(0, (0.8 - speed/(0.8 + speed))), self.velocity)
 		self.position = util.Add(util.Mult(dt, self.velocity), self.position)
-		if TableHandler.BookOnOffer() == index then
+		if ascend then
+			self.position[2] = self.position[2] + (6.3 - self.position[2])*dt
+		elseif TableHandler.BookOnOffer() == index then
 			self.position[2] = self.position[2] + 6*dt
 		else
 			self.position[2] = self.position[2] - 6*dt
 		end
 		self.position[1] = math.max(-1, math.min(1, self.position[1]))
-		self.position[2] = math.max(0, math.min(1, self.position[2]))
+		self.position[2] = math.max(0, math.min(ascend and 6 or 1, self.position[2]))
 	end
 	
 	function api.GetSelfData()

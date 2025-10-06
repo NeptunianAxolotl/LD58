@@ -36,7 +36,7 @@ local def = {
 	placeConsumes = true,
 	costDrawAppend = "+",
 	image = "pen_reverse",
-	humanName = "Addition Stamp (Single Use)",
+	humanName = "Addition Stamp",
 	desc = "Increases the cost of a stamp by 1¢.",
 }
 

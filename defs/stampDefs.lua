@@ -9,7 +9,7 @@ end
 
 local data = {
 	defs = newStamps,
-	COST_RANGE = 9,
+	COST_RANGE = 7,
 	COLOR_RANGE = 8,
 	RAIRTY_RANGE = 3,
 	ABILITY_RAITY = 4,

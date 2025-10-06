@@ -9,12 +9,16 @@ local api = {}
 local menuOptions = {
 	"Quit",
 	"Restart",
-	"Colourblind Mode",
 	"Toggle Music",
-	"Money++",
-	"Disable Tutorial",
-	"God Mode",
+	"Colourblind Mode",
+	"Fullscreen",
 }
+
+if Global.DEV_TOOLS_ENABLED then
+	menuOptions[#menuOptions + 1] = "Money++"
+	menuOptions[#menuOptions + 1] ="Disable Tutorial"
+	menuOptions[#menuOptions + 1] = "God Mode"
+end
 
 --------------------------------------------------
 -- API
@@ -38,6 +42,9 @@ function api.MousePressed(x, y, button)
 	elseif self.hoveredMenuAction == "God Mode" then
 		TableHandler.AddMoney(10000)
 		self.cosmos.ToggleGodMode()
+	elseif self.hoveredMenuAction == "Fullscreen" then
+		self.fullscreen = not self.fullscreen
+		love.window.setFullscreen(self.fullscreen)
 	elseif self.menuOpen then
 		self.menuOpen = false
 		return true
@@ -73,6 +80,7 @@ function api.Initialize(cosmos)
 	self = {
 		cosmos = cosmos,
 		menuOpen = false,
+		fullscreen = true,
 	}
 end
 

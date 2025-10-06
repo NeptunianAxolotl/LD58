@@ -16,8 +16,8 @@ local def = {
 	}),
 	scramble = util.NormaliseWeightedList({
 		{probability = 0.4, target = 0, attempts = 30,},
-		{probability = 0.4, target = 0.5, attempts = 30,},
-		{probability = 0.2, target = 1.0, attempts = 30,}, -- dont scramble
+		{probability = 0.4, target = 0.25, attempts = 30,},
+		{probability = 0.2, target = 0.5, attempts = 30,}, -- dont scramble
 	}),
 }
 

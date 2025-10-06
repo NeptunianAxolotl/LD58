@@ -1,18 +1,12 @@
 
 local def = {
 	{
-		name = "Join Elite Stamp Cabal",
-		bookType = {
-			{probability = 1.0, bookType = "shop_6"},
-		},
-		size = 3,
-		cost = 0,
-		bookRequirement = 600,
+		name = "Become Grandmaster",
+		shopImage = "outside",
+		bookRequirement = 1000,
 		continuoValue = 5,
-		shopImage = "international",
-		desc = [[The very best collectors gather for international trade.
-Bring a ♥ 500 book to enter.
-Cost: $5]]
+		winShop = true,
+		desc = [[Bring a ♥ 1000 book to the gathering of Stamp Masters.]]
 	},
 	{
 		name = "World Stamp Congress",
@@ -28,11 +22,11 @@ Cost: $5]]
 		},
 		size = 3,
 		cost = 5,
-		bookRequirement = 500,
+		bookRequirement = 400,
 		shopImage = "international",
 		continuoValue = 4,
-		desc = [[The very best collectors gather for international trade.
-Bring a ♥ 500 book to enter.
+		desc = [[The very best collectors gather for intense stamp swapping.
+Bring a ♥ 400 book to enter.
 Cost: $5]]
 	},
 	{
@@ -49,11 +43,11 @@ Cost: $5]]
 		},
 		size = 3,
 		cost = 4,
-		bookRequirement = 250,
+		bookRequirement = 200,
 		shopImage = "national",
 		continuoValue = 3,
 		desc = [[Collectors from all over the nation gather to trade stamps.
-Bring a ♥ 250 book to enter.
+Bring a ♥ 200 book to enter.
 Cost: $4]]
 	},
 	{
@@ -70,11 +64,11 @@ Cost: $4]]
 		},
 		size = 3,
 		cost = 3,
-		bookRequirement = 150,
+		bookRequirement = 140,
 		shopImage = "stan",
 		continuoValue = 2,
 		desc = [[The finest stamps Stan has to offer.
-Bring a ♥ 150 book to enter.
+Bring a ♥ 140 book to enter.
 Cost: $3]]
 	},
 	{
@@ -143,6 +137,7 @@ Cost: $1, but free to enter if you have no money.]]
 		cost = false,
 		continuoValue = 4,
 		bookRequirement = false,
+		devTool = true,
 		shopImage = "alley",
 		desc = [[Test.]]
 	},

@@ -1,8 +1,8 @@
 function love.conf(t)
-	t.window.title = "LD57"
+	t.window.title = "Trading Postage"
 	t.window.width = 1280
 	t.window.height = 768
-	--t.window.fullscreen = true -- Do not fullscreen since we lack an exit button.
+	t.window.fullscreen = true -- Do not fullscreen since we lack an exit button.
 	t.window.resizable = true
 	--t.window.icon = "resources/images/hat.png"
 

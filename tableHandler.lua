@@ -337,6 +337,16 @@ function api.TutorialBoughtBook()
 	end
 end
 
+function api.UniqueBestBook()
+	local best = 1
+	for i = 1, #self.books do
+		if self.books[i].GetScore() > self.books[best].GetScore() then
+			best = i
+		end
+	end
+	return best
+end
+
 local function MaxBookScore()
 	local score = 0
 	for i = 1, #self.books do
@@ -365,7 +375,7 @@ local function DoTutorial(dt)
 			self.wantedTutorialPhase = math.max(2, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 2 then
-		if MaxBookScore() >= 48 then
+		if MaxBookScore() >= 50 then
 			self.wantedTutorialPhase = math.max(3, self.wantedTutorialPhase)
 		end
 	elseif self.tutorialPhase == 3 then
@@ -387,7 +397,7 @@ local function DoTutorial(dt)
 		self.books[1].SetVelocity({10, 0})
 		self.books[2].SetPosition({-0.25, 0})
 	end
-	if self.tutorialPhase > 4.6 and #self.books == 2 then
+	if self.tutorialPhase > 4.1 and #self.books == 2 then
 		self.books[#self.books + 1] = BookHelper.GetBook("starter_3")
 		self.books[3].SetPosition({0.9, 0})
 	end
@@ -406,9 +416,9 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
-		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to reach ♥ 48.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
+		love.graphics.printf("Every collector needs a stamp tray. Use the orange planet from the tray to reach ♥ 50.\n\nMatch colours or make ¢ sequences to multiply ♥ in a line. Sequences need at least three stamps.", Global.WINDOW_X*0.08, Global.WINDOW_Y*0.2, 490)
 		Font.SetSize(2)
-		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 48", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
+		love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ 50", Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 3) * 2)
@@ -426,6 +436,36 @@ local function DrawTutorial()
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
 		love.graphics.printf("Improve the ♥ of your books to gain access to better shops and assemble the ultimate stamp book.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.37, 950)
+	end
+end
+
+--------------------------------------------------
+-- Win
+--------------------------------------------------
+
+local function DrawWin()
+	Font.SetSize(2)
+	local xPos = Global.WINDOW_X*0.25
+	local yPos = Global.WINDOW_Y*0.32 - math.min(9.3, self.winProgress)*35
+	if self.winProgress > 0.9 then
+		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 0.9)*3))
+		love.graphics.printf("You approach the stamp podium.", xPos, yPos, 860)
+	end
+	if self.winProgress > 1.9 then
+		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 1.9)*1.5))
+		love.graphics.printf("\nBook in hand.", xPos, yPos, 860)
+	end
+	if self.winProgress > 5 then
+		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 5)*2))
+		love.graphics.printf("\n\nA gasp rings out, never before have the Stamp Masters seen such an exquisite collection.", xPos, yPos + 15, 860)
+	end
+	if self.winProgress > 8.4 then
+		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 8.4)*1.1))
+		love.graphics.printf("\n\n\n\nThe vote is unanimous as you are elected Stamp Grandmaster for life.", xPos, yPos + 30, 860)
+	end
+	if self.winProgress > 10.5 then
+		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 10.5)*2))
+		love.graphics.printf("\n\n\n\n\n\nThanks for playing", xPos, yPos + 38, 740, "center")
 	end
 end
 
@@ -451,6 +491,9 @@ function api.Update(dt)
 			self.tempTextDecay = false
 			self.tempText = false
 		end
+	end
+	if ShopHandler.InWinShop() then
+		self.winProgress = (self.winProgress or 0) + dt
 	end
 end
 
@@ -550,9 +593,13 @@ function api.Draw(drawQueue)
 		local yScale = scale * Global.STAMP_HEIGHT
 		
 		local wantTooltip = false
+		local bestBook = api.UniqueBestBook()
 		for i = 1, #self.books do
-			wantTooltip = DrawBook(i, xScale, yScale, scale, mousePos, wantTooltip)
+			if i ~= bestBook then
+				wantTooltip = DrawBook(i, xScale, yScale, scale, mousePos, wantTooltip)
+			end
 		end
+		wantTooltip = DrawBook(bestBook, xScale, yScale, scale, mousePos, wantTooltip)
 		
 		local sideX, sideY = api.GetSideboardDrawPosition(1)
 		Resources.DrawImage("sideboard", sideX - 412, sideY - 108)
@@ -571,6 +618,10 @@ function api.Draw(drawQueue)
 			if self.sideboard[i] then
 				self.sideboard[i].Draw(x + xScale/2, y + yScale/2, scale)
 			end
+		end
+		
+		if self.winProgress and ShopHandler.InWinShop() then
+			DrawWin()
 		end
 		
 		local buySideboard = false
@@ -624,7 +675,7 @@ function api.Draw(drawQueue)
 		if wantTooltip then
 			Font.SetSize(3)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(wantTooltip, self.tooltipX, self.tooltipY, 380)
+			love.graphics.printf(wantTooltip, self.tooltipX, self.tooltipY, 340)
 		end
 		
 		local moneyChangeString = ""
