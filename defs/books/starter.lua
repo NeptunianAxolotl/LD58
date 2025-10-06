@@ -5,10 +5,10 @@ local def = {
 	predeterminedStamps = {
 		false,
 		{name = "bird_stamp", quality = 2, cost = 2, color = 4, rarity = 2,},
-		{name = "herd_stamp", quality = 2, cost = 3, color = 5, rarity = 3,},
+		{name = "kangaroo_stamp", quality = 2, cost = 3, color = 5, rarity = 3,},
 		false,
-		{name = "herd_stamp", quality = 2, cost = 4, color = 1, rarity = 1,},
-		{name = "herd_stamp", quality = 2, cost = 7, color = 2, rarity = 2,},
+		{name = "kangaroo_stamp", quality = 2, cost = 4, color = 1, rarity = 1,},
+		{name = "kangaroo_stamp", quality = 2, cost = 7, color = 2, rarity = 2,},
 	}
 }
 

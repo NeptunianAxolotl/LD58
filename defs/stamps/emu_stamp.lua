@@ -4,7 +4,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if not other then
 		return 0
 	end
-	if other.name == "herd_stamp" then
+	if other.name == "emu_stamp" then
 		return 1
 	end
 	return 0
@@ -24,15 +24,15 @@ local function GetAdjacencyScore(self, x, y, bonusDisplayTable, left, right, top
 			if not data then
 				data = {
 					posList = {},
-					image = "kangaroo",
-					humanName = "Kangaroo Herd",
+					image = "emu",
+					humanName = "Emu Herd",
 					score = 0,
 				}
 				IterableMap.Add(bonusDisplayTable, key, data)
 			end
 			data.score = data.score + score
 			data.posList[#data.posList + 1] = {x, y}
-			data.desc = "♥ " .. data.score .. " for kangaroos with one or two neighbours. Improved by quality."
+			data.desc = "♥ " .. data.score .. " for emus with one or two neighbours. Improved by quality."
 		end
 	end
 	return score
@@ -58,9 +58,9 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "kangaroo",
-	humanName = "Kangaroo",
-	desc = "Likes other kangaroos.",
+	image = "emu",
+	humanName = "Emu",
+	desc = "Likes other emus.",
 }
 
 return def

@@ -63,8 +63,14 @@ local function NewStamp(def)
 	function self.Draw(x, y, scale, alpha)
 		local colorDef = StampConst.colorMap[self.color]
 		Resources.DrawImage(self.def.backImage or "stamp_back", x, y, false, alpha or false, scale, colorDef and colorDef[1])
-		Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, colorDef and colorDef[2])
-		Resources.DrawImage("stamp", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
+		if self.def.image then
+			Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, colorDef and colorDef[2])
+		end
+		if self.def.DoPlaceAbility then
+			Resources.DrawImage("stamp_zigzag", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
+		else
+			Resources.DrawImage("stamp", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
+		end
 		Resources.DrawImage("quality_" .. self.quality, x, y, false, alpha or false, scale)
 		
 		Font.SetSize(4)
