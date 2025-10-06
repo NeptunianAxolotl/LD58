@@ -8,6 +8,8 @@ local scales = {
 	quality_3 = 1/5,
 	quality_4 = 1/5,
 	quality_5 = 1/5,
+	colcombo = 1/1.3,
+	rowcombo = 1/1.3,
 }
 
 for i = 1, #names do

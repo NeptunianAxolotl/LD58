@@ -461,7 +461,7 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	for i = 1, bonusCount do
 		local bonus = bonusByKey[keyByIndex[i]]
 		local hovered = (not wantTooltip) and util.PosInRectangle(mousePos, xOff - xScale*0.5/2, yOff - yScale*0.5/2, xScale*0.5, yScale*0.5)
-		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or 0.6, 0.5)
+		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or 0.6, 0.5 * self.bonusIconScale)
 		if hovered then
 			Font.SetSize(3)
 			love.graphics.setColor(0, 0, 0, 1)
@@ -646,6 +646,7 @@ function api.Initialize(world)
 		sideboardGap = 18,
 		bookDrawSpacing = 390,
 		bookScale = 1,
+		bonusIconScale = 1.3,
 	}
 	self.sideboard[1] = NewStamp({name = "planet_stamp", cost = 7, quality = 2, color = 1, rarity = 2})
 	
