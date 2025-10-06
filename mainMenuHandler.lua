@@ -21,10 +21,12 @@ local menuOptions = {
 function api.MousePressed(x, y, button)
 	if self.hoveredMenuAction == "Menu" then
 		api.ToggleMenu()
-	elseif self.hoveredMenuAction == "Restart" then
-		self.cosmos.RestartWorld()
 	elseif self.hoveredMenuAction == "Quit" then
 		self.cosmos.QuitGame()
+	elseif self.hoveredMenuAction == "Restart" then
+		self.cosmos.RestartWorld()
+	elseif self.hoveredMenuAction == "Toggle Music" then
+		self.cosmos.ToggleMusic()
 	elseif self.hoveredMenuAction == "Money++" then
 		TableHandler.AddMoney(1000)
 	elseif self.hoveredMenuAction == "Disable Tutorial" then
