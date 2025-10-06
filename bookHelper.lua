@@ -303,8 +303,7 @@ local function ForceBasicSequence(self)
 	end
 end
 
-local function ForceRocketPlanet(self)
-	
+local function ForcePair(self,stamp1,stamp2)
 	i = 1 + math.floor(math.random() * self.width)
 	j = 1 + math.floor(math.random()*self.height)
 	flip = 1 + math.floor(math.random()*2)
@@ -329,13 +328,81 @@ local function ForceRocketPlanet(self)
 	end
 	
 	self.stamps[i][j] = NewStamp({
-		name = "rocket_stamp", 
+		name = stamp1, 
 		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
 	})
 	self.stamps[i2][j2] = NewStamp({
-		name = "planet_stamp", 
+		name = stamp2, 
 		quality = util.RandomIntegerInRange(self.minQuality, self.maxQuality)
 	})
+end
+
+local function permcompare(a,b)
+	return a["value"] < b["value"]
+end
+
+local function ScrambleForTarget(self, target, attempts)
+	
+	if target > 1 then
+		target = 1
+	end
+	if target < 0 then
+		target = 0
+	end
+	
+	local lstamps = {}
+	
+	local lsize = 0
+	for i = 1, self.width do
+		for j = 1, self.height do
+			lsize = lsize + 1
+			lstamps[lsize] = self.stamps[i][j]
+		end
+	end
+	
+	local perms = {}
+	local values = {}
+	perms[1] = {}
+	perms[1]["perm"] = {}
+	perms[1]["value"] = -1
+	for k = 1, lsize do
+		perms[1]["perm"][k] = k
+	end
+	perms[1]["value"] = api.CalculateBookScore(self)
+	
+	for a = 2, attempts do
+		perms[a] = {}
+		perms[a]["perm"] = util.GetRandomPermutation(lsize)
+		perms[a]["value"] = -1
+		
+		for i = 1, self.width do
+			for j = 1, self.height do
+				nextstamp = perms[a]["perm"][(i-1)*self.height + j]
+				self.stamps[i][j] = lstamps[nextstamp]
+			end
+		end
+		
+		perms[a]["value"] = api.CalculateBookScore(self)
+	end
+	
+	table.sort(perms, permcompare)
+	
+	if target < 1e-3 then
+		chosen = 1
+	elseif target > 1 - 1e-3 then
+		chosen = attempts
+	else
+		chosen = math.ceil(target * attempts)
+	end
+	
+	cperm = perms[chosen]["perm"]
+	for i = 1, self.width do
+		for j = 1, self.height do
+			nextstamp = perms[chosen]["perm"][(i-1)*self.height + j]
+			self.stamps[i][j] = lstamps[nextstamp]
+		end
+	end
+	
 end
 
 local function SelectRandomStamp(self, stampTypeCounts)
@@ -364,8 +431,8 @@ local function RegenerateStamps(self)
 			})
 		end
 	end
-	if self.forcingDist then
-		forcing = util.SampleListWeighted(self.forcingDist).forcing
+	if self.earlyForceDist then
+		forcing = util.SampleListWeighted(self.earlyForceDist).forcing
 		if forcing == "force_none" then
 			-- do nothing
 		elseif forcing == "force_sequence" then
@@ -373,9 +440,16 @@ local function RegenerateStamps(self)
 		elseif forcing == "force_flush" then
 			ForceBasicFlush(self)
 		elseif forcing == "force_rocket" then
-			ForceRocketPlanet(self)
+			ForcePair(self,"rocket_stamp","planet_stamp")
 		else
 			error("Error in book generation")
+		end
+	end
+	if self.scramble then
+		if self.scramble.doWithProb and math.random() < self.scramble.doWithProb then
+			target = self.scramble.target -- 0 to 1, what fraction of the other attempts is the selected permutation better than. NOT a book score target.
+			attempts = self.scramble.attempts
+			ScrambleForTarget(self, target, attempts)
 		end
 	end
 	

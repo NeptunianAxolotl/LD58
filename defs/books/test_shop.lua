@@ -36,7 +36,7 @@ local def = {
 		{probability = 1, stamp = "paint_stamp"},
 		{probability = 1, stamp = "renumber_stamp"},
 	}),
-	forcingDist = util.NormaliseWeightedList({
+	earlyForceDist = util.NormaliseWeightedList({
 		{probability = 0.4, forcing = "force_rocket"},
 		{probability = 0.2, forcing = "force_flush"},
 		{probability = 0.2, forcing = "force_sequence"},
