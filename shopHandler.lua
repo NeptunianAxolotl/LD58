@@ -127,6 +127,11 @@ end
 
 
 function api.Draw(drawQueue)
+	drawQueue:push({y=0; f=function()
+		Resources.DrawImage("alley", Global.WINDOW_X*0.5, Global.WINDOW_Y*0.7, false, 0.5)
+		
+		Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.65)
+	end})
 	drawQueue:push({y=50; f=function()
 		DrawBooks(self.books, true)
 		

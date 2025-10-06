@@ -4,9 +4,21 @@ local data = {}
 
 local offset = {
 	money_bag = 0.5,
+	alley = 0.5,
+	auspost = 0.5,
+	international = 0.5,
+	national = 0.5,
+	stan = 0.5,
 }
+
+local backgroundScale = 0.8
 local scale = {
 	["table"] = 1,
+	alley = backgroundScale,
+	auspost = backgroundScale,
+	international = backgroundScale,
+	national = backgroundScale,
+	stan = backgroundScale,
 }
 
 for i = 1, #names do

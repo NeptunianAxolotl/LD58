@@ -529,7 +529,6 @@ function api.Draw(drawQueue)
 		self.heldSellAbilityAmount = false
 	end
 	drawQueue:push({y=20; f=function()
-		Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.6)
 		if self.tempText then
 			Font.SetSize(2)
 			love.graphics.setColor(0, 0, 0, self.tempTextDecay or 1)
