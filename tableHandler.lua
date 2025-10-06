@@ -283,6 +283,9 @@ function api.CanEnterShop(shopDef)
 	if shopDef.cost and not shopDef.waiveCostIfNoMoney and shopDef.cost > self.money then
 		return false
 	end
+	if ShopHandler.GetBestSoFar() <= shopDef.index then
+		return true
+	end
 	if shopDef.bookRequirement and shopDef.bookRequirement > api.GetMaxBookValue() then
 		return false
 	end
@@ -351,6 +354,10 @@ local function DoTutorial(dt)
 			self.books[1].SetVelocity({10, 0})
 			self.books[2].SetPosition({-0.25, 0})
 		end
+		if #self.books == 2 then
+			self.books[#self.books + 1] = BookHelper.GetBook("starter_3")
+			self.books[3].SetPosition({0.9, 0})
+		end
 		return
 	end
 	if self.tutorialPhase == 1 then
@@ -384,7 +391,7 @@ local function DoTutorial(dt)
 		self.books[#self.books + 1] = BookHelper.GetBook("starter_3")
 		self.books[3].SetPosition({0.9, 0})
 	end
-	if self.tutorialPhase >= 8 then
+	if self.tutorialPhase >= 7 then
 		self.tutorialPhase = false
 	end
 end
@@ -414,15 +421,11 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 4.8 and self.tutorialPhase <= 5.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 5) * 2)
-		love.graphics.printf("Offer a book for trade. Trade for books with low ♥ that can be rearranged for profit.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 850)
+		love.graphics.printf("Try to trade books of similar ♥. Store excess stamps in other books to build up a collection. Reroll to see new trades.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 850)
 	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
-		love.graphics.printf("Reroll Stamp Alley again see new trades. This costs $1, but Stamp Alley waives the fee for the destitute.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 950)
-	elseif self.tutorialPhase > 6.8 and self.tutorialPhase <= 7.5 then
-		Font.SetSize(2)
-		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 7) * 2)
-		love.graphics.printf("Improve the ♥ of your books to climb .", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.39, 950)
+		love.graphics.printf("Improve the ♥ of your books to gain access to better shops and assemble the ultimate stamp book.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.33, 950)
 	end
 end
 
@@ -600,6 +603,13 @@ function api.Draw(drawQueue)
 			else
 				wantTooltip = "Drop a stamp here to sell it."
 			end
+		end
+		
+		local shopRequirement = ShopHandler.NextShopRequirement()
+		if shopRequirement and (not self.tutorialPhase or self.tutorialPhase > 5.8) then
+			Font.SetSize(2)
+			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.printf("♥ " .. MaxBookScore() .. " / ♥ " .. shopRequirement, Global.WINDOW_X*0.24, Global.WINDOW_Y*0.45, 780, "center")
 		end
 		
 		if not wantTooltip then

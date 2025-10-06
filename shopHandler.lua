@@ -36,6 +36,14 @@ function api.ReplaceBook(tableBook, shopIndex)
 	return shopBook
 end
 
+function api.GetBestSoFar()
+	return self.bestShopSoFar
+end
+
+function api.NextShopRequirement()
+	return self.bestShopSoFar and ShopDefs[self.bestShopSoFar - 1] and ShopDefs[self.bestShopSoFar - 1].bookRequirement
+end
+
 function api.RefreshShop(index)
 	self.previousShopIndex = self.currentShopIndex
 	self.bestShopSoFar = math.min(index, self.bestShopSoFar)
@@ -155,7 +163,7 @@ function api.Draw(drawQueue)
 			local shopDef = ShopDefs[i]
 			if i >= self.bestShopSoFar - ShopDefsData.shopLookahead or self.world.IsGodMode() then
 				local canEnter = TableHandler.CanEnterShop(shopDef) or self.world.IsGodMode()
-				local flash = (TableHandler.GetTutorialPhase() == 4) and (i == ShopDefsData.starterShop)
+				local flash = canEnter and (not self.bestShopSoFar or i < self.bestShopSoFar)
 				if InterfaceUtil.DrawButton(xOff, yOff, 410, 60, mousePos, shopDef.name, not canEnter, flash, true, highlight or (i == api.GetCurrentShopIndex()), 2, 8) then
 					TableHandler.SetUnderMouse({type = "selectShop", index = i, cost = shopDef.cost, tooltip = shopDef.desc})
 				end
@@ -168,7 +176,7 @@ end
 function api.Initialize(world)
 	self = {
 		world = world,
-		bestShopSoFar = ShopDefsData.starterShop,
+		bestShopSoFar = ShopDefsData.starterShop + 1,
 		currentShopIndex = false,
 		previousShopIndex = false,
 		previousShopTime = false,

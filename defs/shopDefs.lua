@@ -113,11 +113,15 @@ Costs $1 to visit, if you can pay.]]
 	},
 }
 
+for i = 1, #def do
+	def[i].index = i
+end
+
 local data = {
 	def = def,
 	defaultShopImage = "outside",
 	starterShop = 6,
-	shopLookahead = 2,
+	shopLookahead = 1,
 }
 
 return data

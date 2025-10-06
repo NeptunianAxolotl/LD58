@@ -115,11 +115,8 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	
 	-- Do their costs form a sequence?
 	local dir = 0
-	local x = -100
-	if self.stamps[1][rowIndex] and self.stamps[1][rowIndex].cost then
-		x = self.stamps[1][rowIndex].cost
-	end
-	if x >= 0 and self.stamps[2][rowIndex] and self.stamps[2][rowIndex].cost then
+	local x = self.stamps[1][rowIndex].cost
+	if self.stamps[2][rowIndex] and self.stamps[2][rowIndex].cost then
 		if x == self.stamps[2][rowIndex].cost then
 			return 1
 		end
@@ -144,10 +141,7 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 		end
 	end
 	quality = quality / self.width
-	if x >= 0 then
-		return math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
-	end
-	return 1
+	return math.max(2, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
 end
 
 local function TrackMultiplier(self, mult, posList, humanName, desc, index, bonusDisplayTable, chosenImage)
