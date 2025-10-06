@@ -305,6 +305,12 @@ end
 local function DoTutorial(dt)
 	if self.world.GetCosmos().SkipTutorial() then
 		self.tutorialPhase = false
+		if #self.books == 1 then
+			self.books[#self.books + 1] = BookHelper.GetBook("starter_2")
+			self.books[1].SetPosition({0.3, 0})
+			self.books[1].SetVelocity({10, 0})
+			self.books[2].SetPosition({-0.25, 0})
+		end
 		return
 	end
 	if self.tutorialPhase == 1 then
@@ -349,7 +355,7 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 1.6 and self.tutorialPhase <= 2.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 2) * 2)
-		love.graphics.printf("Every collector needs a stamp tray. Replace the blue kangaroo with the orange planet from the tray to increase ♥.\n\nRows are multiplied by runs of price. Columns are multiplied by matching colours.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
+		love.graphics.printf("\nEvery collector needs a stamp tray. Use the orange planet from the tray to increase ♥.\n\nRows are multiplied by runs of price. Columns are multiplied by matching colours.", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.45, 490)
 		Font.SetSize(2)
 		love.graphics.printf("♥ " .. TotalBookScore() .. " / ♥ 41", Global.WINDOW_X*0.06, Global.WINDOW_Y*0.74 + 40, 490, "center")
 	elseif self.tutorialPhase > 2.8 and self.tutorialPhase <= 3.5 then
@@ -360,7 +366,6 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 3.8 and self.tutorialPhase <= 4.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 4) * 2)
-		print(1 - (self.tutorialPhase - 5) * 2)
 		love.graphics.printf("Take a visit to Stamp Alley to find collectors willing to trade books. Stamps can be sold to pay for travel, but avoid selling too many.", Global.WINDOW_X*0.28, Global.WINDOW_Y*0.345, 850)
 	elseif self.tutorialPhase > 4.8 and self.tutorialPhase <= 5.5 then
 		Font.SetSize(2)
@@ -369,7 +374,7 @@ local function DrawTutorial()
 	elseif self.tutorialPhase > 5.8 and self.tutorialPhase <= 6.5 then
 		Font.SetSize(2)
 		love.graphics.setColor(0, 0, 0, 1 - (self.tutorialPhase - 6) * 2)
-		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for valuable stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.345, 850)
+		love.graphics.printf("Improve the ♥ of your books to gain access to higher tier events, and look out for $ stamps to pay for the travel.", Global.WINDOW_X*0.25, Global.WINDOW_Y*0.345, 850)
 	end
 end
 
@@ -399,7 +404,8 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local buttonX = baseX + book.GetOfferOffset()
 	local canAfford = ShopHandler.CanSwapFromTable(book.GetScore())
 	local highlight = canAfford and self.swapSelected and (self.swapSelected.type == "mySwapSelected") and (self.swapSelected.index == index)
-	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, false, false, highlight, 2, 5) then
+	local tradeSelected = self.swapSelected and (self.swapSelected.type == "shopSwapSelected")
+	if InterfaceUtil.DrawButton(buttonX, baseY - 60, 120, 50, mousePos, "Offer", not canAfford, canAfford and tradeSelected, false, highlight, 2, 5) then
 		api.SetUnderMouse({type = "mySwapSelected", index = index})
 	end
 	Font.SetSize(2)

@@ -88,10 +88,11 @@ local function DrawBooks(bookList, canTrade)
 		book.Draw(xOff, yOff + extraHeight, scale, "shopBook")
 		local buttonX = xOff + book.GetOfferOffset()
 		local canAfford = TableHandler.CanAffordShopBook(book.GetScore())
+		local offerActive = swapSelected and (swapSelected.type == "mySwapSelected")
 		local highlight = canAfford and swapSelected and (swapSelected.type == "shopSwapSelected") and (swapSelected.index == i)
 		if InterfaceUtil.DrawButton(
 				buttonX, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 10 + extraHeight, 120, 50, mousePos,
-				"Trade", not canAfford, false, false, highlight, 2, 5) then
+				"Trade", not canAfford, canAfford and offerActive, false, highlight, 2, 5) then
 			TableHandler.SetUnderMouse({type = "shopSwapSelected", index = i})
 		end
 		Font.SetSize(2)
