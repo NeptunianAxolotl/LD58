@@ -117,13 +117,10 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	local dir = 0
 	local x = self.stamps[1][rowIndex].cost
 	if self.stamps[2][rowIndex] and self.stamps[2][rowIndex].cost then
-		if x == self.stamps[2][rowIndex].cost then
-			return 1
-		end
 		dir = self.stamps[2][rowIndex].cost - x
 		x = x + dir
 	end
-	if self.width <= 2 and dir ~= -1 and dir ~= 1 then
+	if self.width <= 2 and dir ~= -1 and dir ~= 1 and dir ~= 0 then
 		return 1 -- No arbitrary sequence bonus for pairs
 	end
 	for i = 3, self.width do
