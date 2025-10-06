@@ -30,7 +30,7 @@ local function CountPair(other)
 	return (other and other.name == "pair_stamp") and 1 or 0
 end
 
-local function UpdateAdjacencyData(self, x, y, left, right, top, bottom)
+local function UpdateAdjacencyData(self, x, y, bookSelf, bonusDisplayTable, left, right, top, bottom)
 	local count = CountPair(left) + CountPair(right) + CountPair(top) + CountPair(bottom)
 	self.adjacencyDisabled = (count ~= 1)
 end
@@ -56,6 +56,7 @@ end
 local function InitRandomStamp(self, def)
 	self.cost = def.cost or util.RandomIntegerInRange(1, StampConst.COST_RANGE)
 	self.color = def.color or util.RandomIntegerInRange(1, StampConst.COLOR_RANGE)
+	self.rarity = def.rarity or util.RandomIntegerInRange(1, StampConst.RAIRTY_RANGE)
 end
 
 local def = {

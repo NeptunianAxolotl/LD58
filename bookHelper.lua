@@ -57,7 +57,7 @@ function api.GetColScoreMultiplier(self, colIndex)
 	else
 		-- check for colours
 		if candfound and candcolor >= 0 then
-			multiplier = math.max(1.5, math.ceil(quality*2)/2)
+			multiplier = math.max(1.5, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
 		end
 	end
 	return multiplier
@@ -103,7 +103,7 @@ function api.GetRowScoreMultiplier(self, rowIndex)
 	end
 	quality = quality / self.width
 	if x >= 0 then
-		return math.max(1.5, math.ceil(quality*2)/2)
+		return math.max(1.5, math.ceil(quality*2)/2) * self.rowColumnGlobalMult
 	end
 	return 1
 end
@@ -126,13 +126,19 @@ function api.GetStampAdjacencyScore(self, i, j, bonusDisplayTable)
 		self.stamps[i][j + 1])
 end
 
-local function UpdateStampAdjacencyData(self, i, j)
+local function UpdateStampAdjacencyData(self, i, j, bonusDisplayTable)
 	return self.stamps[i][j].def.UpdateAdjacencyData(
 		self.stamps[i][j], i, j,
+		bonusDisplayTable or false, self,
 		self.stamps[i - 1] and self.stamps[i - 1][j],
 		self.stamps[i + 1] and self.stamps[i + 1][j],
 		self.stamps[i][j - 1],
-		self.stamps[i][j + 1])
+		self.stamps[i][j + 1],
+		self.stamps[i + 1] and self.stamps[i + 1][j - 1], -- NE
+		self.stamps[i - 1] and self.stamps[i - 1][j - 1], -- NW
+		self.stamps[i - 1] and self.stamps[i - 1][j + 1], -- SW
+		self.stamps[i + 1] and self.stamps[i + 1][j + 1]  -- SE
+	)
 end
 
 function api.CalculateBookScore(self, bonusDisplayTable)
@@ -148,11 +154,14 @@ function api.CalculateBookScore(self, bonusDisplayTable)
 		basic_scores_row[j] = 0
 	end
 	
+	-- Reset score multipliers that depend on book layout
+	self.rowColumnGlobalMult = 1
+	
 	-- Cache information that stamps need to figure out how their adjacency works (eg disabling if there are too many adjacent).
 	for i = 1, self.width do
 		for j = 1, self.height do
 			if self.stamps[i][j] and self.stamps[i][j].def.UpdateAdjacencyData then
-				UpdateStampAdjacencyData(self, i, j)
+				UpdateStampAdjacencyData(self, i, j, bonusDisplayTable)
 			end
 		end
 	end
@@ -240,6 +249,26 @@ function api.SpawnStampPlaceEffect(self, placePos, bx, by, bw, bh)
 			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
 		end
 	end
+end
+
+function api.SpawnAllMultiplierEffects(self, bx, by, bw, bh)
+	for i = 1, self.width do
+		local colMult = api.GetColScoreMultiplier(self, i)
+		if colMult > 1 then
+			local ex = bx + bw * (i - 0.5) / self.width
+			EffectsHandler.SpawnEffect("popup", {ex, by}, {text = "x" .. colMult, velocity = {0, -5}})
+			EffectsHandler.SpawnEffect("popup", {ex, by + bh}, {text = "x" .. colMult, velocity = {0, 5}})
+		end
+	end
+	for j = 1, self.height do
+		local rowMult = api.GetRowScoreMultiplier(self, j)
+		if colMult > 1 then
+			local ey = by + bh * (placePos.y - 0.5) / self.height
+			EffectsHandler.SpawnEffect("popup", {bx, ey}, {text = "x" .. rowMult, velocity = {-5, 0}})
+			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
+		end
+	end
+
 end
 
 local function ForceBasicFlush(self)

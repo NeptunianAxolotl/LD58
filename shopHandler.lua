@@ -11,6 +11,9 @@ local api = {}
 --------------------------------------------------
 
 function api.CanSwapFromTable(tableValue)
+	if self.world.IsGodMode() then
+		return true
+	end
 	local swapSelected = TableHandler.GetSelected()
 	if swapSelected and swapSelected.type == "shopSwapSelected" then
 		return tableValue >= self.books[swapSelected.index].GetScore()
@@ -26,7 +29,7 @@ end
 
 function api.ReplaceBook(tableBook, shopIndex)
 	local shopBook = self.books[shopIndex]
-	if shopBook.GetScore() > tableBook.GetScore() then
+	if shopBook.GetScore() > tableBook.GetScore() and not self.world.IsGodMode() then
 		return false
 	end
 	self.books[shopIndex] = tableBook

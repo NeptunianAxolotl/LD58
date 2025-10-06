@@ -9,6 +9,11 @@ local function NewBook(def)
 	self.score = BookHelper.CalculateBookScore(self, self.bonusDisplayTable)
 	self.position = def.position or {math.random()*2 - 1, 0}
 	self.velocity = {0, 0}
+	self.rowColumnGlobalMult = 1
+	
+	function api.GetRowColumnGlobalMult()
+		return self.rowColumnGlobalMult
+	end
 	
 	function api.SetVelocity(newVelocity)
 		self.velocity = newVelocity

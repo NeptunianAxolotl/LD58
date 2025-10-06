@@ -130,10 +130,16 @@ local function MousePlaceClick(placePos)
 		return leftEmptySpace
 	elseif placePos.type == "book" then
 		local book = placePos.book
+		local bookMult = book.GetRowColumnGlobalMult()
 		local bookStamp = book.ReplaceStamp(placePos.x, placePos.y, self.heldStamp or false)
 		if self.heldStamp and placePos.index then
-			local bx, by, bw, bh = GetBookDimensions(book, placePos.index)
-			BookHelper.SpawnStampPlaceEffect(book.GetSelfData(), placePos, bx, by, bw, bh)
+			if book.GetRowColumnGlobalMult() > bookMult then
+				local bx, by, bw, bh = GetBookDimensions(book, placePos.index)
+				BookHelper.SpawnAllMultiplierEffects(book.GetSelfData(), bx, by, bw, bh)
+			else
+				local bx, by, bw, bh = GetBookDimensions(book, placePos.index)
+				BookHelper.SpawnStampPlaceEffect(book.GetSelfData(), placePos, bx, by, bw, bh)
+			end
 		end
 		local leftEmptySpace = bookStamp and not self.heldStamp
 		self.heldStamp = bookStamp
@@ -259,6 +265,9 @@ function api.GetAverageFullness()
 end
 
 function api.CanAffordShopBook(shopScore)
+	if self.world.IsGodMode() then
+		return true
+	end
 	if self.swapSelected and self.swapSelected.type == "mySwapSelected" then
 		return shopScore <= self.books[self.swapSelected.index].GetScore()
 	end
