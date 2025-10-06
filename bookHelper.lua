@@ -326,22 +326,37 @@ function api.SpawnAllMultiplierEffects(self, bx, by, bw, bh)
 			EffectsHandler.SpawnEffect("popup", {bx + bw, ey}, {text = "x" .. rowMult, velocity = {5, 0}})
 		end
 	end
-
 end
 
-local function ForceBasicFlush(self)
+local function SelectRandomStamp(self, stampTypeCounts)
+	local name, def
+	local tries = 20
+	while (not def) or (def.shopLimitCategory and (stampTypeCounts[def.shopLimitCategory] or 0) > def.shopLimit and tries > 0) do
+		name = util.SampleListWeighted(self.stampDist).stamp
+		def = StampDefs[name]
+		tries = tries - 1
+	end
+	if def.shopLimitCategory then
+		stampTypeCounts[def.shopLimitCategory] = (stampTypeCounts[def.shopLimitCategory] or 0) + 1
+	end
+	return name
+end
+
+local function ForceBasicFlush(self, stampTypeCounts)
 	i = 1 + math.floor(math.random() * self.width)
 	c = 1 + math.floor(math.random() * 8)
 	for j = 1, self.height do
 		self.stamps[i][j] = NewStamp({
-								name = "blank_stamp", 
+								name = SelectRandomStamp(self, stampTypeCounts), 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
-		self.stamps[i][j].color = c
+		if not self.stamps[i][j].def.noColor then
+			self.stamps[i][j].color = c
+		end
 	end
 end
 
-local function ForceBasicSequence(self)
+local function ForceBasicSequence(self, stampTypeCounts)
 	j = 1 + math.floor(math.random()*self.height)
 	flip = 1 + math.floor(math.random()*2)
 	if flip == 1 then
@@ -354,10 +369,12 @@ local function ForceBasicSequence(self)
 	
 	for i = 1, self.width do
 		self.stamps[i][j] = NewStamp({
-								name = "blank_stamp", 
+								name = SelectRandomStamp(self, stampTypeCounts), 
 								quality = self.minQuality + math.floor(math.random()*(self.maxQuality - self.minQuality + 1))
 								})
-		self.stamps[i][j].cost = seqstart + jumpsize*(i-1)
+		if not self.stamps[i][j].def.fixedCost then
+			self.stamps[i][j].cost = seqstart + jumpsize*(i-1)
+		end
 	end
 end
 
@@ -463,20 +480,6 @@ local function ScrambleForTarget(self, target, attempts)
 	
 end
 
-local function SelectRandomStamp(self, stampTypeCounts)
-	local name, def
-	local tries = 20
-	while (not def) or (def.shopLimitCategory and (stampTypeCounts[def.shopLimitCategory] or 0) > def.shopLimit and tries > 0) do
-		name = util.SampleListWeighted(self.stampDist).stamp
-		def = StampDefs[name]
-		tries = tries - 1
-	end
-	if def.shopLimitCategory then
-		stampTypeCounts[def.shopLimitCategory] = (stampTypeCounts[def.shopLimitCategory] or 0) + 1
-	end
-	return name
-end
-
 local function RegenerateStamps(self)
 	local stampTypeCounts = {}
 	for i = 1, self.width do
@@ -494,9 +497,9 @@ local function RegenerateStamps(self)
 		if forcing == "force_none" then
 			-- do nothing
 		elseif forcing == "force_sequence" then
-			ForceBasicSequence(self)
+			ForceBasicSequence(self, stampTypeCounts)
 		elseif forcing == "force_flush" then
-			ForceBasicFlush(self)
+			ForceBasicFlush(self, stampTypeCounts)
 		elseif forcing == "force_rocket" then
 			ForcePair(self,"rocket_stamp","planet_stamp")
 		elseif forcing == "force_pair" then

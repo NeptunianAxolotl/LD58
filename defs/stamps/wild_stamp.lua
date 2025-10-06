@@ -23,6 +23,7 @@ local def = {
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
 	isWildColor = true,
+	noColor = true,
 	image = "prism",
 	humanName = "Rainbow Stamp",
 	desc = "Low value, but a single one can complete a column.",

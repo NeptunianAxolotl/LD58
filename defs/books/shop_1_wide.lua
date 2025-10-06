@@ -17,7 +17,7 @@ local def = {
 		{probability = 0.10, stamp = "rocket_stamp"},
 		{probability = 0.05, stamp = "planet_stamp"},
 		{probability = 0.05, stamp = "misprint_stamp"},
-		{probability = 1, stamp = "blank_stamp"},
+		{probability = 0.16, stamp = "blank_stamp"},
 	}),
 	earlyForceDist = util.NormaliseWeightedList({
 		{probability = 0.2, forcing = "force_flush"},
@@ -28,8 +28,8 @@ local def = {
 		{probability = 0.3, forcing = "force_none"},
 	}),
 	scramble = util.NormaliseWeightedList({
-		{probability = 0.90, target = 0, attempts = 30,},
-		{probability = 0.10, attempts = 0}, -- dont scramble
+		{probability = 0.99, target = 0, attempts = 30,},
+		{probability = 0.01, attempts = 0}, -- dont scramble
 	}),
 }
 

@@ -32,7 +32,7 @@ local def = {
 		{probability = 0.2, stamp = "renumber_down_stamp"},
 		{probability = 0.2, stamp = "paint_stamp"},
 		{probability = 0.2, stamp = "quality_stamp"},
-		{probability = 1, stamp = "blank_stamp"},
+		{probability = 0.16, stamp = "blank_stamp"},
 	}),
 	earlyForceDist = util.NormaliseWeightedList({
 		{probability = 0.01, forcing = "force_flush"},
