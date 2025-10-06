@@ -67,14 +67,18 @@ local function NewStamp(def)
 			Resources.DrawImage(self.def.image, x, y, false, alpha or false, scale, colorDef and colorDef[2])
 		end
 		if self.def.DoPlaceAbility then
-			Resources.DrawImage("stamp_zigzag", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
+			Resources.DrawImage("border2", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
 		else
 			Resources.DrawImage("stamp", x, y, false, alpha or false, scale, StampConst.rarityColorMap[self.rarity] or false)
 		end
 		Resources.DrawImage("quality_" .. self.quality, x, y, false, alpha or false, scale)
 		
 		Font.SetSize(4)
-		love.graphics.setColor(0, 0.05, 0, alpha or 1)
+		if self.color == 100 then
+			love.graphics.setColor(1, 1, 1, alpha or 1)
+		else
+			love.graphics.setColor(0, 0.05, 0, alpha or 1)
+		end
 		local costString = self.def.GetSellValue(self) > 1 and ("$" .. self.cost) or (self.cost .. "¢")
 		love.graphics.printf(costString, x - Global.STAMP_WIDTH*scale*0.39, y - Global.STAMP_HEIGHT*scale*0.41, Global.STAMP_WIDTH*scale)
 	end

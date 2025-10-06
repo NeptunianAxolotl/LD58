@@ -25,7 +25,6 @@ local def = {
 	InitRandomStamp = InitRandomStamp,
 	isWildColor = true,
 	image = "prism",
-	backImage = "wild_stamp",
 	humanName = "Rainbow Stamp",
 	desc = "Low value, but a single one can complete a column.",
 }

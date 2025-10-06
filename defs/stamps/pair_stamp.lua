@@ -15,9 +15,9 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},
-					image = "pair",
+					image = "pear",
 					humanName = "Pair Bonus",
-					desc = string.format("Paired stamps gaining %d and %d to base ♥, improves with quality.", bonus, otherBonus),
+					desc = string.format("Paired pears are gaining ♥ %d and ♥ %d, improves with quality.", bonus, otherBonus),
 				})
 			end
 		end
@@ -65,9 +65,9 @@ local def = {
 	GetSoloScore = GetSoloScore,
 	GetSellValue = GetSellValue,
 	InitRandomStamp = InitRandomStamp,
-	image = "pair",
-	humanName = "Pair Stamp",
-	desc = "Bonus points when next to one pair stamp",
+	image = "pear",
+	humanName = "Pear Stamp",
+	desc = "Looks better when paired with exactly one pear.",
 }
 
 return def
