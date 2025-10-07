@@ -149,7 +149,7 @@ end
 -- Buttons
 --------------------------------------------------
 
-function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, canHoverDisabled, forceHighlight, fontSize, fontOffset, borderThickness, alpha)
+function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, canHoverDisabled, forceHighlight, fontSize, fontOffset, borderThickness, alpha, sliderProp)
 	local hovered = ((not disabled) or canHoverDisabled) and util.PosInRectangle(mousePos, x, y, width, height)
 	borderThickness = borderThickness or 6
 	alpha = alpha or 1
@@ -165,6 +165,12 @@ function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, ca
 	end
 	love.graphics.setLineWidth(borderThickness*0.5)
 	love.graphics.rectangle("fill", x, y, width, height, 4, 4, 16)
+	
+	if sliderProp then
+		love.graphics.setColor(0, 0, 0, 0.15)
+		love.graphics.setLineWidth(1)
+		love.graphics.rectangle("fill", x + borderThickness/2 + width * sliderProp, y + borderThickness/2, (width - borderThickness) * (1 - sliderProp), height - borderThickness)
+	end
 	
 	if fontSize then
 		Font.SetSize(fontSize)

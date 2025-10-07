@@ -9,7 +9,7 @@ local api = {}
 local menuOptions = {
 	"Quit",
 	"Restart",
-	"Toggle Music",
+	"Music Volume",
 	"Colourblind Mode",
 	"Fullscreen",
 	"Brutal",
@@ -19,6 +19,16 @@ local menuTooltip = {
 		return string.format("Brutal - %s\nShops offer higher ♥ books and the books are more organised.\nProgress is much slower.", self.cosmos.GetBrutal() and "Enabled" or "Disabled")
 	end,
 }
+local menuSliders = {
+	["Music Volume"] = {
+		drawFunc = function ()
+			return self.cosmos.GetMusicVolume()/2
+		end,
+		changeFunc = function (frac)
+			self.cosmos.SetMusicVolume(frac*2)
+		end,
+	}
+}
 
 if Global.DEV_TOOLS_ENABLED then
 	menuOptions[#menuOptions + 1] = "Money++"
@@ -26,19 +36,39 @@ if Global.DEV_TOOLS_ENABLED then
 	menuOptions[#menuOptions + 1] = "God Mode"
 end
 
+local function UpdateSliderDrag()
+	local slider = self.sliderHeld and menuSliders[self.sliderHeld] and menuSliders[self.sliderHeld]
+	if not (slider and slider.extents) then
+		return
+	end
+	local mousePos = self.cosmos.GetWorld().GetMousePositionInterface()
+	slider.changeFunc(math.max(0, math.min(1, (mousePos[1] - slider.extents.x) / slider.extents.width)))
+	return true
+end
+
 --------------------------------------------------
 -- API
 --------------------------------------------------
 
+function api.MouseReleased(x, y, button)
+	self.sliderHeld = false
+end
+
+function api.MouseMoved(x, y, dx, dy)
+	return UpdateSliderDrag()
+end
+
 function api.MousePressed(x, y, button)
-	if self.hoveredMenuAction == "Menu" then
+	self.sliderHeld = false
+	if menuSliders[self.hoveredMenuAction] then
+		self.sliderHeld = self.hoveredMenuAction
+		UpdateSliderDrag()
+	elseif self.hoveredMenuAction == "Menu" then
 		api.ToggleMenu()
 	elseif self.hoveredMenuAction == "Quit" then
 		self.cosmos.QuitGame()
 	elseif self.hoveredMenuAction == "Restart" then
 		self.cosmos.RestartWorld()
-	elseif self.hoveredMenuAction == "Toggle Music" then
-		self.cosmos.ToggleMusic()
 	elseif self.hoveredMenuAction == "Colourblind Mode" then
 		self.cosmos.ToggleColorblindMode()
 	elseif self.hoveredMenuAction == "Money++" then
@@ -78,7 +108,11 @@ function api.Draw(drawQueue)
 		local overX = 150
 		local offset = Global.WINDOW_Y * 0.035 + 80*6
 		for i = 1, #menuOptions do
-			local hovered = InterfaceUtil.DrawButton(overX + 20, offset, 350, 60, mousePos, menuOptions[i], false, false, false, false, 2, 8)
+			local slider = menuSliders[menuOptions[i]]
+			if slider and not slider.extents then
+				slider.extents = {x = overX + 20, width = 350}
+			end
+			local hovered = InterfaceUtil.DrawButton(overX + 20, offset, 350, 60, mousePos, menuOptions[i], false, false, false, false, 2, 8, false, false, slider and slider.drawFunc())
 			if hovered then
 				self.hoveredMenuAction = hovered
 				if menuTooltip[menuOptions[i]] then

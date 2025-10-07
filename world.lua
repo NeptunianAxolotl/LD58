@@ -114,10 +114,13 @@ end
 function api.MouseReleased(x, y, button)
 	x, y = CameraHandler.GetCameraTransform():inverse():transformPoint(x, y)
 	-- Send event to game components
+	MainMenuHandler.MouseReleased(x, y, button)
 end
 
 function api.MouseMoved(x, y, dx, dy)
-	
+	if MainMenuHandler.MouseMoved(x, y, dx, dy) then
+		return true
+	end
 end
 
 --------------------------------------------------

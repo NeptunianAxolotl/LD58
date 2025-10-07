@@ -38,7 +38,7 @@ function api.Update(dt)
   local track = nil
   
   playbackPosition = playbackPosition + dt
-  
+  local volumeMult = cosmos.GetMusicVolume()
   -- Perform bank cutover and update the volume target values if required
   if cosmos.MusicEnabled()
   then
@@ -85,8 +85,8 @@ function api.Update(dt)
   then actualVolumes[i] = actualVolumes[i] - dv
     else actualVolumes[i] = actualVolumes[i] + dv
   end
-    bankA[i]:setVolume(actualVolumes[i])
-    bankB[i]:setVolume(actualVolumes[i])
+    bankA[i]:setVolume(math.abs(actualVolumes[i] * volumeMult))
+    bankB[i]:setVolume(math.abs(actualVolumes[i] * volumeMult))
   end
   
 end

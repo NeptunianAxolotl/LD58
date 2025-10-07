@@ -1,6 +1,6 @@
 return {
 	file = "music/LD58-Trumpet_descant.ogg",
-	volMult = 0.2 * Global.MUSIC_VOLUME,
+	volMult = 0.45 * Global.MUSIC_VOLUME,
     handler = 1,
     group = "principal",
     minVal = 400,
