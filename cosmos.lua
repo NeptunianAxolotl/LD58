@@ -199,7 +199,7 @@ function api.Initialize()
 	self = {
 		realTime = 0,
 		musicEnabled = true,
-		musicVolume = 1,
+		musicVolume = Global.DEFAULT_UI_VOLUME,
 		mouseScrollSpeed = Global.MOUSE_SCROLL_MULT,
 		keyScrollSpeed = Global.KEYBOARD_SCROLL_MULT,
 		grabInput = Global.MOUSE_SCROLL_MULT > 0,
