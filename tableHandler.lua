@@ -465,11 +465,27 @@ local function DrawWin()
 	end
 	if self.winProgress > 8.4 then
 		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 8.4)*1.1))
-		love.graphics.printf("\n\n\n\nThe vote is unanimous as you are elected Stamp Grandmaster for life.", xPos, yPos + 30, 860)
+		if ShopHandler.GetBrutalThroughout() then
+			love.graphics.printf("\n\n\n\nYour dedication impresses them, given the brutal journey behind you.", xPos, yPos + 30, 860)
+		else
+			love.graphics.printf("\n\n\n\nThe vote is unanimous as you are elected Stamp Grandmaster for life.", xPos, yPos + 30, 860)
+		end
 	end
 	if self.winProgress > 10.5 then
 		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 10.5)*2))
-		love.graphics.printf("\n\n\n\n\n\nThanks for playing", xPos, yPos + 38, 740, "center")
+		if ShopHandler.GetBrutalThroughout() then
+			love.graphics.printf("\n\n\n\n\n                                   The vote is unanimous.", xPos, yPos + 30, 860)
+		else
+			love.graphics.printf("\n\n\n\n\n\nThanks for playing", xPos, yPos + 38, 740, "center")
+		end
+	end
+	if self.winProgress > 12.2 and ShopHandler.GetBrutalThroughout() then
+		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 12.2)*2))
+		love.graphics.printf("\n\n\n\n\n\nYou are elected Stamp Grandmaster for life.", xPos, yPos + 38, 1080)
+	end
+	if self.winProgress > 13 and ShopHandler.GetBrutalThroughout() then
+		love.graphics.setColor(0, 0, 0, math.min(1, (self.winProgress - 13)*2))
+		love.graphics.printf("Thanks for playing!", -300 + (self.winProgress - 13)*180*(self.winProgress - 12) + math.random()*50, 600 - (self.winProgress - 13)*(self.winProgress - 13)*80 + math.random()*50, 500, "center")
 	end
 end
 

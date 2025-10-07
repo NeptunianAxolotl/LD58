@@ -36,6 +36,10 @@ function api.ReplaceBook(tableBook, shopIndex)
 	return shopBook
 end
 
+function api.GetBrutalThroughout()
+	return self.brutalThroughout
+end
+
 function api.GetBestSoFar()
 	return self.bestShopSoFar
 end
@@ -45,6 +49,9 @@ function api.NextShopRequirement()
 end
 
 function api.RefreshShop(index)
+	if self.brutalThroughout and not self.world.GetCosmos().GetBrutal() then
+		self.brutalThroughout = false
+	end
 	self.previousShopIndex = self.currentShopIndex
 	self.bestShopSoFar = math.min(index, self.bestShopSoFar)
 	TableHandler.ClearShopSelected()
@@ -204,6 +211,7 @@ function api.Initialize(world)
 		currentShopIndex = false,
 		previousShopIndex = false,
 		previousShopTime = false,
+		brutalThroughout = true,
 		books = {}
 	}
 end
