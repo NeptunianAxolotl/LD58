@@ -114,13 +114,14 @@ local function NewBook(def)
 		return bonusCount, keyByIndex, bonusByKey
 	end
 	
-	function api.Draw(x, y, scale, hoverType, index, drawBonuses)
+	function api.Draw(x, y, scale, hoverType, index, drawBonuses, alpha)
 		local xScale = scale * Global.STAMP_WIDTH
 		local yScale = scale * Global.STAMP_HEIGHT
+		alpha = alpha or 1
 		for i = 1, self.width do
 			for j = 1, self.height do
 				if not hoverType or not TableHandler.JustCheckUnderMouse(x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale) then
-					love.graphics.setColor(0.4, 0.35, 0.2, 1)
+					love.graphics.setColor(0.4, 0.35, 0.2, alpha)
 					love.graphics.setLineWidth(2)
 					love.graphics.rectangle("line", x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale)
 				end
@@ -133,12 +134,12 @@ local function NewBook(def)
 					{type = hoverType, book = api, index = index, x = i, y = j}
 				)
 				if underMouse then
-					love.graphics.setColor(0.2, 1, 0.2, 1)
+					love.graphics.setColor(0.2, 1, 0.2, alpha)
 					love.graphics.setLineWidth(3)
 					love.graphics.rectangle("line", x + (i - 1)*xScale, y + (j - 1)*yScale, xScale, yScale)
 				end
 				if self.stamps[i][j] then
-					self.stamps[i][j].Draw(x + (i - 0.5)*xScale, y + (j - 0.5)*yScale, scale)
+					self.stamps[i][j].Draw(x + (i - 0.5)*xScale, y + (j - 0.5)*yScale, scale, alpha)
 				end
 			end
 		end

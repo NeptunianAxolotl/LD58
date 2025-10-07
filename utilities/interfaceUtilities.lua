@@ -149,18 +149,19 @@ end
 -- Buttons
 --------------------------------------------------
 
-function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, canHoverDisabled, forceHighlight, fontSize, fontOffset, borderThickness)
+function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, canHoverDisabled, forceHighlight, fontSize, fontOffset, borderThickness, alpha)
 	local hovered = ((not disabled) or canHoverDisabled) and util.PosInRectangle(mousePos, x, y, width, height)
 	borderThickness = borderThickness or 6
+	alpha = alpha or 1
 	
 	if disabled and not hovered then
-		love.graphics.setColor(Global.BUTTON_DISABLE_COL[1], Global.BUTTON_DISABLE_COL[2], Global.BUTTON_DISABLE_COL[3], 1)
+		love.graphics.setColor(Global.BUTTON_DISABLE_COL[1], Global.BUTTON_DISABLE_COL[2], Global.BUTTON_DISABLE_COL[3], alpha)
 	elseif (flash and (self.animDt%Global.BUTTON_FLASH_PERIOD < Global.BUTTON_FLASH_PERIOD/2)) then
-		love.graphics.setColor(Global.BUTTON_FLASH_COL[1], Global.BUTTON_FLASH_COL[2], Global.BUTTON_FLASH_COL[3], 1)
+		love.graphics.setColor(Global.BUTTON_FLASH_COL[1], Global.BUTTON_FLASH_COL[2], Global.BUTTON_FLASH_COL[3], alpha)
 	elseif hovered or forceHighlight then
-		love.graphics.setColor(Global.BUTTON_HIGHLIGHT_COL[1], Global.BUTTON_HIGHLIGHT_COL[2], Global.BUTTON_HIGHLIGHT_COL[3], 1)
+		love.graphics.setColor(Global.BUTTON_HIGHLIGHT_COL[1], Global.BUTTON_HIGHLIGHT_COL[2], Global.BUTTON_HIGHLIGHT_COL[3], alpha)
 	else
-		love.graphics.setColor(Global.BUTTON_COL[1], Global.BUTTON_COL[2], Global.BUTTON_COL[3], 1)
+		love.graphics.setColor(Global.BUTTON_COL[1], Global.BUTTON_COL[2], Global.BUTTON_COL[3], alpha)
 	end
 	love.graphics.setLineWidth(borderThickness*0.5)
 	love.graphics.rectangle("fill", x, y, width, height, 4, 4, 16)
@@ -168,25 +169,25 @@ function api.DrawButton(x, y, width, height, mousePos, text, disabled, flash, ca
 	if fontSize then
 		Font.SetSize(fontSize)
 		if disabled and not hovered then
-			love.graphics.setColor(Global.TEXT_DISABLE_COL[1], Global.TEXT_DISABLE_COL[2], Global.TEXT_DISABLE_COL[3], 1)
+			love.graphics.setColor(Global.TEXT_DISABLE_COL[1], Global.TEXT_DISABLE_COL[2], Global.TEXT_DISABLE_COL[3], alpha)
 		elseif (flash and (self.animDt%Global.BUTTON_FLASH_PERIOD < Global.BUTTON_FLASH_PERIOD/2)) then
-			love.graphics.setColor(Global.TEXT_FLASH_COL[1], Global.TEXT_FLASH_COL[2], Global.TEXT_FLASH_COL[3], 1)
+			love.graphics.setColor(Global.TEXT_FLASH_COL[1], Global.TEXT_FLASH_COL[2], Global.TEXT_FLASH_COL[3], alpha)
 		elseif hovered or forceHighlight then
-			love.graphics.setColor(Global.TEXT_HIGHLIGHT_COL[1], Global.TEXT_HIGHLIGHT_COL[2], Global.TEXT_HIGHLIGHT_COL[3], 1)
+			love.graphics.setColor(Global.TEXT_HIGHLIGHT_COL[1], Global.TEXT_HIGHLIGHT_COL[2], Global.TEXT_HIGHLIGHT_COL[3], alpha)
 		else
-			love.graphics.setColor(Global.TEXT_COL[1], Global.TEXT_COL[2], Global.TEXT_COL[3], 1)
+			love.graphics.setColor(Global.TEXT_COL[1], Global.TEXT_COL[2], Global.TEXT_COL[3], alpha)
 		end
 		love.graphics.printf(text, x, y + (fontOffset or 8), width, "center")
 	end
 	
 	if disabled and not hovered then
-		love.graphics.setColor(Global.OUTLINE_DISABLE_COL[1], Global.OUTLINE_DISABLE_COL[2], Global.OUTLINE_DISABLE_COL[3], 1)
+		love.graphics.setColor(Global.OUTLINE_DISABLE_COL[1], Global.OUTLINE_DISABLE_COL[2], Global.OUTLINE_DISABLE_COL[3], alpha)
 	elseif (flash and (self.animDt%Global.BUTTON_FLASH_PERIOD < Global.BUTTON_FLASH_PERIOD/2)) then
-		love.graphics.setColor(Global.OUTLINE_FLASH_COL[1], Global.OUTLINE_FLASH_COL[2], Global.OUTLINE_FLASH_COL[3], 1)
+		love.graphics.setColor(Global.OUTLINE_FLASH_COL[1], Global.OUTLINE_FLASH_COL[2], Global.OUTLINE_FLASH_COL[3], alpha)
 	elseif hovered or forceHighlight then
-		love.graphics.setColor(Global.OUTLINE_HIGHLIGHT_COL[1], Global.OUTLINE_HIGHLIGHT_COL[2], Global.OUTLINE_HIGHLIGHT_COL[3], 1)
+		love.graphics.setColor(Global.OUTLINE_HIGHLIGHT_COL[1], Global.OUTLINE_HIGHLIGHT_COL[2], Global.OUTLINE_HIGHLIGHT_COL[3], alpha)
 	else
-		love.graphics.setColor(Global.OUTLINE_COL[1], Global.OUTLINE_COL[2], Global.OUTLINE_COL[3], 1)
+		love.graphics.setColor(Global.OUTLINE_COL[1], Global.OUTLINE_COL[2], Global.OUTLINE_COL[3], alpha)
 	end
 	
 	love.graphics.setLineWidth(borderThickness)

@@ -56,6 +56,17 @@ function api.RefreshShop(index)
 	self.bestShopSoFar = math.min(index, self.bestShopSoFar)
 	TableHandler.ClearShopSelected()
 	self.currentShopIndex = index
+	
+	-- Animation
+	if self.previousShopIndex ~= index then
+		if not self.previousShopIndex then
+			self.bookFade = self.bookFadeTimeConst
+		end
+		self.previousShopTime = 1
+	end
+	self.previousBooks = self.books
+	
+	-- Generate new shop
 	self.books = {}
 	local shopDef = ShopDefs[index]
 	if not shopDef.size then
@@ -95,10 +106,8 @@ end
 -- Drawing
 --------------------------------------------------
 
-local function DrawBooks(bookList, canTrade)
+local function DrawBooks(bookList, xOff, yOff, alpha, canTrade)
 	local mousePos = self.world.GetMousePositionInterface()
-	local xOff = Global.WINDOW_X * 0.68
-	local yOff = Global.WINDOW_Y * 0.05
 	local scale = 1
 	
 	local swapSelected = TableHandler.GetSelected()
@@ -121,19 +130,19 @@ local function DrawBooks(bookList, canTrade)
 			xOff = xOff + 10
 		end
 		
-		Resources.DrawImage("book_width_" .. book.GetWidth(), xOff - 60, yOff - 630 + Global.STAMP_HEIGHT*book.GetHeight() + extraHeight)
-		book.Draw(xOff, yOff + extraHeight, scale, "shopBook")
+		Resources.DrawImage("book_width_" .. book.GetWidth(), xOff - 60, yOff - 630 + Global.STAMP_HEIGHT*book.GetHeight() + extraHeight, false, alpha)
+		book.Draw(xOff, yOff + extraHeight, scale, "shopBook", false, false, alpha)
 		local buttonX = xOff + book.GetOfferOffset()
 		local canAfford = TableHandler.CanAffordShopBook(book.GetScore())
-		local offerActive = swapSelected and (swapSelected.type == "mySwapSelected")
-		local highlight = canAfford and swapSelected and (swapSelected.type == "shopSwapSelected") and (swapSelected.index == i)
+		local offerActive = canTrade and swapSelected and (swapSelected.type == "mySwapSelected")
+		local highlight = canTrade and canAfford and swapSelected and (swapSelected.type == "shopSwapSelected") and (swapSelected.index == i)
 		if InterfaceUtil.DrawButton(
 				buttonX, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 10 + extraHeight, 120, 50, mousePos,
-				"Trade", not canAfford, canAfford and offerActive, false, highlight, 2, 5) then
+				"Trade", not canAfford, canAfford and offerActive, not canTrade, highlight, 2, 5, false, alpha) then
 			TableHandler.SetUnderMouse({type = "shopSwapSelected", index = i})
 		end
 		Font.SetSize(2)
-		love.graphics.setColor(0, 0, 0, 1)
+		love.graphics.setColor(0, 0, 0, alpha)
 		love.graphics.printf("♥ " .. book.GetScore(), buttonX + 138, yOff + Global.STAMP_HEIGHT*book.GetHeight() + 15 + extraHeight, Global.STAMP_WIDTH*3)
 		
 		xOff = xOff - 120
@@ -151,6 +160,18 @@ end
 --------------------------------------------------
 
 function api.Update(dt)
+	if self.previousShopTime then
+		self.previousShopTime = self.previousShopTime - dt
+		if self.previousShopTime < 0 then
+			self.previousShopTime = false
+		end
+	end
+	if self.bookFade then
+		self.bookFade = self.bookFade - dt
+		if self.bookFade < 0 then
+			self.bookFade = false
+		end
+	end
 end
 
 local function GetShopImage(index)
@@ -161,16 +182,25 @@ end
 function api.Draw(drawQueue)
 	drawQueue:push({y=0; f=function()
 		local shopImage = GetShopImage(self.currentShopIndex)
-		if self.world.GetAspectRatio() > 0.95 then
-			Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.5, false, 0.45, 0.75)
+		local scale = (self.world.GetAspectRatio() > 0.95) and 0.75 or 1
+		if (not self.previousShopTime) or self.previousShopTime < 0.5 then
+			Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.5, false, 0.45, scale)
 		else
-			Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.5, false, 0.45)
+			local oldShopImage = GetShopImage(self.previousShopIndex)
+			local alpha = (self.previousShopTime - 0.5)/0.5
+			Resources.DrawImage(shopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.5, false, 0.45 * (1 - alpha), scale)
+			Resources.DrawImage(oldShopImage, Global.WINDOW_X*0.5, Global.WINDOW_Y*0.5, false, 0.45 * alpha, scale)
 		end
 		--Resources.DrawImage("table", -0.8*Global.WINDOW_X, Global.WINDOW_Y * 0.65)
 	end})
 	drawQueue:push({y=50; f=function()
-		DrawBooks(self.books, true)
-		
+		local bookX, bookY = Global.WINDOW_X * 0.68, Global.WINDOW_Y * 0.05
+		if self.bookFade and self.previousBooks then
+			DrawBooks(self.previousBooks, bookX, bookY, self.bookFade/self.bookFadeTimeConst, false)
+		end
+		if (not self.previousShopTime) or self.previousShopTime < 0.8 then
+			DrawBooks(self.books, bookX, bookY - (self.previousShopTime or 0)*(self.previousShopTime or 0)*800, 1, true)
+		end
 		local tutorialPhase = TableHandler.GetTutorialPhase()
 		if tutorialPhase and tutorialPhase < 3.9 then
 			return
@@ -211,8 +241,12 @@ function api.Initialize(world)
 		currentShopIndex = false,
 		previousShopIndex = false,
 		previousShopTime = false,
+		bookFade = false,
 		brutalThroughout = true,
-		books = {}
+		books = {},
+		previousBooks = false,
+		
+		bookFadeTimeConst = 0.22,
 	}
 end
 
