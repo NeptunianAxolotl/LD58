@@ -2,6 +2,7 @@
 local shop = require("defs/shopLevelDefs")
 
 local def = {
+	shopLevel = 4,
 	width = 3,
 	height = 4,
 	scoreRange = shop.scoreRange[4],

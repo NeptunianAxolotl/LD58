@@ -12,6 +12,12 @@ local menuOptions = {
 	"Toggle Music",
 	"Colourblind Mode",
 	"Fullscreen",
+	"Brutal",
+}
+local menuTooltip = {
+	Brutal = function ()
+		return string.format("Brutal - %s\nShops offer higher ♥ books and the books are more organised.\nProgress is much slower.", self.cosmos.GetBrutal() and "Enabled" or "Disabled")
+	end,
 }
 
 if Global.DEV_TOOLS_ENABLED then
@@ -45,6 +51,8 @@ function api.MousePressed(x, y, button)
 	elseif self.hoveredMenuAction == "Fullscreen" then
 		self.fullscreen = not self.fullscreen
 		love.window.setFullscreen(self.fullscreen)
+	elseif self.hoveredMenuAction == "Brutal" then
+		self.cosmos.ToggleBrutal()
 	elseif self.menuOpen then
 		self.menuOpen = false
 		return true
@@ -70,7 +78,13 @@ function api.Draw(drawQueue)
 		local overX = 150
 		local offset = Global.WINDOW_Y * 0.035 + 80*6
 		for i = 1, #menuOptions do
-			self.hoveredMenuAction = InterfaceUtil.DrawButton(overX + 20, offset, 350, 60, mousePos, menuOptions[i], false, false, false, false, 2, 8) or self.hoveredMenuAction
+			local hovered = InterfaceUtil.DrawButton(overX + 20, offset, 350, 60, mousePos, menuOptions[i], false, false, false, false, 2, 8)
+			if hovered then
+				self.hoveredMenuAction = hovered
+				if menuTooltip[menuOptions[i]] then
+					TableHandler.SetTooltip(menuTooltip[menuOptions[i]]())
+				end
+			end
 			offset = offset - 80
 		end
 	end})

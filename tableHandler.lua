@@ -193,6 +193,10 @@ end
 -- API
 --------------------------------------------------
 
+function api.SetTooltip(text)
+	self.externalTooltip = text
+end
+
 function api.GetBookCount()
 	return #self.books
 end
@@ -672,11 +676,12 @@ function api.Draw(drawQueue)
 			wantTooltip = self.underMouse.tooltip
 		end
 		
-		if wantTooltip then
+		if wantTooltip or self.externalTooltip then
 			Font.SetSize(3)
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(wantTooltip, self.tooltipX, self.tooltipY, 340)
+			love.graphics.printf(wantTooltip or self.externalTooltip, self.tooltipX, self.tooltipY, 340)
 		end
+		self.externalTooltip = false
 		
 		local moneyChangeString = ""
 		if buySideboard then

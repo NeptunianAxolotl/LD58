@@ -83,6 +83,15 @@ end
 function api.ToggleColorblindMode()
 	self.colorblindMode = not self.colorblindMode
 end
+
+function api.ToggleBrutal()
+	self.brutal = not self.brutal
+end
+
+function api.GetBrutal()
+	return self.brutal
+end
+
 --------------------------------------------------
 -- Draw
 --------------------------------------------------
@@ -183,6 +192,7 @@ function api.Initialize()
 		transposePlacementMode = false,
 		skipTutorial = false,
 		colorblindMode = false,
+		brutal = false,
 	}
 	MainMenuHandler.Initialize(api)
 	MusicHandler.Initialize(api)

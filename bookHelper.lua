@@ -2,6 +2,7 @@
 StampConst = require("defs/stampDefs")
 StampDefs = StampConst.defs
 
+local BrutalDefs = require("defs/brutalDefs")
 local BookDefData = require("defs/bookDefs")
 local BookDefs = BookDefData.defs
 
@@ -420,7 +421,6 @@ local function permcompare(a,b)
 end
 
 local function ScrambleForTarget(self, target, attempts)
-	
 	if target > 1 then
 		target = 1
 	end
@@ -480,7 +480,6 @@ local function ScrambleForTarget(self, target, attempts)
 			self.stamps[i][j] = lstamps[nextstamp]
 		end
 	end
-	
 end
 
 local function RegenerateStamps(self)
@@ -513,8 +512,11 @@ local function RegenerateStamps(self)
 			error("Error in book generation")
 		end
 	end
-	if self.scramble then
-		scramset = util.SampleListWeighted(self.scramble)
+	local scramble = (world.GetCosmos().GetBrutal() and self.shopLevel and BrutalDefs.scramble[self.shopLevel]) or self.scramble
+	local preScore = api.CalculateBookScore(self)
+	
+	if scramble then
+		scramset = util.SampleListWeighted(scramble)
 		if scramset.attempts > 0 then
 			target = scramset.target -- 0 to 1, what fraction of the other attempts is the selected permutation better than. NOT a book score target.
 			attempts = scramset.attempts
@@ -552,11 +554,24 @@ function api.GetBook(defName, qualityDist)
 	else
 		RegenerateStamps(self)
 	end
-	if self.scoreRange then
+	local scoreRange = (world.GetCosmos().GetBrutal() and self.shopLevel and BrutalDefs.scoreRange[self.shopLevel]) or self.scoreRange
+	local rangeOffset = ((world.GetCosmos().GetBrutal() and self.shopLevel and BrutalDefs.scoreRangeRandomOffset[self.shopLevel]) or 0)*math.random()
+	if scoreRange then
 		local tries = 100
-		while (self.score < self.scoreRange[1] or self.score > self.scoreRange[2]) and tries > 0 do
+		local best = world.GetCosmos().GetBrutal() and {score = 0, stamps = false}
+		while (self.score < scoreRange[1] + rangeOffset or self.score > scoreRange[2] + rangeOffset) and tries > 0 do
 			RegenerateStamps(self)
+			if best and self.score > best.score then
+				best.stamps = self.stamps
+				best.score = self.score
+				self.stamps = {}
+			end
 			tries = tries - 1
+		end
+		if best and best.stamps then
+			local prevScore = self.score
+			self.stamps = best.stamps
+			api.CalculateBookScore(self)
 		end
 	end
 	return NewBook(self)
