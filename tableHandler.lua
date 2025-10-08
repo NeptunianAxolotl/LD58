@@ -496,7 +496,7 @@ end
 function api.Update(dt)
 	self.underMouse = false
 	for i = 1, #self.books do
-		self.books[i].UpdatePhysics(dt, i, self.books)
+		self.books[i].Update(dt, i, self.books)
 	end
 	local wantToSeeSlots = math.min(self.sideboardSize + 1, SideboardDefs.maxSlots)
 	if self.sideboardDrawSize < wantToSeeSlots then
@@ -536,11 +536,18 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	-- Draw bonuses
 	local xOff = baseX + xScale * 0.35
 	local yOff = baseY + yScale*book.GetHeight() + yScale / 2
-	local bonusCount, keyByIndex, bonusByKey = book.GetBonusIterationData()
+	local bonusCount, keyByIndex, bonusByKey, prevBonus, prevBonusTimer = book.GetBonusIterationData()
+	print("prevBonus", prevBonus)
 	for i = 1, bonusCount do
-		local bonus = bonusByKey[keyByIndex[i]]
+		local key = keyByIndex[i]
+		local bonus = bonusByKey[key]
 		local hovered = (not wantTooltip) and util.PosInRectangle(mousePos, xOff - xScale*0.5/2, yOff - yScale*0.5/2, xScale*0.5, yScale*0.5)
-		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or 0.6, 0.5 * self.bonusIconScale)
+		local pulseMag = ((not prevBonus) and 0) or math.max(0, ((((not prevBonus[key]) and bonus.popTime) or 0) - book.GetAnimTime()))
+		pulseMag = pulseMag / Global.BONUS_PULSE_TIME -- Normalise to go from 1 to zer
+		pulseMag = pulseMag - pulseMag*pulseMag*0.7 -- Enlarge then shrink back down
+		pulseMag = util.AverageScalar(pulseMag*0.8, pulseMag, pulseMag*pulseMag) -- Ease into 0, rather than hitting it like a parabola
+		local scaleMult = (hovered and 1.1 or 1) * (1 + pulseMag*0.9)
+		Resources.DrawImage(bonus.image, xOff, yOff, false, hovered and 1 or (0.6 + pulseMag * 0.3), 0.5 * self.bonusIconScale * scaleMult)
 		if hovered then
 			Font.SetSize(3)
 			love.graphics.setColor(0, 0, 0, 1)

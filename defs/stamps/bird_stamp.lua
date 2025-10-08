@@ -6,7 +6,7 @@ local function ScorePair(self, other, sx, sy, ox, oy, bonusDisplayTable)
 	if other.name == "tree_stamp" or other.name == "flower_stamp" then
 		local bonus = other.quality + self.quality + 5
 		if bonusDisplayTable then
-			local key = "pair_" .. math.min(sx, ox) .. "_" .. math.min(sy, oy) .. "_" .. math.max(sx, ox) .. "_" .. math.max(sy, oy)
+			local key = "bird_" .. sx .. "_" .. sy
 			if not IterableMap.Get(bonusDisplayTable, key) then
 				IterableMap.Add(bonusDisplayTable, key, {
 					posList = {{sx, sy}, {ox, oy}},

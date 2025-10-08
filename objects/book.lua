@@ -3,6 +3,7 @@ local function NewBook(def)
 	local self = {}
 	local api = {}
 	self.bonusDisplayTable = IterableMap.New()
+	self.previousBonusDisplay = false
 	self.width = def.width
 	self.height = def.height
 	self.stamps = def.stamps
@@ -10,6 +11,7 @@ local function NewBook(def)
 	self.position = def.position or {math.random()*2 - 1, 0}
 	self.velocity = {0, 0}
 	self.rowColumnGlobalMult = 1
+	self.animTime = 0
 	
 	function api.GetRowColumnGlobalMult()
 		return self.rowColumnGlobalMult
@@ -32,7 +34,8 @@ local function NewBook(def)
 		return self.width == 2 and -10 or self.width == 3 and -2 or 4
 	end
 	
-	function api.UpdatePhysics(dt, index, otherBooks)
+	function api.Update(dt, index, otherBooks)
+		self.animTime = self.animTime + dt
 		local accel = {-12*self.position[1], 0}
 		for i = 1, #otherBooks do
 			local ascend = ShopHandler.InWinShop() and (TableHandler.UniqueBestBook() == i)
@@ -104,14 +107,28 @@ local function NewBook(def)
 	
 	function api.ReplaceStamp(x, y, replacement)
 		replacement, self.stamps[x][y] = TableHandler.PlaceStampAndMaybeDoAbility(replacement, self.stamps[x][y], api, x, y)
+		local prevBonusDisplay = self.bonusDisplayTable
+		self.bonusDisplayTable = self.previousBonusDisplay or IterableMap.New()
 		IterableMap.Clear(self.bonusDisplayTable)
+		self.previousBonusDisplay = prevBonusDisplay
 		self.score = BookHelper.CalculateBookScore(self, self.bonusDisplayTable)
+		for _, prevData in IterableMap.Iterator(self.bonusDisplayTable) do
+			prevData.popTime = self.animTime + Global.BONUS_PULSE_TIME
+		end
 		return replacement
+	end
+	
+	function api.GetAnimTime()
+		return self.animTime
 	end
 	
 	function api.GetBonusIterationData()
 		local bonusCount, keyByIndex, bonusByKey = IterableMap.GetBarbarianData(self.bonusDisplayTable)
-		return bonusCount, keyByIndex, bonusByKey
+		local prevBonusKey = false
+		if self.previousBonusDisplay then
+			_, _, prevBonusKey = IterableMap.GetBarbarianData(self.previousBonusDisplay)
+		end
+		return bonusCount, keyByIndex, bonusByKey, prevBonusKey
 	end
 	
 	function api.Draw(x, y, scale, hoverType, index, drawBonuses, alpha)
