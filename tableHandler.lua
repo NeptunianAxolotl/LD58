@@ -537,7 +537,6 @@ local function DrawBook(index, xScale, yScale, scale, mousePos, wantTooltip)
 	local xOff = baseX + xScale * 0.35
 	local yOff = baseY + yScale*book.GetHeight() + yScale / 2
 	local bonusCount, keyByIndex, bonusByKey, prevBonus, prevBonusTimer = book.GetBonusIterationData()
-	print("prevBonus", prevBonus)
 	for i = 1, bonusCount do
 		local key = keyByIndex[i]
 		local bonus = bonusByKey[key]
